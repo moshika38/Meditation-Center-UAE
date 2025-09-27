@@ -11,7 +11,6 @@ import 'package:meditation_center/presentation/pages/upload/widgets/post_upload_
 import 'package:meditation_center/presentation/pages/upload/widgets/bottom.text.dart';
 import 'package:meditation_center/presentation/pages/upload/widgets/image.card.dart';
 import 'package:meditation_center/presentation/components/text.input.dart';
-import 'package:meditation_center/providers/notification.provider.dart';
 import 'package:meditation_center/providers/post.provider.dart';
 import 'package:meditation_center/providers/user.provider.dart';
 import 'package:provider/provider.dart';
@@ -57,8 +56,7 @@ class _UploadPageState extends State<UploadPage> {
     PopupWindow.showPopupWindow(text, "Yes, Upload", context, () async {
       context.pop();
       final postProvider = Provider.of<PostProvider>(context, listen: false);
-      final notificationProvider =
-          Provider.of<NotificationProvider>(context, listen: false);
+       
 
       showDialog(
         context: context,
@@ -76,10 +74,7 @@ class _UploadPageState extends State<UploadPage> {
       );
 
       if (postStatus) {
-        await notificationProvider.addNewNotification(
-          "Uploaded",
-          "Your post has been uploaded successfully !",
-        );
+         
 
         setState(() {
           imageList.clear();

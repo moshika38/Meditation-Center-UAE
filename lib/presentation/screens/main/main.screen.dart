@@ -10,7 +10,7 @@ import 'package:meditation_center/presentation/components/update.banner.dart';
 import 'package:meditation_center/presentation/pages/item%20menus/item.menu.page.dart';
 import 'package:meditation_center/presentation/pages/home/home.page.dart';
 import 'package:meditation_center/presentation/pages/notice/page/notice.page.dart';
-import 'package:meditation_center/presentation/pages/notification/notification.page.dart';
+import 'package:meditation_center/presentation/pages/upcoming%20program/upcoming.program.dart';
 import 'package:meditation_center/presentation/pages/upload/page/upload.page.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 
@@ -144,10 +144,10 @@ class _MainScreenState extends State<MainScreen> {
                 indicatorColor: AppColors.primaryColor,
                 tabs: [
                   Tab(icon: Icon(Icons.home_rounded, size: 25)),
-                  Tab(icon: Icon(Icons.newspaper_rounded, size: 25)),
+                  Tab(icon: Icon(Icons.swap_vertical_circle_sharp, size: 25)),
                   Tab(icon: Icon(Icons.add_circle_rounded, size: 25)),
-                  Tab(icon: Icon(Icons.calendar_month_rounded, size: 25)),
-                  Tab(icon: Icon(Icons.notifications, size: 25)),
+                  Tab(icon: Icon(Icons.assignment_outlined, size: 25)),
+                  Tab(icon: Icon(Icons.event_repeat, size: 25)),
                 ],
               ),
             ),
@@ -165,7 +165,7 @@ class _MainScreenState extends State<MainScreen> {
                 ItemMenuPage(),
 
                 // NotificationPage
-                NotificationPage(),
+                UpcomingProgram(),
               ],
             ),
           );
