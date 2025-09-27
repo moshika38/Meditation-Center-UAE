@@ -8,7 +8,6 @@ import 'package:meditation_center/core/notifications/local.notification.dart';
 import 'package:meditation_center/data/firebase/firebase_options.dart';
 import 'package:meditation_center/core/routing/app.routing.dart';
 import 'package:meditation_center/core/theme/app.theme.dart';
-import 'package:meditation_center/data/services/animation.services.dart';
 import 'package:meditation_center/providers/comment.provider.dart';
 import 'package:meditation_center/providers/notice.provider.dart';
 import 'package:meditation_center/providers/post.with.user.data.provider.dart';
@@ -42,9 +41,7 @@ void main() async {
   final bool isUserVerified = user != null
       ? await UserProvider().isUserVerifiedInFirestore(user.uid)
       : false;
-  // Get animation duration
-  final int animationDuration =
-      await AnimationServices().getAnimationDuration();
+ 
 
   runApp(
     // MultiProvider
@@ -58,7 +55,6 @@ void main() async {
       ],
       child: MyApp(
         isUserVerified: isUserVerified,
-        animationDuration: animationDuration,
       ),
     ),
   );
@@ -66,11 +62,9 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final bool isUserVerified;
-  final int animationDuration;
   const MyApp({
     super.key,
     required this.isUserVerified,
-    required this.animationDuration,
   });
 
   @override
@@ -80,7 +74,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       routerConfig: AppRouting(
-        duration: animationDuration,
         isVerify: isUserVerified,
       ).appRouter,
       builder: EasyLoading.init(),

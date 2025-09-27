@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_center/presentation/pages/account%20settings/account.settings.dart';
 import 'package:meditation_center/presentation/pages/notice/add%20notice/add.notice.dart';
-import 'package:meditation_center/presentation/pages/animation%20settings/animation.settings.dart';
+import 'package:meditation_center/presentation/pages/notifications%20settings/notifications.settings.dart';
 import 'package:meditation_center/presentation/pages/comments/comment.page.dart';
 import 'package:meditation_center/presentation/pages/help%20and%20supports/help.and.support.dart';
 import 'package:meditation_center/presentation/pages/notice/notice%20viewer/notice.viewer.dart';
@@ -21,11 +21,12 @@ import 'package:meditation_center/presentation/screens/splash/splash.screen.dart
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 class AppRouting {
-  final int duration;
+  
   final bool isVerify;
+  final int duration = 100;
   late final GoRouter appRouter;
 
-  AppRouting({required this.duration, required this.isVerify}) {
+  AppRouting({ required this.isVerify}) {
     appRouter = GoRouter(
       navigatorKey: _rootNavigatorKey,
       initialLocation: FirebaseAuth.instance.currentUser != null
@@ -91,10 +92,10 @@ class AppRouting {
           duration,
         ),
         _route(
-          '/animation_settings',
-          'animation_settings',
+          '/notifications',
+          'notifications',
           false,
-          AnimationSettings(),
+          NotificationsSettings(),
           duration,
         ),
         _route(

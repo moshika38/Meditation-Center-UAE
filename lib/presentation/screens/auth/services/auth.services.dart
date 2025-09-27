@@ -72,6 +72,7 @@ class AuthServices {
                 : currentUser.photoURL.toString(),
             isAdmin: false,
             isVerify: isVerify,
+            allowNotification: true,
           ),
         );
       } else {

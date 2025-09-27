@@ -1,56 +1,51 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
-import 'package:meditation_center/data/services/animation.services.dart';
 import 'package:meditation_center/presentation/components/introduction.text.dart';
+import 'package:meditation_center/providers/user.provider.dart';
+import 'package:provider/provider.dart';
 
-class AnimationSettings extends StatefulWidget {
-  const AnimationSettings({super.key});
+class NotificationsSettings extends StatefulWidget {
+  const NotificationsSettings({super.key});
 
   @override
-  State<AnimationSettings> createState() => _AnimationSettingsState();
+  State<NotificationsSettings> createState() => _NotificationsSettingsState();
 }
 
-class _AnimationSettingsState extends State<AnimationSettings> {
+class _NotificationsSettingsState extends State<NotificationsSettings> {
   int durationVal = 100;
+  bool isSwitch = true;
 
-Future<void> getDuration() async {
-  final val = await AnimationServices().getAnimationDuration();
-  setState(() {
-    durationVal = val;
-  });
-}
+  Future<void> _getUserData() async {
+    final id = FirebaseAuth.instance.currentUser!.uid;
+    final provider = Provider.of<UserProvider>(context, listen: false);
+    final user = await provider.getUserById(id);
+    setState(() {
+      isSwitch = user.allowNotification;
+    });
+  }
+
+  void updateNotificationSettings(bool nValue) async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    final provider = Provider.of<UserProvider>(context, listen: false);
+    if (nValue) {
+      messaging.subscribeToTopic('all_users');
+      print("🛑  Subscribed to all_users topic");
+    } else {
+      messaging.unsubscribeFromTopic('all_users');
+      print("🛑 Unsubscribed from all_users topic");
+    }
+    await provider.updateNotificationSettings(nValue);
+  }
 
 
-
-@override
+  @override
   void initState() {
-    getDuration();
+    _getUserData();
     super.initState();
   }
-
-  void incrementVal() {
-    if (durationVal != 1000) {
-      durationVal+=100;
-      saveDuration(durationVal);
-      setState(() {});
-    }
-  }
-
-  void decrementVal() {
-    if (durationVal != 100) {
-      durationVal-=100;
-      saveDuration(durationVal);
-      setState(() {});
-    }
-  }
-
-  void saveDuration(durationVal) async{
-    await AnimationServices().setAnimationDuration(durationVal);
-  }
-
-
-   
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +84,7 @@ Future<void> getDuration() async {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Text(
-                "Change animation duration between page transitions",
+                "Notifications Settings",
                 style: theme.textTheme.bodyMedium!
                     .copyWith(color: AppColors.whiteColor),
               ),
@@ -107,38 +102,25 @@ Future<void> getDuration() async {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Milliseconds",
+                      !isSwitch
+                          ? "Enable Notifications"
+                          : "Disable Notifications",
                       style: theme.textTheme.bodyMedium!
                           .copyWith(color: AppColors.whiteColor),
                     ),
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            decrementVal();
-                          },
-                          icon: Icon(
-                            Icons.arrow_left,
-                            size: 30,
-                            color: AppColors.whiteColor,
-                          ),
-                        ),
-                        Text(
-                          durationVal.toString().split(".")[0],
-                          style: theme.textTheme.bodyMedium!
-                              .copyWith(color: AppColors.whiteColor),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            incrementVal();
-                          },
-                          icon: Icon(
-                            Icons.arrow_right,
-                            size: 30,
-                            color: AppColors.whiteColor,
-                          ),
-                        ),
-                      ],
+                    // switch button
+                    Switch(
+                      value: isSwitch,
+                      activeColor: AppColors.secondaryColor,
+                      activeTrackColor: AppColors.primaryColor,
+                      inactiveThumbColor: AppColors.gray,
+                      inactiveTrackColor: AppColors.whiteColor,
+                      onChanged: (value) {
+                        setState(() {
+                          isSwitch = value;
+                        });
+                        updateNotificationSettings(value);
+                      },
                     ),
                   ],
                 ),
@@ -147,17 +129,17 @@ Future<void> getDuration() async {
             SizedBox(height: height * 0.05),
             IntroductionText.text(
               theme,
-              "Animation duration must be a value between 100 and 1000",
+              "Use the toggle above to temporarily pause all notifications",
               false,
             ),
             IntroductionText.text(
               theme,
-              "Use the arrow keys to change the value.",
+              "Reopen the app for the newly applied changes to take effect immediately.",
               false,
             ),
             IntroductionText.text(
               theme,
-              "Refresh the app to enjoy the new animation experience.",
+              "You can reactivate notifications at any time you wish.",
               false,
             ),
             Spacer(),

@@ -124,4 +124,21 @@ class UserProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  // notification settings
+  Future<bool> updateNotificationSettings(bool isSwitch) async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    try {
+      await _firestore.collection('users').doc(uid).update({
+        'allowNotification': isSwitch,
+      });
+      print("Notification settings updated successfully");
+      notifyListeners();
+      return true;
+    } catch (e) {
+      notifyListeners();
+      print("Error updating notification settings: $e");
+      return false;
+    }
+  }
 }

@@ -6,6 +6,7 @@ class UserModel {
   final String profileImage;
   final bool isAdmin; 
   final bool isVerify; 
+  final bool allowNotification; 
 
   UserModel({
     this.id,
@@ -15,6 +16,7 @@ class UserModel {
     required this.profileImage,
     required this.isAdmin,
     required this.isVerify,
+    required this.allowNotification,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class UserModel {
       profileImage: json['profileImage'] as String,
       isAdmin: json['isAdmin'] as bool,
       isVerify: json['isVerify'] as bool,
+      allowNotification: json['allowNotification'] as bool,
     );
   }
 
@@ -38,6 +41,7 @@ class UserModel {
       'profileImage': profileImage,
       'isAdmin': isAdmin,
       'isVerify': isVerify,
+      'allowNotification': allowNotification,
     };
   }
 }

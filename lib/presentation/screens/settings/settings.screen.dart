@@ -131,11 +131,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   },
                                 ),
                                 _items(
-                                  Icons.animation,
-                                  "Animation",
-                                  "Change duration",
+                                  Icons.notifications,
+                                  "Notifications ",
+                                  "Manage notification settings",
                                   () {
-                                    context.push('/animation_settings');
+                                    context.push('/notifications');
                                   },
                                 ),
                                 _items(

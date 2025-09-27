@@ -13,6 +13,8 @@ import 'package:meditation_center/presentation/pages/notice/page/notice.page.dar
 import 'package:meditation_center/presentation/pages/upcoming%20program/upcoming.program.dart';
 import 'package:meditation_center/presentation/pages/upload/page/upload.page.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
+import 'package:meditation_center/providers/user.provider.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -43,9 +45,16 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  void subscribeToAllUserTopic() {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    messaging.subscribeToTopic('all_users');
+  Future<void> subscribeToAllUserTopic() async {
+    final id = FirebaseAuth.instance.currentUser!.uid;
+    final provider = Provider.of<UserProvider>(context, listen: false);
+    final user = await provider.getUserById(id);
+
+    if (user.allowNotification == true) {
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      messaging.subscribeToTopic('all_users');
+      print("🛑  Subscribed to all_users topic");
+    }
   }
 
   void listeners() {
@@ -84,7 +93,7 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     // validate User
     validateUser();
-    // check update 
+    // check update
     checkUpdate();
     // request permissions
     PermissionServices.requestPermissions();
