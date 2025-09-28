@@ -33,8 +33,8 @@ class EventsProvider extends ChangeNotifier {
       await docRef.set({...event.toJson()});
       if (isNotify) {
         SendPushNotification.sendNotificationUsingApi(
-          title: "Notice Alert",
-          body: "You have a new notice. Check it out!",
+          title: "Upcoming Event",
+          body: "ඉදිරි වැඩසටහන් පෙළගැස්ම...",
           data: {
             "post_id": docRef.id,
             "user_id": userId,

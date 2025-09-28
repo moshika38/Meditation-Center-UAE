@@ -37,12 +37,17 @@ void main() async {
   // Setting background message handler
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // Get verification status and animation duration before running the app
+  // Get verification status before running the app
   final user = FirebaseAuth.instance.currentUser;
   final bool isUserVerified = user != null
       ? await UserProvider().isUserVerifiedInFirestore(user.uid)
       : false;
- 
+
+  // re-subscribe to topics
+  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+    print("🔄 Token refreshed: $newToken");
+    await FirebaseMessaging.instance.subscribeToTopic('all_users');
+  });
 
   runApp(
     // MultiProvider
@@ -55,18 +60,16 @@ void main() async {
         ChangeNotifierProvider(create: (_) => NoticeProvider()),
         ChangeNotifierProvider(create: (_) => EventsProvider()),
       ],
-      child: MyApp(
-        isUserVerified: isUserVerified,
-      ),
+      child: MyApp(isVerifyUser: isUserVerified),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  final bool isUserVerified;
+  final bool isVerifyUser;
   const MyApp({
     super.key,
-    required this.isUserVerified,
+    required this.isVerifyUser,
   });
 
   @override
@@ -76,7 +79,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       routerConfig: AppRouting(
-        isVerify: isUserVerified,
+        isVerify: isVerifyUser,
       ).appRouter,
       builder: EasyLoading.init(),
     );

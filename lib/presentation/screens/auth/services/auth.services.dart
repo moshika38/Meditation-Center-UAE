@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/data/models/user.model.dart';
@@ -12,7 +13,7 @@ class AuthServices {
       final credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: emailAddress, password: password);
       if (credential.user != null) {
-         credential.user!.displayName;
+        credential.user!.displayName;
         return "Successfully";
       }
     } on FirebaseAuthException catch (e) {
@@ -39,7 +40,9 @@ class AuthServices {
       );
       if (credential.user != null) {
         sendEmailVerification(emailAddress);
-        checkUserStatus(name,false);
+        checkUserStatus(name, false);
+        FirebaseMessaging messaging = FirebaseMessaging.instance;
+        messaging.subscribeToTopic('all_users');
         return 'Successfully';
       }
     } on FirebaseAuthException catch (e) {
@@ -54,7 +57,7 @@ class AuthServices {
     return 'Unknown error occurred.';
   }
 
-  static void checkUserStatus(String name,bool isVerify) async {
+  static void checkUserStatus(String name, bool isVerify) async {
     final isUserIdExists = await UserServices()
         .isUserIdExists(FirebaseAuth.instance.currentUser!.uid);
 
@@ -136,8 +139,10 @@ class AuthServices {
 
     final data = await FirebaseAuth.instance.signInWithCredential(credential);
     if (data.user != null) {
-      final name =FirebaseAuth.instance.currentUser!.displayName;
-      checkUserStatus(name??"User123",true);
+      final name = FirebaseAuth.instance.currentUser!.displayName;
+      checkUserStatus(name ?? "User123", true);
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      messaging.subscribeToTopic('all_users');
       return true;
     } else {
       return false;
