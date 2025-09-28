@@ -36,7 +36,6 @@ class PostCardComponents {
                     cacheKey: imageUrl2,
                     fadeInDuration: Duration.zero,
                     fadeOutDuration: Duration.zero,
-                    
                     width: MediaQuery.of(context).size.width * 0.43,
                     height: 200,
                     fit: BoxFit.cover,
@@ -83,25 +82,21 @@ class PostCardComponents {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
-          color: isColors ? AppColors.primaryColor : null,
-          border: Border.all(
-            color: isColors ? AppColors.primaryColor : AppColors.gray,
-            width: 1,
-          ),
+          color: AppColors.gray.withOpacity(0.0),
         ),
         child: Row(
           children: [
             Icon(
               icon,
-              color: isColors ? AppColors.whiteColor : AppColors.gray,
+              color: isColors ? AppColors.primaryColor : AppColors.gray,
               size: 20,
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 5),
             Text(
               text,
               style: Theme.of(context).textTheme.bodySmall!.copyWith(
                     color:
-                        isColors ? AppColors.whiteColor : AppColors.textColor,
+                        isColors ? AppColors.primaryColor : AppColors.textColor,
                   ),
             ),
           ],

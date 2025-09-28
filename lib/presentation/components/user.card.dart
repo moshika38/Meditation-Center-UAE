@@ -6,11 +6,13 @@ class UserCard extends StatelessWidget {
   final String imageUrl;
   final bool isEdit;
   final VoidCallback selectImage;
+  final bool? isDarkBorder;
   const UserCard({
     super.key,
     required this.imageUrl,
     required this.isEdit,
     required this.selectImage,
+    this.isDarkBorder,
   });
 
   @override
@@ -26,14 +28,13 @@ class UserCard extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppColors.secondaryColor,
+                  color:isDarkBorder==true?AppColors.textColor:AppColors.secondaryColor,
                   width: 3,
                 ),
               ),
               child: CircleAvatar(
                 radius: 60,
                 backgroundColor: AppColors.secondaryColor.withOpacity(0.2),
-                
                 child: ClipOval(
                   child: Image.network(
                     imageUrl,

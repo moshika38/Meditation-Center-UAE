@@ -7,13 +7,14 @@ class UserDataCard extends StatelessWidget {
   final String name;
   final String email;
   final bool isDarkText;
+  final bool? isDarkBorder;
 
   const UserDataCard({
     super.key,
     required this.imageUrl,
     required this.name,
     required this.email,
-    required this.isDarkText,
+    required this.isDarkText, this.isDarkBorder,
   });
 
   @override
@@ -21,6 +22,7 @@ class UserDataCard extends StatelessWidget {
     return Column(
       children: [
         UserCard(
+          isDarkBorder: isDarkBorder,
           imageUrl: imageUrl,
           isEdit: false,
           selectImage: () {},

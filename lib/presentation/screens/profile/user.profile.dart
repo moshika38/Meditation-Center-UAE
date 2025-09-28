@@ -157,6 +157,7 @@ class _UserProfileState extends State<UserProfile> {
             child: SizedBox(
               width: size.width * 0.7,
               child: UserDataCard(
+                isDarkBorder: true,
                 isDarkText: true,
                 imageUrl: userImage,
                 name: userName,
@@ -174,12 +175,22 @@ class _UserProfileState extends State<UserProfile> {
                   Icons.thumb_up,
                   allLikes,
                 ),
+                Container(
+                  width: 1,
+                  height: 20,
+                  color: AppColors.gray,
+                ),
                 itemCard(
                   Icons.comment,
                   allComments,
                 ),
+                Container(
+                  width: 1,
+                  height: 20,
+                  color: AppColors.gray,
+                ),
                 itemCard(
-                  Icons.post_add,
+                  Icons.photo_size_select_actual,
                   postData.length,
                 ),
               ],
@@ -222,14 +233,12 @@ class _UserProfileState extends State<UserProfile> {
                         isHome: false,
                         postID: postData[index].post.id,
                         onDelete: () {
-                            
                           LoadingPopup.show('Deleting...');
                           final postProvider =
                               Provider.of<PostProvider>(context, listen: false);
                           postProvider.deletePost(postData[index].post.id);
                           EasyLoading.dismiss();
                           _refreshPosts();
-                          
                         },
                       ),
                     );
@@ -257,10 +266,6 @@ class _UserProfileState extends State<UserProfile> {
       width: 110,
       height: 60,
       decoration: BoxDecoration(
-        border: Border.all(
-          color: AppColors.secondaryColor,
-          width: 2,
-        ),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Center(
