@@ -50,7 +50,7 @@ class PopupWindow {
                     child: Text(buttonText, style: theme.textTheme.bodySmall),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         );

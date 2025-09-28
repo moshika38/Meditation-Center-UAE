@@ -9,6 +9,7 @@ import 'package:meditation_center/data/firebase/firebase_options.dart';
 import 'package:meditation_center/core/routing/app.routing.dart';
 import 'package:meditation_center/core/theme/app.theme.dart';
 import 'package:meditation_center/providers/comment.provider.dart';
+import 'package:meditation_center/providers/events.provider.dart';
 import 'package:meditation_center/providers/notice.provider.dart';
 import 'package:meditation_center/providers/post.with.user.data.provider.dart';
 import 'package:meditation_center/providers/post.provider.dart';
@@ -52,6 +53,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => PostWithUserDataProvider()),
         ChangeNotifierProvider(create: (_) => CommentProvider()),
         ChangeNotifierProvider(create: (_) => NoticeProvider()),
+        ChangeNotifierProvider(create: (_) => EventsProvider()),
       ],
       child: MyApp(
         isUserVerified: isUserVerified,
