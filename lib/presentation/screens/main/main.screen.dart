@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/core/notifications/local.notification.dart';
@@ -152,11 +153,12 @@ class _MainScreenState extends State<MainScreen> {
                 unselectedLabelColor: AppColors.secondaryColor,
                 indicatorColor: AppColors.primaryColor,
                 tabs: [
-                  Tab(icon: Icon(Icons.home_rounded, size: 25)),
-                  Tab(icon: Icon(Icons.swap_vertical_circle_sharp, size: 25)),
-                  Tab(icon: Icon(Icons.add_circle_rounded, size: 25)),
-                  Tab(icon: Icon(Icons.event_repeat, size: 25)),
-                  Tab(icon: Icon(Icons.assignment_outlined, size: 25)),
+                  Tab(icon: Icon(Icons.home_rounded, size: 30)),
+                  Tab(icon: FaIcon(FontAwesomeIcons.scroll, size: 22)),
+                  Tab(icon: Icon(Icons.add_circle_rounded, size: 28)),
+                  Tab(icon: FaIcon(FontAwesomeIcons.calendar, size: 22)),
+                  Tab(icon: FaIcon(FontAwesomeIcons.listUl, size: 22)),
+                   
                 ],
               ),
             ),
