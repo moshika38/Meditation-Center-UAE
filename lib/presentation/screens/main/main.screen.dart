@@ -86,11 +86,11 @@ class _MainScreenState extends State<MainScreen> {
 
     if (user.isAdmin) {
       final prefs = await SharedPreferences.getInstance();
-      final alreadySubscribed = prefs.getBool('subscribed_all_users') ?? false;
+      final alreadySubscribed = prefs.getBool('subscribed_admins') ?? false;
 
       if (!alreadySubscribed) {
         await FirebaseMessaging.instance.subscribeToTopic('admins');
-        await prefs.setBool('subscribed_all_users', true);
+        await prefs.setBool('subscribed_admins', true);
       }
     }
   }

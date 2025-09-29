@@ -148,11 +148,15 @@ class _UpcomingProgramState extends State<UpcomingProgram> {
                     () {
                       // delete
                       _deleteEvent(events[index].id);
-                      context.pop();
+                      if (mounted) {
+                        context.pop();
+                      }
                     },
                     () {
                       // cancel
-                      context.pop();
+                      if (mounted) {
+                        context.pop();
+                      }
                     },
                   );
                 }
