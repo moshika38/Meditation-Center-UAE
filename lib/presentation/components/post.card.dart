@@ -152,7 +152,7 @@ class _PostCardState extends State<PostCard>
                         userImage: postData.user.profileImage,
                         time: postData.post.dateTime,
                       ),
-                      widget.isCUser
+                      widget.isCUser && widget.isHome == false
                           ? PopupMenuButton<int>(
                               icon: const Icon(
                                 Icons.more_vert_outlined,

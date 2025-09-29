@@ -82,9 +82,10 @@ class CommentProvider extends ChangeNotifier {
 
 
   // delete comment
-  Future<void> deleteCommentById(String commentID) async {
+  Future<void> deleteComment(String postID,String commentID) async {
     final docRef = _firestore.collection('comment').doc(commentID);
     await docRef.delete();
+    updateComment(postID, commentID, false);
   }
 
   
