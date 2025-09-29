@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meditation_center/core/datetime/datetime.calculate.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
+import 'package:meditation_center/presentation/components/app.buttons.dart';
+import 'package:meditation_center/presentation/components/pending.icon.dart';
 import 'package:meditation_center/presentation/components/post.card.Components.dart';
 import 'package:meditation_center/presentation/components/post.card.user.info.dart';
 import 'package:meditation_center/core/shimmer/post.shimmer.dart';
@@ -15,13 +16,21 @@ class PostCard extends StatefulWidget {
   final String postID;
   final bool isHome;
   final bool isCUser;
+  final bool isApproved;
+  final bool approvedPage;
   final VoidCallback onDelete;
+  final VoidCallback approvedFun;
+  final VoidCallback removeFun;
   const PostCard({
     super.key,
     required this.postID,
+    required this.isApproved,
     required this.isHome,
     required this.isCUser,
+    required this.approvedPage,
     required this.onDelete,
+    required this.approvedFun,
+    required this.removeFun,
   });
 
   @override
@@ -36,6 +45,8 @@ class _PostCardState extends State<PostCard>
   int numOfComments = 0;
   final cUser = FirebaseAuth.instance.currentUser!.uid;
 
+ 
+
   void checkUserLikeStatus() async {
     final postProvider = Provider.of<PostProvider>(context, listen: false);
     bool status = await postProvider.hasUserLikedPost(widget.postID, cUser);
@@ -45,14 +56,6 @@ class _PostCardState extends State<PostCard>
     });
   }
 
-  // _deletePost() {
-  //   context.pop();
-  //   LoadingPopup.show('Deleting...');
-  //   final postProvider = Provider.of<PostProvider>(context, listen: false);
-  //   postProvider.deletePost(widget.postID);
-  //   EasyLoading.dismiss();
-  // }
-
   @override
   bool get wantKeepAlive => true;
 
@@ -60,6 +63,7 @@ class _PostCardState extends State<PostCard>
   void initState() {
     super.initState();
     checkUserLikeStatus();
+    
   }
 
   @override
@@ -108,72 +112,106 @@ class _PostCardState extends State<PostCard>
 
               return Column(
                 children: [
+                  // delete or approve post
+                  widget.approvedPage
+                      ? !widget.isApproved
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                AppButtons(
+                                  width: 120,
+                                  height: 40,
+                                  icon: Icons.remove,
+                                  text: "Remove",
+                                  onTap: widget.removeFun,
+                                  isPrimary: true,
+                                ),
+                                SizedBox(width: 10),
+                                AppButtons(
+                                  width: 120,
+                                  height: 40,
+                                  icon: Icons.check_circle_rounded,
+                                  text: "Approve",
+                                  onTap: widget.approvedFun,
+                                  isPrimary: true,
+                                ),
+                              ],
+                            )
+                          : SizedBox.shrink()
+                      : SizedBox.shrink(),
+
+                  SizedBox(height: 20),
                   // user info
-                  widget.isHome
-                      ? PostCardUserInfo(
-                          userId: postData.user.uid,
-                          userName: postData.user.name,
-                          userImage: postData.user.profileImage,
-                          time: postData.post.dateTime,
-                        )
-                      : Row(
-                          mainAxisAlignment: widget.isCUser
-                              ? MainAxisAlignment.spaceBetween
-                              : MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              DatetimeCalculate.timeAgo(postData.post.dateTime),
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            widget.isCUser
-                                ? PopupMenuButton<int>(
-                                    icon: const Icon(
-                                      Icons.more_vert_outlined,
-                                      color: AppColors.pureBlack,
-                                      size: 25,
-                                    ),
-                                    color: Colors.black87,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    onSelected: (value) async {
-                                      // delete
-                                      PopupWindow.showPopupWindow(
-                                        "Are you sure? This action cannot be undone.",
-                                        "Yes, delete",
-                                        context,
-                                        () {
-                                          // delete
-                                          context.pop();
-                                          widget.onDelete();
-                                        },
-                                        () {
-                                          // cancel
-                                          context.pop();
-                                        },
-                                      );
-                                    },
-                                    itemBuilder: (context) => [
-                                      const PopupMenuItem<int>(
-                                        value: 1,
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.delete,
-                                                color: AppColors.whiteColor),
-                                            SizedBox(width: 8),
-                                            Text(
-                                              "Delete post",
-                                              style: TextStyle(
-                                                  color: AppColors.whiteColor),
-                                            ),
-                                          ],
-                                        ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      PostCardUserInfo(
+                        isNotHome: widget.approvedPage == true,
+                        userId: postData.user.uid,
+                        userName: postData.user.name,
+                        userImage: postData.user.profileImage,
+                        time: postData.post.dateTime,
+                      ),
+                      widget.isCUser
+                          ? PopupMenuButton<int>(
+                              icon: const Icon(
+                                Icons.more_vert_outlined,
+                                color: AppColors.pureBlack,
+                                size: 25,
+                              ),
+                              color: Colors.black87,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              onSelected: (value) async {
+                                // delete
+                                PopupWindow.showPopupWindow(
+                                  "Are you sure? This action cannot be undone.",
+                                  "Yes, delete",
+                                  context,
+                                  () {
+                                    // delete
+                                    context.pop();
+                                    widget.onDelete();
+                                  },
+                                  () {
+                                    // cancel
+                                    context.pop();
+                                  },
+                                );
+                              },
+                              itemBuilder: (context) => [
+                                const PopupMenuItem<int>(
+                                  value: 1,
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.delete,
+                                          color: AppColors.whiteColor),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "Delete post",
+                                        style: TextStyle(
+                                            color: AppColors.whiteColor),
                                       ),
                                     ],
-                                  )
-                                : SizedBox.shrink(),
-                          ],
-                        ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : SizedBox.shrink(),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // show pending badge
+                      widget.isApproved == false
+                          ? widget.isCUser
+                              ? PendingIcon()
+                              : SizedBox.shrink()
+                          : SizedBox.shrink(),
+                    ],
+                  ),
 
                   const SizedBox(height: 10),
                   Padding(
@@ -252,68 +290,78 @@ class _PostCardState extends State<PostCard>
                   ),
                   const SizedBox(height: 30),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "$numOfLikes like",
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        Text(
-                          "$numOfComments comments",
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                  ),
+                  widget.isApproved
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "$numOfLikes like",
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              Text(
+                                "$numOfComments comments",
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                        )
+                      : SizedBox.shrink(),
 
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        PostCardComponents.actionBtn(
-                          context,
-                          Icons.thumb_up,
-                          "Like",
-                          isLiked,
-                          () {
-                            setState(() {
-                              isLiked = !isLiked;
-                              numOfLikes += isLiked ? 1 : -1;
-                            });
+                  widget.isApproved
+                      ? const SizedBox(height: 10)
+                      : SizedBox.shrink(),
+                  widget.isApproved
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              PostCardComponents.actionBtn(
+                                context,
+                                Icons.thumb_up,
+                                "Like",
+                                isLiked,
+                                () {
+                                  setState(() {
+                                    isLiked = !isLiked;
+                                    numOfLikes += isLiked ? 1 : -1;
+                                  });
 
-                            // backend update background  
-                            if (isLiked) {
-                              postProvider.likePost(widget.postID, cUser);
-                            } else {
-                              postProvider.dislikePost(widget.postID, cUser);
-                            }
-                          },
-                        ),
-                        PostCardComponents.actionBtn(
-                          context,
-                          Icons.comment,
-                          "Comment",
-                          false,
-                          () {
-                            (context).push('/comment', extra: widget.postID);
-                          },
-                        ),
-                        PostCardComponents.actionBtn(
-                          context,
-                          Icons.share_outlined,
-                          "Share",
-                          false,
-                          () {},
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
+                                  // backend update background
+                                  if (isLiked) {
+                                    postProvider.likePost(widget.postID, cUser);
+                                  } else {
+                                    postProvider.dislikePost(
+                                        widget.postID, cUser);
+                                  }
+                                },
+                              ),
+                              PostCardComponents.actionBtn(
+                                context,
+                                Icons.comment,
+                                "Comment",
+                                false,
+                                () {
+                                  (context)
+                                      .push('/comment', extra: widget.postID);
+                                },
+                              ),
+                              PostCardComponents.actionBtn(
+                                context,
+                                Icons.share_outlined,
+                                "Share",
+                                false,
+                                () {},
+                              ),
+                            ],
+                          ),
+                        )
+                      : SizedBox.shrink(),
+                  widget.isApproved
+                      ? const SizedBox(height: 10)
+                      : SizedBox.shrink(),
                 ],
               );
             },

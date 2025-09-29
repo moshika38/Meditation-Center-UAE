@@ -9,6 +9,7 @@ class PostCardUserInfo extends StatelessWidget {
   final String userImage;
   final DateTime time;
   final String userId;
+  final bool isNotHome;
 
   const PostCardUserInfo({
     super.key,
@@ -16,6 +17,7 @@ class PostCardUserInfo extends StatelessWidget {
     required this.userImage,
     required this.time,
     required this.userId,
+    required this.isNotHome,
   });
 
   @override
@@ -50,9 +52,16 @@ class PostCardUserInfo extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              userName,
-              style: Theme.of(context).textTheme.bodySmall,
+            SizedBox(
+              width: isNotHome
+                  ? MediaQuery.of(context).size.width * 0.4
+                  : MediaQuery.of(context).size.width * 0.6,
+              child: Text(
+                userName,
+                style: Theme.of(context).textTheme.bodySmall,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
             ),
             SizedBox(height: 2),
             Text(
@@ -60,7 +69,7 @@ class PostCardUserInfo extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .bodySmall!
-                  .copyWith(color: AppColors.gray, fontSize: 12),
+                  .copyWith(color: AppColors.gray, fontSize: 14),
             ),
           ],
         ),

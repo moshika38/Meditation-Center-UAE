@@ -6,7 +6,7 @@ class SendPushNotification {
   static Future<void> sendNotificationUsingApi({
     required String? title,
     required String? body,
-    // required String? token,
+    required String? topic,
     required Map<String, dynamic>? data,
   }) async {
     String serviceKey = await GetServiceKey().getServiceKey();
@@ -21,7 +21,7 @@ class SendPushNotification {
 
     Map<String, dynamic> message = {
       "message": {
-        "topic": "all_users",
+        "topic": topic,
         "notification": {
           "title": title,
           "body": body,

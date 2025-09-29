@@ -45,6 +45,25 @@ class _CommentPageState extends State<CommentPage> {
     });
   }
 
+  bool isAdmin = false;
+
+  // check user is admin or not
+  void checkAdmin() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final cUser = FirebaseAuth.instance.currentUser!.uid;
+    final user = await userProvider.getUserById(cUser);
+    if (user.isAdmin) {
+      setState(() {
+        isAdmin = true;
+      });
+    }
+  }
+
+  void initState() {
+    super.initState();
+    checkAdmin();
+  }
+
   @override
   void dispose() {
     _textController.dispose();
@@ -86,7 +105,7 @@ class _CommentPageState extends State<CommentPage> {
                         itemBuilder: (context, index) {
                           final comment = comments[index];
                           return CommentCard(
-                             commentID: comment.id,
+                            commentID: comment.id,
                             userID: comment.userID,
                             body: comment.body,
                             dateTime: comment.dateTime,

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/core/notifications/send.push.notification.dart';
 import 'package:meditation_center/data/models/event.model.dart';
 
@@ -33,6 +34,7 @@ class EventsProvider extends ChangeNotifier {
       await docRef.set({...event.toJson()});
       if (isNotify) {
         SendPushNotification.sendNotificationUsingApi(
+          topic: AppData.allUserTopic,
           title: "Upcoming Event",
           body: "ඉදිරි වැඩසටහන් පෙළගැස්ම...",
           data: {

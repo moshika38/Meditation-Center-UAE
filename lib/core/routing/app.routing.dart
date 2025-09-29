@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_center/presentation/pages/account%20settings/account.settings.dart';
+import 'package:meditation_center/presentation/pages/approve%20posts/approve.posts.page.dart';
 import 'package:meditation_center/presentation/pages/notice/add%20notice/add.notice.dart';
 import 'package:meditation_center/presentation/pages/notifications%20settings/notifications.settings.dart';
 import 'package:meditation_center/presentation/pages/comments/comment.page.dart';
@@ -21,12 +22,11 @@ import 'package:meditation_center/presentation/screens/splash/splash.screen.dart
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 class AppRouting {
-  
   final bool isVerify;
   final int duration = 100;
   late final GoRouter appRouter;
 
-  AppRouting({ required this.isVerify}) {
+  AppRouting({required this.isVerify}) {
     appRouter = GoRouter(
       navigatorKey: _rootNavigatorKey,
       initialLocation: FirebaseAuth.instance.currentUser != null
@@ -112,6 +112,14 @@ class AppRouting {
           builder: (context, state) {
             final userID = state.extra as String;
             return UserProfile(userID: userID);
+          },
+        ),
+        // no - animation
+        GoRoute(
+          path: "/approve",
+          name: "approve",
+          builder: (context, state) {
+            return ApprovePostsPage();
           },
         ),
         // no - animation

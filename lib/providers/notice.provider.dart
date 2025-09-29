@@ -3,6 +3,7 @@ import 'package:cloudinary_sdk/cloudinary_sdk.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/core/notifications/send.push.notification.dart';
 import 'package:meditation_center/data/cloudinary/cloudinary_api.dart';
 import 'package:meditation_center/data/models/notice.model.dart';
@@ -58,6 +59,7 @@ class NoticeProvider extends ChangeNotifier {
         // create dummy notice
         await docRef.update({...updateNotice.toJson()});
         SendPushNotification.sendNotificationUsingApi(
+          topic: AppData.allUserTopic,
           title: "Notice Alert",
           body: "You have a new notice. Check it out!",
           data: {

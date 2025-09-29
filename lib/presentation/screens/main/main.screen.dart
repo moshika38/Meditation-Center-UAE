@@ -14,6 +14,10 @@ import 'package:meditation_center/presentation/pages/notice/page/notice.page.dar
 import 'package:meditation_center/presentation/pages/upcoming%20program/page/upcoming.program.dart';
 import 'package:meditation_center/presentation/pages/upload/page/upload.page.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
+import 'package:meditation_center/providers/post.provider.dart';
+import 'package:meditation_center/providers/user.provider.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -43,8 +47,6 @@ class _MainScreenState extends State<MainScreen> {
       });
     }
   }
-
-  
 
   void listeners() {
     // 🔹 Foreground state
@@ -77,6 +79,44 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  Future<void> subscribeOnce() async {
+    final id = FirebaseAuth.instance.currentUser!.uid;
+    final provider = Provider.of<UserProvider>(context, listen: false);
+    final user = await provider.getUserById(id);
+
+    if (user.isAdmin) {
+      final prefs = await SharedPreferences.getInstance();
+      final alreadySubscribed = prefs.getBool('subscribed_all_users') ?? false;
+
+      if (!alreadySubscribed) {
+        await FirebaseMessaging.instance.subscribeToTopic('admins');
+        await prefs.setBool('subscribed_all_users', true);
+      }
+    }
+  }
+
+  bool isAvailable = false;
+  Future<void> checkIfPostAvailableOrNot() async {
+    final id = FirebaseAuth.instance.currentUser!.uid;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final postProvider = Provider.of<PostProvider>(context, listen: false);
+    final user = await userProvider.getUserById(id);
+
+    if (user.isAdmin) {
+      postProvider.unapprovedPostsStream().listen((posts) {
+        if (posts.isNotEmpty) {
+          setState(() {
+            isAvailable = true;
+          });
+        } else {
+          setState(() {
+            isAvailable = false;
+          });
+        }
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -86,9 +126,12 @@ class _MainScreenState extends State<MainScreen> {
     checkUpdate();
     // request permissions
     PermissionServices.requestPermissions();
-  
     // setup  listeners
     listeners();
+    // subscribe to admin
+    subscribeOnce();
+    // check if post available
+    checkIfPostAvailableOrNot();
   }
 
   @override
@@ -113,6 +156,16 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
               actions: [
+                isAvailable
+                    ? IconButton(
+                        onPressed: () {
+                          context.push('/approve');
+                        },
+                        icon: FaIcon(FontAwesomeIcons.lock, size: 23),
+                        color: AppColors.whiteColor,
+                        iconSize: 30,
+                      )
+                    : SizedBox.shrink(),
                 IconButton(
                   onPressed: () {
                     context.push('/profile', extra: cUSer);
@@ -145,7 +198,6 @@ class _MainScreenState extends State<MainScreen> {
                   Tab(icon: Icon(Icons.add_circle_rounded, size: 28)),
                   Tab(icon: FaIcon(FontAwesomeIcons.calendar, size: 22)),
                   Tab(icon: FaIcon(FontAwesomeIcons.listUl, size: 22)),
-                   
                 ],
               ),
             ),
@@ -164,7 +216,6 @@ class _MainScreenState extends State<MainScreen> {
 
                 // BookingPage
                 ItemMenuPage(),
- 
               ],
             ),
           );

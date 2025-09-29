@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
+import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/core/shimmer/user.account.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/posts.with.users.model.dart';
@@ -65,7 +66,9 @@ class _UserProfileState extends State<UserProfile> {
   void _loadPosts() {
     final provider =
         Provider.of<PostWithUserDataProvider>(context, listen: false);
-    _postsFuture = provider.getPostsByUserId(widget.userID);
+    _postsFuture = isCUser
+        ? provider.getPostsByUserId(widget.userID)
+        : provider.getApprovedPostsByUserId(widget.userID);
   }
 
   Future<void> _refreshPosts() async {
@@ -74,12 +77,26 @@ class _UserProfileState extends State<UserProfile> {
     await _postsFuture;
   }
 
+    bool isAdmin = false;
+
+  // check user is admin or not
+  void checkAdmin() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = await userProvider.getUserById(cUser);
+    if (user.isAdmin) {
+      setState(() {
+        isAdmin = true;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     loadUser();
     checkUser();
     _loadPosts();
+    checkAdmin();
   }
 
   @override
@@ -204,7 +221,7 @@ class _UserProfileState extends State<UserProfile> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Public Posts",
+                        "Uploaded Posts",
                         style: theme.bodyMedium!.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -222,24 +239,53 @@ class _UserProfileState extends State<UserProfile> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: postData.length,
                   itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      width: size.width * 0.8,
-                      decoration: BoxDecoration(
-                        color: AppColors.gray.withOpacity(0.1),
-                      ),
-                      child: PostCard(
-                        isCUser: isCUser,
-                        isHome: false,
-                        postID: postData[index].post.id,
-                        onDelete: () {
-                          LoadingPopup.show('Deleting...');
-                          final postProvider =
-                              Provider.of<PostProvider>(context, listen: false);
-                          postProvider.deletePost(postData[index].post.id);
-                          EasyLoading.dismiss();
-                          _refreshPosts();
-                        },
+                    return GestureDetector(
+                onLongPress: () {
+                  if (isAdmin) {
+                    // admin can delete any post
+                    PopupWindow.showPopupWindow(
+                      "Are you sure? you want to delete this post?if you delete this post, it will be gone forever",
+                      "Yes, Delete",
+                      context,
+                      () {
+                        // delete post by admin
+                        LoadingPopup.show('Deleting...');
+                        final postProvider =
+                            Provider.of<PostProvider>(context, listen: false);
+                        postProvider.deletePost(postData[index].post.id);
+                        EasyLoading.dismiss();
+                        _refreshPosts();
+                        context.pop();
+                      },
+                      () {
+                        context.pop();
+                      },
+                    );
+                  }
+                }, 
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        width: size.width * 0.8,
+                        decoration: BoxDecoration(
+                          color: AppColors.gray.withOpacity(0.1),
+                        ),
+                        child: PostCard(
+                          removeFun: () {},
+                          approvedFun: () {},
+                          approvedPage: false,
+                          isApproved: postData[index].post.isApproved,
+                          isCUser: isCUser,
+                          isHome: false,
+                          postID: postData[index].post.id,
+                          onDelete: () {
+                            LoadingPopup.show('Deleting...');
+                            final postProvider =
+                                Provider.of<PostProvider>(context, listen: false);
+                            postProvider.deletePost(postData[index].post.id);
+                            EasyLoading.dismiss();
+                            _refreshPosts();
+                          },
+                        ),
                       ),
                     );
                   },

@@ -79,4 +79,13 @@ class CommentProvider extends ChangeNotifier {
       }
     });
   }
+
+
+  // delete comment
+  Future<void> deleteCommentById(String commentID) async {
+    final docRef = _firestore.collection('comment').doc(commentID);
+    await docRef.delete();
+  }
+
+  
 }

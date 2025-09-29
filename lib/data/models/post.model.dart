@@ -11,6 +11,7 @@ class PostModel {
   final int comments;
   final List<String> comment_ids;
   final List<String> likedUsersIds;
+  final bool isApproved;
 
   PostModel({
     required this.id,
@@ -23,6 +24,7 @@ class PostModel {
     required this.comments,
     required this.comment_ids,
     required this.likedUsersIds,
+    required this.isApproved,
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
@@ -39,6 +41,7 @@ class PostModel {
       comments: json['comments'] as int? ?? 0,
       comment_ids: List<String>.from(json['comments_id'] ?? []),
       likedUsersIds: List<String>.from(json['likedUsersIds'] ?? []),
+      isApproved: json['isApproved'] as bool,
     );
   }
 
@@ -54,6 +57,7 @@ class PostModel {
       'comments': comments,
       'comments_id': comment_ids,
       'likedUsersIds': likedUsersIds,
+      'isApproved': isApproved,
     };
   }
 }

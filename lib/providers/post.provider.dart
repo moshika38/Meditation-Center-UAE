@@ -3,6 +3,7 @@ import 'package:cloudinary_sdk/cloudinary_sdk.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/core/notifications/local.notification.dart';
 import 'package:meditation_center/core/notifications/send.push.notification.dart';
 import 'package:meditation_center/data/cloudinary/cloudinary_api.dart';
@@ -22,6 +23,7 @@ class PostProvider extends ChangeNotifier {
   Future<bool> createNewPost(
     String des,
     String name,
+    bool isAdmin,
     List<XFile> imageList,
   ) async {
     // reset upload progress
@@ -40,6 +42,7 @@ class PostProvider extends ChangeNotifier {
       comments: 0,
       comment_ids: [],
       likedUsersIds: [],
+      isApproved: isAdmin,
     );
 
     try {
@@ -61,11 +64,13 @@ class PostProvider extends ChangeNotifier {
       // show notification
       LocalNotification().showNotification(
         docRef.id.hashCode,
-        "Successfully uploaded",
-        "Your post has been uploaded successfully\n $des",
+        "Pending...",
+        "Successfully uploaded. wait for admin approval",
       );
+      // SendPushNotification
       SendPushNotification.sendNotificationUsingApi(
-        title: "Post Alert",
+        topic: isAdmin ? AppData.allUserTopic : AppData.adminTopic,
+        title: isAdmin ? "New Post" : "Action needed",
         body: "'$name' uploaded a new post",
         data: {
           "post_id": docRef.id,
@@ -91,7 +96,7 @@ class PostProvider extends ChangeNotifier {
 
     try {
       uploadProgress = 0.0;
-      isDone = false; // reset when starting upload
+      isDone = false;
       notifyListeners();
 
       int totalFiles = imageList.length;
@@ -267,4 +272,19 @@ class PostProvider extends ChangeNotifier {
       debugPrint("Failed to delete Cloudinary folder posts/$postsID: $e");
     }
   }
+
+  // has Unapproved Posts
+ Stream<List<PostModel>> unapprovedPostsStream() {
+  return _firestore
+      .collection('posts')
+      .where('isApproved', isEqualTo: false)
+      .snapshots()
+      .map((snapshot) {
+        return snapshot.docs.map((doc) {
+          final data = doc.data();
+          return PostModel.fromJson(data);
+        }).toList();
+      });
+}
+
 }

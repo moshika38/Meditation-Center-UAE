@@ -56,7 +56,7 @@ class _UploadPageState extends State<UploadPage> {
     PopupWindow.showPopupWindow(text, "Yes, Upload", context, () async {
       context.pop();
       final postProvider = Provider.of<PostProvider>(context, listen: false);
-       
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
 
       showDialog(
         context: context,
@@ -65,17 +65,19 @@ class _UploadPageState extends State<UploadPage> {
           return const PostUploadUi();
         },
       );
+
+      final id = FirebaseAuth.instance.currentUser!.uid;
+      final user = await userProvider.getUserById(id);
       //  process to upload images
 
       final postStatus = await postProvider.createNewPost(
         descriptionController.text,
         userName,
+        user.isAdmin,
         images,
       );
 
       if (postStatus) {
-         
-
         setState(() {
           imageList.clear();
           descriptionController.text = "";

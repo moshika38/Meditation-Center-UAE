@@ -1,14 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:go_router/go_router.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
+import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/posts.with.users.model.dart';
 import 'package:meditation_center/presentation/components/empty.animation.dart';
 import 'package:meditation_center/presentation/components/post.card.dart';
 import 'package:meditation_center/core/shimmer/post.shimmer.dart';
+import 'package:meditation_center/providers/post.provider.dart';
 import 'package:meditation_center/providers/post.with.user.data.provider.dart';
+import 'package:meditation_center/providers/user.provider.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,6 +31,20 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadPosts();
+    checkAdmin();
+  }
+
+  bool isAdmin = false;
+
+  // check user is admin or not
+  void checkAdmin() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = await userProvider.getUserById(cUser);
+    if (user.isAdmin) {
+      setState(() {
+        isAdmin = true;
+      });
+    }
   }
 
   void _loadPosts() {
@@ -67,7 +85,7 @@ class _HomePageState extends State<HomePage> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const PostShimmer(); // shimmer directly
+            return const PostShimmer();
           }
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -86,16 +104,45 @@ class _HomePageState extends State<HomePage> {
             cacheExtent: 1000,
             itemBuilder: (context, index) {
               final post = posts[index];
-              return Container(
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.gray.withOpacity(0.1),
-                ),
-                child: PostCard(
-                  isCUser: post.user.uid == cUser,
-                  isHome: true,
-                  postID: post.post.id,
-                  onDelete: () {},
+              return GestureDetector(
+                onLongPress: () {
+                  if (isAdmin) {
+                    // admin can delete any post
+                    PopupWindow.showPopupWindow(
+                      "Are you sure? you want to delete this post?if you delete this post, it will be gone forever",
+                      "Yes, Delete",
+                      context,
+                      () {
+                        // delete post by admin
+                        LoadingPopup.show('Deleting...');
+                        final postProvider =
+                            Provider.of<PostProvider>(context, listen: false);
+                        postProvider.deletePost(post.post.id);
+                        EasyLoading.dismiss();
+                        _refreshPosts();
+                        context.pop();
+                      },
+                      () {
+                        context.pop();
+                      },
+                    );
+                  }
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.gray.withOpacity(0.1),
+                  ),
+                  child: PostCard(
+                    removeFun: () {},
+                    approvedFun: () {},
+                    approvedPage: false,
+                    isApproved: post.post.isApproved,
+                    isCUser: post.user.uid == cUser,
+                    isHome: true,
+                    postID: post.post.id,
+                    onDelete: () {},
+                  ),
                 ),
               );
             },
