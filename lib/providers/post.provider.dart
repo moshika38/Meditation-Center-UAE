@@ -26,6 +26,7 @@ class PostProvider extends ChangeNotifier {
     String des,
     String name,
     bool isAdmin,
+    bool isReel,
     List<XFile> imageList,
   ) async {
     // reset upload progress
@@ -34,18 +35,18 @@ class PostProvider extends ChangeNotifier {
     final docRef = _firestore.collection('posts').doc();
 
     final post = PostModel(
-      id: docRef.id,
-      description: des,
-      userId: userId,
-      userName: name,
-      dateTime: DateTime.now(),
-      images: [],
-      likes: 0,
-      comments: 0,
-      comment_ids: [],
-      likedUsersIds: [],
-      isApproved: isAdmin,
-    );
+        id: docRef.id,
+        description: des,
+        userId: userId,
+        userName: name,
+        dateTime: DateTime.now(),
+        assetsUrls: [],
+        likes: 0,
+        comments: 0,
+        commentsIds: [],
+        likedUsersIds: [],
+        isApproved: isAdmin,
+        isReel: isReel);
 
     try {
       // create dummy post
@@ -55,18 +56,29 @@ class PostProvider extends ChangeNotifier {
       notifyListeners();
 
       // upload images to cloudinary
-      List<String> cloudinaryUrlList =
-          await uploadImages(imageList, userId, docRef.id, isAdmin);
+      List<String> cloudinaryUrlList = [];
+
+      if (isReel) {
+        String? videoUrl =
+            await uploadSingleVideo(imageList.first, userId, docRef.id);
+        if (videoUrl != null) {
+          cloudinaryUrlList = [videoUrl];
+        }
+      } else {
+        cloudinaryUrlList =
+            await uploadImages(imageList, userId, docRef.id);
+      }
+
       if (cloudinaryUrlList.isEmpty) {
         await LocalNotification().showNotification(
           docRef.id.hashCode,
-          "❌ Failed",
+          "🚫 Failed",
           " Upload failed ! try again later",
         );
         return false;
       }
       // update post with image urls
-      await docRef.update({'images': cloudinaryUrlList});
+      await docRef.update({'assetsUrls': cloudinaryUrlList});
 
       // SendPushNotification
       SendPushNotification.sendNotificationUsingApi(
@@ -80,8 +92,8 @@ class PostProvider extends ChangeNotifier {
       );
       await LocalNotification().showNotification(
         docRef.id.hashCode,
-        "✅ Completed 100%",
-        "All files uploaded successfully!  ${!isAdmin ? "Wait for admin approval" : ""}",
+        "✔️ Completed 100%",
+        "Successfully uploaded !  ${!isAdmin ? "Wait for admin approval" : ""}",
       );
       notifyListeners();
 
@@ -93,11 +105,53 @@ class PostProvider extends ChangeNotifier {
     }
   }
 
+// upload video to cloudinary
+  Future<String?> uploadSingleVideo(
+    XFile videoFile,
+    String userID,
+    String postsID,
+  ) async {
+    try {
+      final response = await CloudinarySdk.cloudinary.uploadResource(
+        CloudinaryUploadResource(
+          filePath: videoFile.path,
+          resourceType: CloudinaryResourceType.video,
+          folder: "videos/$postsID",
+          fileName: "${userID}_${DateTime.now().millisecondsSinceEpoch}",
+          progressCallback: (count, total) async {
+            double progress = (count / total) * 100;
+
+            uploadProgress = progress;
+            notifyListeners();
+
+            await LocalNotification().showProgressNotification(
+              id: postsID.hashCode,
+              title: "Uploading Video...",
+              body: "${progress.toStringAsFixed(0)}% completed",
+              progress: progress.toInt(),
+            );
+          },
+        ),
+      );
+
+      if (response.isSuccessful) {
+        return response.secureUrl;
+      } else {
+        debugPrint("Cloudinary upload failed: ${response.error}");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("Video upload failed: $e");
+      return null;
+    }
+  }
+
+// upload images to cloudinary
   Future<List<String>> uploadImages(
     List<XFile> imageList,
     String userID,
     String postsID,
-    bool isAdmin,
+    // bool isAdmin,
   ) async {
     List<String> uploadedUrls = [];
 
@@ -112,9 +166,9 @@ class PostProvider extends ChangeNotifier {
         totalBytesAllFiles += File(f.path).lengthSync();
       }
 
-      int uploadedBytes = 0; // track already uploaded bytes
+      int uploadedBytes = 0; // track uploaded bytes
 
-      // loop through files and upload one by one
+      // loop
       for (int index = 0; index < imageList.length; index++) {
         XFile file = imageList[index];
         int fileTotal = File(file.path).lengthSync();

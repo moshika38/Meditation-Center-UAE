@@ -270,6 +270,7 @@ class _UserProfileState extends State<UserProfile> {
                           color: AppColors.gray.withOpacity(0.1),
                         ),
                         child: PostCard(
+                          isReel:postData[index].post.isReel,
                           removeFun: () {},
                           approvedFun: () {},
                           approvedPage: false,

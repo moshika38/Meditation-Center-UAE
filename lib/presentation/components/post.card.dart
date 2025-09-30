@@ -8,6 +8,7 @@ import 'package:meditation_center/presentation/components/post.card.Components.d
 import 'package:meditation_center/presentation/components/post.card.user.info.dart';
 import 'package:meditation_center/core/shimmer/post.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
+import 'package:meditation_center/presentation/pages/upload/widgets/video.player.dart';
 import 'package:meditation_center/providers/post.provider.dart';
 import 'package:meditation_center/providers/post.with.user.data.provider.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,7 @@ class PostCard extends StatefulWidget {
   final bool isHome;
   final bool isCUser;
   final bool isApproved;
+  final bool isReel;
   final bool approvedPage;
   final VoidCallback onDelete;
   final VoidCallback approvedFun;
@@ -27,6 +29,7 @@ class PostCard extends StatefulWidget {
     required this.isApproved,
     required this.isHome,
     required this.isCUser,
+    required this.isReel,
     required this.approvedPage,
     required this.onDelete,
     required this.approvedFun,
@@ -45,8 +48,6 @@ class _PostCardState extends State<PostCard>
   int numOfComments = 0;
   final cUser = FirebaseAuth.instance.currentUser!.uid;
 
- 
-
   void checkUserLikeStatus() async {
     final postProvider = Provider.of<PostProvider>(context, listen: false);
     bool status = await postProvider.hasUserLikedPost(widget.postID, cUser);
@@ -63,7 +64,6 @@ class _PostCardState extends State<PostCard>
   void initState() {
     super.initState();
     checkUserLikeStatus();
-    
   }
 
   @override
@@ -242,52 +242,56 @@ class _PostCardState extends State<PostCard>
                       ? const SizedBox(height: 10)
                       : const SizedBox.shrink(),
 
-                  // content images
-                  Container(
-                    color: AppColors.gray.withOpacity(0.05),
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        if (postData.post.images.isNotEmpty)
-                          GestureDetector(
-                            onTap: () {
-                              context.push(
-                                '/viewer',
-                                extra: postData.post.images,
-                              );
-                            },
-                            child: PostCardComponents.imageCard(
-                              context,
-                              false,
-                              postData.post.images.length,
-                              postData.post.images[0],
-                              postData.post.images.length > 1
-                                  ? postData.post.images[1]
-                                  : "null",
-                            ),
+                  // content images or video
+                  widget.isReel
+                      ? VideoPlayerWidget(
+                          videoPath: postData.post.assetsUrls.first,
+                        )
+                      : Container(
+                          color: AppColors.gray.withOpacity(0.05),
+                          width: double.infinity,
+                          child: Column(
+                            children: [
+                              if (postData.post.assetsUrls.isNotEmpty)
+                                GestureDetector(
+                                  onTap: () {
+                                    context.push(
+                                      '/viewer',
+                                      extra: postData.post.assetsUrls,
+                                    );
+                                  },
+                                  child: PostCardComponents.imageCard(
+                                    context,
+                                    false,
+                                    postData.post.assetsUrls.length,
+                                    postData.post.assetsUrls[0],
+                                    postData.post.assetsUrls.length > 1
+                                        ? postData.post.assetsUrls[1]
+                                        : "null",
+                                  ),
+                                ),
+                              const SizedBox(height: 10),
+                              if (postData.post.assetsUrls.length > 2)
+                                GestureDetector(
+                                  onTap: () {
+                                    context.push(
+                                      '/viewer',
+                                      extra: postData.post.assetsUrls,
+                                    );
+                                  },
+                                  child: PostCardComponents.imageCard(
+                                    context,
+                                    true,
+                                    postData.post.assetsUrls.length,
+                                    postData.post.assetsUrls[2],
+                                    postData.post.assetsUrls.length != 3
+                                        ? postData.post.assetsUrls[3]
+                                        : "null",
+                                  ),
+                                ),
+                            ],
                           ),
-                        const SizedBox(height: 10),
-                        if (postData.post.images.length > 2)
-                          GestureDetector(
-                            onTap: () {
-                              context.push(
-                                '/viewer',
-                                extra: postData.post.images,
-                              );
-                            },
-                            child: PostCardComponents.imageCard(
-                              context,
-                              true,
-                              postData.post.images.length,
-                              postData.post.images[2],
-                              postData.post.images.length != 3
-                                  ? postData.post.images[3]
-                                  : "null",
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
+                        ),
                   const SizedBox(height: 30),
 
                   widget.isApproved

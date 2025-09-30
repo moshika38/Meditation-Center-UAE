@@ -11,6 +11,7 @@ import 'package:meditation_center/presentation/components/app.buttons.dart';
 import 'package:meditation_center/presentation/pages/upload/widgets/bottom.text.dart';
 import 'package:meditation_center/presentation/pages/upload/widgets/image.card.dart';
 import 'package:meditation_center/presentation/components/text.input.dart';
+import 'package:meditation_center/presentation/pages/upload/widgets/upload.type.selector.dart';
 import 'package:meditation_center/providers/post.provider.dart';
 import 'package:meditation_center/providers/user.provider.dart';
 import 'package:provider/provider.dart';
@@ -28,13 +29,39 @@ class _UploadPageState extends State<UploadPage> {
   final TextEditingController descriptionController = TextEditingController();
   bool isEnabled = true;
   bool isComplete = true;
-  bool isReel = false;
   bool isAdmin = false;
+  bool isReel = false;
+
+  // check is admin
+  void _checkIsAdmin() async {
+    final id = FirebaseAuth.instance.currentUser!.uid;
+    final provider = Provider.of<UserProvider>(context, listen: false);
+    final user = await provider.getUserById(id);
+    user.isAdmin ? isAdmin = true : isAdmin = false;
+  }
 
   // pick multiple images from gallery
+  Future<void> _pickVideoFromGallery() async {
+    if (!isEnabled) return;
+    setState(() => isEnabled = false);
+    setState(() => isReel = true);
+    final XFile? pickedFile =
+        await picker.pickVideo(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        imageList.clear();
+        imageList.add(pickedFile);
+      });
+      print("Video picked: ${pickedFile.path}");
+      setState(() => isEnabled = true);
+    }
+  }
+
   Future<void> _pickImagesFromGallery() async {
     if (!isEnabled) return;
     setState(() => isEnabled = false);
+    setState(() => isReel = false);
 
     try {
       final List<XFile> pickedFiles = await picker.pickMultiImage();
@@ -61,44 +88,43 @@ class _UploadPageState extends State<UploadPage> {
       setState(() => isComplete = false);
       context.pop();
       final postProvider = Provider.of<PostProvider>(context, listen: false);
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-      final id = FirebaseAuth.instance.currentUser!.uid;
-      final user = await userProvider.getUserById(id);
-       
       //  process to upload images
 
       final postStatus = await postProvider.createNewPost(
         descriptionController.text,
         userName,
-        user.isAdmin,
+        isAdmin,
+        isReel,
         images,
       );
 
       setState(() {
         imageList.clear();
         descriptionController.text = "";
-        user.isAdmin ? isAdmin = true : isAdmin = false;
       });
 
       if (postStatus) {
-        setState(() {
-          isEnabled = true;
-          setState(() => isComplete = true);
-        });
+        setState(() => isComplete = true);
+        setState(() => isEnabled = true);
       } else {
         // EasyLoading.dismiss();
         AppTopSnackbar.showTopSnackBar(context, "Something went wrong");
-        isEnabled = true;
-        setState(() {});
+
+        setState(() => isEnabled = true);
         setState(() => isComplete = true);
       }
     }, () {
       context.pop();
-      isEnabled = true;
-      setState(() {});
+      setState(() => isEnabled = true);
       setState(() => isComplete = true);
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIsAdmin();
   }
 
   @override
@@ -139,7 +165,6 @@ class _UploadPageState extends State<UploadPage> {
                         )
                       : SizedBox.shrink(),
 
-                   
                   const SizedBox(height: 20),
                   TextFieldInput.textFormField(
                     context,
@@ -160,8 +185,21 @@ class _UploadPageState extends State<UploadPage> {
                         width: MediaQuery.of(context).size.width * 0.44,
                         height: 50,
                         onTap: () {
+                          imageList.clear();
                           if (isEnabled) {
-                            _pickImagesFromGallery();
+                            isAdmin
+                                ? UploadTypeSelector.showSelector(
+                                    context,
+                                    () {
+                                      // select video
+                                      _pickVideoFromGallery();
+                                    },
+                                    () {
+                                      // select images
+                                      _pickImagesFromGallery();
+                                    },
+                                  )
+                                : _pickImagesFromGallery();
                           }
                         },
                       ),
@@ -224,8 +262,8 @@ class _UploadPageState extends State<UploadPage> {
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: imageList.length,
                               gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: isReel ? 1 : 2,
                                 crossAxisSpacing: 10,
                                 mainAxisSpacing: 10,
                                 childAspectRatio: 1,
@@ -241,6 +279,7 @@ class _UploadPageState extends State<UploadPage> {
                                         imageList.removeAt(index);
                                       });
                                     },
+                                    isReel,
                                   ),
                                 );
                               },

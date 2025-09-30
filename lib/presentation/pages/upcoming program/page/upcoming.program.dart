@@ -130,7 +130,7 @@ class _UpcomingProgramState extends State<UpcomingProgram> {
 
   Widget _eventCard(List<EventModel> events) {
     return Expanded(
-      // 👈 මෙතන දාන්න
+       
       child: ListView.builder(
         itemCount: events.length,
         itemBuilder: (context, index) {

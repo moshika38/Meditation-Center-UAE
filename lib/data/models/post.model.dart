@@ -6,12 +6,13 @@ class PostModel {
   final String userId;
   final String userName;
   final DateTime dateTime;
-  final List<String> images;
+  final List<String> assetsUrls;
   final int likes;
   final int comments;
-  final List<String> comment_ids;
+  final List<String> commentsIds;
   final List<String> likedUsersIds;
   final bool isApproved;
+  final bool isReel;
 
   PostModel({
     required this.id,
@@ -19,12 +20,13 @@ class PostModel {
     required this.userId,
     required this.userName,
     required this.dateTime,
-    required this.images,
+    required this.assetsUrls,
     required this.likes,
     required this.comments,
-    required this.comment_ids,
+    required this.commentsIds,
     required this.likedUsersIds,
     required this.isApproved,
+    required this.isReel,
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
@@ -36,12 +38,13 @@ class PostModel {
       dateTime: (json['dateTime'] as dynamic) is DateTime
           ? json['dateTime'] as DateTime
           : (json['dateTime'] as Timestamp).toDate(),
-      images: List<String>.from(json['images'] ?? []),
+      assetsUrls: List<String>.from(json['assetsUrls'] ?? []),
       likes: json['likes'] as int? ?? 0,
       comments: json['comments'] as int? ?? 0,
-      comment_ids: List<String>.from(json['comments_id'] ?? []),
+      commentsIds: List<String>.from(json['commentsIds'] ?? []),
       likedUsersIds: List<String>.from(json['likedUsersIds'] ?? []),
       isApproved: json['isApproved'] as bool,
+      isReel: json['isReel'] as bool,
     );
   }
 
@@ -52,12 +55,13 @@ class PostModel {
       'userId': userId,
       'userName': userName,
       'dateTime': dateTime,
-      'images': images,
+      'assetsUrls': assetsUrls,
       'likes': likes,
       'comments': comments,
-      'comments_id': comment_ids,
+      'commentsIds': commentsIds,
       'likedUsersIds': likedUsersIds,
       'isApproved': isApproved,
+      'isReel': isReel,
     };
   }
 }
