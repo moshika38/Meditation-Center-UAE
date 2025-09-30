@@ -22,7 +22,7 @@ class LocalNotification {
     );
 
     await notificationPlugin.initialize(initializationSettings);
-    _isInitialized = true;  
+    _isInitialized = true;
   }
 
   NotificationDetails notificationDetails() {
@@ -47,6 +47,47 @@ class LocalNotification {
     );
   }
 
+  ///upload progress show notification
+  NotificationDetails progressNotificationDetails({
+    required int progress,
+    required int maxProgress,
+  }) {
+    return NotificationDetails(
+      android: AndroidNotificationDetails(
+        'upload_id',
+        'upload channel',
+        channelDescription: 'Notification channel for upload progress',
+        importance: Importance.high,
+        priority: Priority.high,
+        showProgress: true,
+        maxProgress: maxProgress,
+        progress: progress,
+        onlyAlertOnce: true,
+        ongoing: true,
+      ),
+      iOS: DarwinNotificationDetails(
+        presentSound: true,
+        presentAlert: true,
+        presentBadge: true,
+        badgeNumber: 1,
+        interruptionLevel: InterruptionLevel.critical,
+      ),
+    );
+  }
+
+  Future<void> showProgressNotification({
+    required int id,
+    required String title,
+    required String body,
+    required int progress,
+  }) async {
+    await notificationPlugin.show(
+      id,
+      title,
+      body,
+      progressNotificationDetails(progress: progress, maxProgress: 100),
+    );
+  }
 
   // Request permission for Android 13+ and iOS
   Future<void> requestPermission() async {
@@ -57,15 +98,12 @@ class LocalNotification {
     await androidPlugin?.requestNotificationsPermission();
 
     // iOS
-    final iosPlugin =
-        notificationPlugin.resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>();
+    final iosPlugin = notificationPlugin.resolvePlatformSpecificImplementation<
+        IOSFlutterLocalNotificationsPlugin>();
     await iosPlugin?.requestPermissions(
       alert: true,
       badge: true,
       sound: true,
     );
   }
-
-
 }

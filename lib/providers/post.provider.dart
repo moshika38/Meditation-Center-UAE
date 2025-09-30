@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloudinary_sdk/cloudinary_sdk.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,28 +56,32 @@ class PostProvider extends ChangeNotifier {
 
       // upload images to cloudinary
       List<String> cloudinaryUrlList =
-          await uploadImages(imageList, userId, docRef.id);
+          await uploadImages(imageList, userId, docRef.id, isAdmin);
       if (cloudinaryUrlList.isEmpty) {
+        await LocalNotification().showNotification(
+          docRef.id.hashCode,
+          "❌ Failed",
+          " Upload failed ! try again later",
+        );
         return false;
       }
       // update post with image urls
       await docRef.update({'images': cloudinaryUrlList});
 
-      // show notification
-      LocalNotification().showNotification(
-        docRef.id.hashCode,
-        "Pending...",
-        "Successfully uploaded. wait for admin approval",
-      );
       // SendPushNotification
       SendPushNotification.sendNotificationUsingApi(
         topic: isAdmin ? AppData.allUserTopic : AppData.adminTopic,
         title: isAdmin ? "New Post" : "Action needed",
-        body: "'$name' uploaded a new post",
+        body: "'$name' Uploaded a new post",
         data: {
           "post_id": docRef.id,
           "user_id": userId,
         },
+      );
+      await LocalNotification().showNotification(
+        docRef.id.hashCode,
+        "✅ Completed 100%",
+        "All files uploaded successfully!  ${!isAdmin ? "Wait for admin approval" : ""}",
       );
       notifyListeners();
 
@@ -91,6 +97,7 @@ class PostProvider extends ChangeNotifier {
     List<XFile> imageList,
     String userID,
     String postsID,
+    bool isAdmin,
   ) async {
     List<String> uploadedUrls = [];
 
@@ -99,59 +106,64 @@ class PostProvider extends ChangeNotifier {
       isDone = false;
       notifyListeners();
 
-      int totalFiles = imageList.length;
-      int completedFiles = 0;
+      // total bytes of all files
+      int totalBytesAllFiles = 0;
+      for (var f in imageList) {
+        totalBytesAllFiles += File(f.path).lengthSync();
+      }
 
-      // CloudinaryUploadResource list create
-      final resources = imageList.asMap().entries.map(
-        (entry) {
-          int index = entry.key;
-          XFile file = entry.value;
+      int uploadedBytes = 0; // track already uploaded bytes
 
-          return CloudinaryUploadResource(
+      // loop through files and upload one by one
+      for (int index = 0; index < imageList.length; index++) {
+        XFile file = imageList[index];
+        int fileTotal = File(file.path).lengthSync();
+
+        final response = await CloudinarySdk.cloudinary.uploadResource(
+          CloudinaryUploadResource(
             filePath: file.path,
             resourceType: CloudinaryResourceType.image,
             folder: "posts/$postsID",
             fileName:
                 "${userID}_${DateTime.now().millisecondsSinceEpoch}_$index",
-            progressCallback: (count, total) {
-              // one file progress
-              double fileProgress = count / total;
-
-              // overall progress
+            progressCallback: (count, total) async {
+              // total uploaded = already finished files + current file progress
+              int currentUploaded = uploadedBytes + count;
               double overallProgress =
-                  ((completedFiles + fileProgress) / totalFiles) * 100;
+                  (currentUploaded / totalBytesAllFiles) * 100;
 
               uploadProgress = overallProgress;
               notifyListeners();
+
+              await LocalNotification().showProgressNotification(
+                id: postsID.hashCode,
+                title: "Uploading...",
+                body: "${overallProgress.toStringAsFixed(0)}% completed",
+                progress: overallProgress.toInt(),
+              );
             },
-          );
-        },
-      ).toList();
+          ),
+        );
 
-      // Upload resources
-      List<CloudinaryResponse> responses =
-          await CloudinarySdk.cloudinary.uploadResources(resources);
-
-      // Handle responses
-      for (var response in responses) {
         if (response.isSuccessful) {
           uploadedUrls.add(response.secureUrl!);
+        } else {
+          print("Cloudinary upload failed for image $index: ${response.error}");
         }
-        completedFiles++;
-        uploadProgress = (completedFiles / totalFiles) * 100;
-        notifyListeners();
+
+        // mark file as fully uploaded
+        uploadedBytes += fileTotal;
       }
 
-      if (completedFiles == totalFiles) {
-        isDone = true;
-        notifyListeners();
-      }
+      // final 100% notification
+      uploadProgress = 100;
+      isDone = true;
+      notifyListeners();
     } catch (e) {
       isDone = true;
       notifyListeners();
+      debugPrint("Upload failed: $e");
 
-      debugPrint(" Upload failed: $e");
       return [];
     }
 
@@ -274,17 +286,16 @@ class PostProvider extends ChangeNotifier {
   }
 
   // has Unapproved Posts
- Stream<List<PostModel>> unapprovedPostsStream() {
-  return _firestore
-      .collection('posts')
-      .where('isApproved', isEqualTo: false)
-      .snapshots()
-      .map((snapshot) {
-        return snapshot.docs.map((doc) {
-          final data = doc.data();
-          return PostModel.fromJson(data);
-        }).toList();
-      });
-}
-
+  Stream<List<PostModel>> unapprovedPostsStream() {
+    return _firestore
+        .collection('posts')
+        .where('isApproved', isEqualTo: false)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return PostModel.fromJson(data);
+      }).toList();
+    });
+  }
 }
