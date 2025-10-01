@@ -27,7 +27,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final cUSer = FirebaseAuth.instance.currentUser!.uid;
+  String? cUSer = FirebaseAuth.instance.currentUser?.uid;
+
   validateUser() {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
@@ -49,12 +50,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void listeners() {
-    // 🔹 Foreground state
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       final cUser = FirebaseAuth.instance.currentUser;
 
-      final notificationUserId = message.data['user_id'];
-      final postId = message.data['post_id'];
+      final notificationUserId = message.data['user_id'] ?? '';
+      final postId = message.data['item_id'] ?? '0';
 
       if (cUser != null && cUser.uid != notificationUserId) {
         LocalNotification().showNotification(
@@ -63,17 +63,16 @@ class _MainScreenState extends State<MainScreen> {
           message.notification?.body ?? "No Body",
         );
       } else {
-        print("👋 Notification is from current user");
+        print("👋 Notification is from current user or data missing");
       }
     });
 
-    // 🔹 Terminated state
     FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message != null) {
         print("📩 App opened from terminated by notification: ${message.data}");
       }
     });
-    // background state
+
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       print("📩 App opened from background by notification: ${message.data}");
     });

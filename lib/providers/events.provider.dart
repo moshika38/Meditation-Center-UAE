@@ -17,7 +17,6 @@ class EventsProvider extends ChangeNotifier {
     String? contact,
     bool isNotify,
   ) async {
-     
     final docRef = _firestore.collection('events').doc();
 
     try {
@@ -35,13 +34,12 @@ class EventsProvider extends ChangeNotifier {
       if (isNotify) {
         SendPushNotification.sendNotificationUsingApi(
           topic: AppData.allUserTopic,
-          title: "Upcoming Event",
-          body: "ඉදිරි වැඩසටහන් පෙළගැස්ම...",
+          title: "අලුත් වැඩසටහනක් 🪔",
+          body: "දැන්ම කාලසටහන බලන්න, ඔබත් එක්වන්න.",
           data: {
-            "post_id": docRef.id,
             "user_id": userId,
-            "notice_id": docRef.id,
-            "event_id": docRef.id,
+            "screen": "events",
+            "item_id": docRef.id,
           },
         );
       }
@@ -59,7 +57,7 @@ class EventsProvider extends ChangeNotifier {
           .map((doc) => EventModel.fromJson(doc.data()))
           .toList();
 
-        events.sort((a, b) => b.dateTime!.compareTo(a.dateTime!));
+      events.sort((a, b) => b.dateTime!.compareTo(a.dateTime!));
       return events;
     });
   }

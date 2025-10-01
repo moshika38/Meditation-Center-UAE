@@ -98,7 +98,9 @@ class _NoticeViewerState extends State<NoticeViewer> {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: Consumer2(
-        builder: (context, UserProvider uProvider,NoticeProvider nProvider, child) => FutureBuilder(
+        builder: (context, UserProvider uProvider, NoticeProvider nProvider,
+                child) =>
+            FutureBuilder(
           future: uProvider.getUserById(userID),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
@@ -112,17 +114,22 @@ class _NoticeViewerState extends State<NoticeViewer> {
                       "Conform to delete this  notice, this action cannot be undone",
                       "Yes, add notice",
                       context,
-                      () async{
+                      () async {
                         // upload
-                        final status=await nProvider.deleteNotice(widget.noticeID);
+                        final status =
+                            await nProvider.deleteNotice(widget.noticeID);
                         if (status) {
-                          EasyLoading.showSuccess("Deleted !",duration: Duration(seconds: 2));
-                        context.pop();
+                          EasyLoading.showSuccess("Deleted !",
+                              duration: Duration(seconds: 2));
+                          if (!mounted) return;
+                          context.pop();
                         }
+                        if (!mounted) return;
                         context.pop();
                       },
                       () {
                         // cancel
+                        if (!mounted) return;
                         context.pop();
                       },
                     );

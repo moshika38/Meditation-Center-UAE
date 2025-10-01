@@ -99,6 +99,7 @@ class _UploadPageState extends State<UploadPage> {
         images,
       );
 
+      if (!mounted) return;
       setState(() {
         imageList.clear();
         descriptionController.text = "";

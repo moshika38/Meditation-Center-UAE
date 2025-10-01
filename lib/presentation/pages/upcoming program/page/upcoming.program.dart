@@ -130,7 +130,6 @@ class _UpcomingProgramState extends State<UpcomingProgram> {
 
   Widget _eventCard(List<EventModel> events) {
     return Expanded(
-       
       child: ListView.builder(
         itemCount: events.length,
         itemBuilder: (context, index) {
@@ -148,15 +147,13 @@ class _UpcomingProgramState extends State<UpcomingProgram> {
                     () {
                       // delete
                       _deleteEvent(events[index].id);
-                      if (mounted) {
-                        context.pop();
-                      }
+                      if (!mounted) return;
+                      context.pop();
                     },
                     () {
                       // cancel
-                      if (mounted) {
-                        context.pop();
-                      }
+                      if (!mounted) return;
+                      context.pop();
                     },
                   );
                 }

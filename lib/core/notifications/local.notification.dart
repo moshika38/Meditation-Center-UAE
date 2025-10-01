@@ -64,6 +64,7 @@ class LocalNotification {
         progress: progress,
         onlyAlertOnce: true,
         ongoing: true,
+        autoCancel: false,
       ),
       iOS: DarwinNotificationDetails(
         presentSound: true,

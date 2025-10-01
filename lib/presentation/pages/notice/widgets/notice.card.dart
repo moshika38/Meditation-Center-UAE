@@ -60,7 +60,7 @@ class _NoticeCardState extends State<NoticeCard> {
               borderRadius: BorderRadius.circular(10),
               child: CachedNetworkImage(
                 width: double.infinity,
-                height: 260,
+                height: 200,
                 imageUrl: widget.mainImage,
                 cacheKey: widget.mainImage,
                 fit: BoxFit.cover,

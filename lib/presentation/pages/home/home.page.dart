@@ -85,7 +85,10 @@ class _HomePageState extends State<HomePage> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const PostShimmer();
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+              child: const PostShimmer(),
+            );
           }
 
           WidgetsBinding.instance.addPostFrameCallback((_) {

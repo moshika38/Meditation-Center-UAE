@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meditation_center/core/constance/app.constance.dart';
+import 'package:meditation_center/core/notifications/local.notification.dart';
 import 'package:meditation_center/core/notifications/send.push.notification.dart';
 import 'package:meditation_center/data/cloudinary/cloudinary_api.dart';
 import 'package:meditation_center/data/models/notice.model.dart';
@@ -20,18 +21,7 @@ class NoticeProvider extends ChangeNotifier {
     String userId = FirebaseAuth.instance.currentUser!.uid;
     final docRef = _firestore.collection('notice').doc();
 
-    final notice = NoticeModel(
-      title: title,
-      body: body,
-      mainImage: "",
-      id: docRef.id,
-      dateTime: DateTime.now(),
-    );
-
     try {
-      // create dummy notice
-      await docRef.set({...notice.toJson()});
-
       // upload images to cloudinary
       final response = await CloudinarySdk.cloudinary.uploadResource(
         CloudinaryUploadResource(
@@ -46,30 +36,37 @@ class NoticeProvider extends ChangeNotifier {
       );
 
       if (response.isSuccessful) {
-        final profileImage = response.secureUrl;
+        final noticeImageUrl = response.secureUrl;
 
-        final updateNotice = NoticeModel(
+        final notice = NoticeModel(
           title: title,
           body: body,
           id: docRef.id,
-          mainImage: profileImage.toString(),
+          mainImage: noticeImageUrl.toString(),
           dateTime: DateTime.now(),
         );
 
-        // create dummy notice
-        await docRef.update({...updateNotice.toJson()});
+        // create notice in firestore
+        await docRef.set({...notice.toJson()});
+
         SendPushNotification.sendNotificationUsingApi(
           topic: AppData.allUserTopic,
-          title: "Notice Alert",
-          body: "You have a new notice. Check it out!",
+          title: "නව දැන්වීමක් 📢",
+          body: "ඔබට නව දැන්වීමක් ඇත. දැන්ම බලන්න.",
           data: {
-            "post_id": docRef.id,
             "user_id": userId,
-            "notice_id": docRef.id,
+             "screen": "notice",
+            "id": docRef.id,
           },
         );
         notifyListeners();
       } else {
+        // send local notification for failed upload
+        await LocalNotification().showNotification(
+          docRef.id.hashCode,
+          "🚫 Failed",
+          " Your notice failed to upload ! try again later",
+        );
         notifyListeners();
         return false;
       }

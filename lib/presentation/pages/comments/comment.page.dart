@@ -67,6 +67,7 @@ class _CommentPageState extends State<CommentPage> {
     }
   }
 
+  @override
   void initState() {
     super.initState();
     checkAdmin();

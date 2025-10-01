@@ -34,23 +34,9 @@ class PostProvider extends ChangeNotifier {
     uploadProgress = 0.0;
     final docRef = _firestore.collection('posts').doc();
 
-    final post = PostModel(
-        id: docRef.id,
-        description: des,
-        userId: userId,
-        userName: name,
-        dateTime: DateTime.now(),
-        assetsUrls: [],
-        likes: 0,
-        comments: 0,
-        commentsIds: [],
-        likedUsersIds: [],
-        isApproved: isAdmin,
-        isReel: isReel);
-
     try {
-      // create dummy post
-      await docRef.set({...post.toJson()});
+      // // create dummy post
+      // await docRef.set({...post.toJson()});
 
       uploadProgress = 0.0;
       notifyListeners();
@@ -65,39 +51,57 @@ class PostProvider extends ChangeNotifier {
           cloudinaryUrlList = [videoUrl];
         }
       } else {
-        cloudinaryUrlList =
-            await uploadImages(imageList, userId, docRef.id);
+        cloudinaryUrlList = await uploadImages(imageList, userId, docRef.id);
       }
 
       if (cloudinaryUrlList.isEmpty) {
+        // send local notification for failed upload
         await LocalNotification().showNotification(
           docRef.id.hashCode,
           "🚫 Failed",
           " Upload failed ! try again later",
         );
         return false;
+      } else {
+        final userID = FirebaseAuth.instance.currentUser?.uid;
+        // create post with image urls
+        final post = PostModel(
+          id: docRef.id,
+          description: des,
+          userId: userId,
+          userName: name,
+          dateTime: DateTime.now(),
+          assetsUrls: cloudinaryUrlList,
+          likes: 0,
+          comments: 0,
+          commentsIds: [],
+          likedUsersIds: [],
+          isApproved: isAdmin,
+          isReel: isReel,
+        );
+
+        await docRef.set({...post.toJson()});
+
+        // send local notification
+        await LocalNotification().showNotification(
+          docRef.id.hashCode,
+          "✔️ Completed 100%",
+          "Successfully uploaded !  ${!isAdmin ? "Wait for admin approval" : ""}",
+        );
+        // Send push notification
+        SendPushNotification.sendNotificationUsingApi(
+          topic: isAdmin ? AppData.allUserTopic : AppData.adminTopic,
+          title: isAdmin ? "නව පළ කිරීමක් 🔔" : "ඔබේ ක්‍රියාමාර්ගය අවශ්‍යයි 🚨",
+          body: "'$name' විසින් අලුත් පළ කිරීමක් කරන ලදී...",
+          data: {
+            "user_id": userID,
+            "screen": "home",
+            "id": docRef.id,
+          },
+        );
+        notifyListeners();
+        return true;
       }
-      // update post with image urls
-      await docRef.update({'assetsUrls': cloudinaryUrlList});
-
-      // SendPushNotification
-      SendPushNotification.sendNotificationUsingApi(
-        topic: isAdmin ? AppData.allUserTopic : AppData.adminTopic,
-        title: isAdmin ? "New Post" : "Action needed",
-        body: "'$name' Uploaded a new post",
-        data: {
-          "post_id": docRef.id,
-          "user_id": userId,
-        },
-      );
-      await LocalNotification().showNotification(
-        docRef.id.hashCode,
-        "✔️ Completed 100%",
-        "Successfully uploaded !  ${!isAdmin ? "Wait for admin approval" : ""}",
-      );
-      notifyListeners();
-
-      return true;
     } catch (e) {
       print('Error creating post: $e');
       notifyListeners();
