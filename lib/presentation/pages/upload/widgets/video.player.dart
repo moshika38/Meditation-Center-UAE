@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 
@@ -18,21 +17,17 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   void initState() {
     super.initState();
-
-    // Detect if it's a network URL
     if (widget.videoPath.startsWith("http")) {
       _controller = VideoPlayerController.network(widget.videoPath)
         ..initialize().then((_) {
-          setState(() {
-            initialized = true;
-          });
+          if (!mounted) return;
+          setState(() => initialized = true);
         });
     } else {
       _controller = VideoPlayerController.file(File(widget.videoPath))
         ..initialize().then((_) {
-          setState(() {
-            initialized = true;
-          });
+          if (!mounted) return;
+          setState(() => initialized = true);
         });
     }
   }
@@ -47,9 +42,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   Widget build(BuildContext context) {
     if (!initialized) {
       return const SizedBox(
-        height: 200,
-        child: Center(child: CircularProgressIndicator()),
-      );
+          height: 200, child: Center(child: CircularProgressIndicator()));
     }
 
     return AspectRatio(
@@ -77,11 +70,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                 color: Colors.white,
               ),
               onPressed: () {
-                setState(() {
-                  _controller.value.isPlaying
-                      ? _controller.pause()
-                      : _controller.play();
-                });
+                if (_controller.value.isPlaying) {
+                  _controller.pause();
+                } else {
+                  _controller.play();
+                }
+                setState(() {});  
               },
             ),
           ),

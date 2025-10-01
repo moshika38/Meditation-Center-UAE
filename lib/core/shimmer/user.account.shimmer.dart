@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class UserProfileShimmer extends StatelessWidget {
-  final Size size;
-  const UserProfileShimmer({super.key, required this.size});
+   
+  const UserProfileShimmer({super.key,});
 
   @override
   Widget build(BuildContext context) {
+    final size= MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(20),

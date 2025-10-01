@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_center/core/constance/app.constance.dart';
-import 'package:meditation_center/core/datetime/datetime.calculate.dart';
+import 'package:meditation_center/core/formatter/datetime.formatter.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 
 class PostCardUserInfo extends StatelessWidget {
@@ -65,7 +65,7 @@ class PostCardUserInfo extends StatelessWidget {
             ),
             SizedBox(height: 2),
             Text(
-              DatetimeCalculate.timeAgo(time),
+              DatetimeFormatter.timeAgo(time),
               style: Theme.of(context)
                   .textTheme
                   .bodySmall!

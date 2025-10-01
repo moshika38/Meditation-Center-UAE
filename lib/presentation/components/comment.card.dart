@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meditation_center/core/datetime/datetime.calculate.dart';
+import 'package:meditation_center/core/formatter/datetime.formatter.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/user.model.dart';
 import 'package:meditation_center/providers/user.provider.dart';
@@ -113,7 +113,7 @@ class _CommentCardState extends State<CommentCard> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
-                                  DatetimeCalculate.timeAgo(widget.dateTime),
+                                  DatetimeFormatter.timeAgo(widget.dateTime),
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodySmall!

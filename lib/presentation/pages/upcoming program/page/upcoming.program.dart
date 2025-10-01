@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meditation_center/core/datetime/datetime.calculate.dart';
+import 'package:meditation_center/core/formatter/datetime.formatter.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/presentation/pages/upcoming%20program/widgets/add.new.events.dart';
 import 'package:provider/provider.dart';
@@ -197,7 +197,7 @@ class _UpcomingProgramState extends State<UpcomingProgram> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
-                            DatetimeCalculate.timeAgo(event.dateTime!),
+                            DatetimeFormatter.timeAgo(event.dateTime!),
                             style:
                                 Theme.of(context).textTheme.bodySmall!.copyWith(
                                       color: AppColors.gray,

@@ -111,7 +111,8 @@ class AppRouting {
           name: "profile",
           builder: (context, state) {
             final userID = state.extra as String;
-            return UserProfile(userID: userID);
+            return UserProfile(userId: userID);
+            
           },
         ),
         // no - animation

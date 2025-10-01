@@ -23,7 +23,6 @@ class NoticeCard extends StatefulWidget {
 }
 
 class _NoticeCardState extends State<NoticeCard> {
-   
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -76,16 +75,14 @@ class _NoticeCardState extends State<NoticeCard> {
               maxLines: 2,
             ),
             const SizedBox(height: 10),
-            SizedBox(
-              height: 50 ,
-              child: Text(
-                widget.body,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      fontSize: 15,
-                    ),
-              ),
+            Text(
+              widget.body,
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    fontSize: 15,
+                  ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 5,
             ),
-            
           ],
         ),
       ),

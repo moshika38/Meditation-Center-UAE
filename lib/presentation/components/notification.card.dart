@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meditation_center/core/datetime/datetime.calculate.dart';
+import 'package:meditation_center/core/formatter/datetime.formatter.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 
 class NotificationCard extends StatelessWidget {
@@ -66,7 +66,7 @@ class NotificationCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Text(
-                          DatetimeCalculate.timeAgo(DateTime.parse(time)),
+                          DatetimeFormatter.timeAgo(DateTime.parse(time)),
                           style: theme.bodySmall!.copyWith(
                             color: AppColors.gray,
                             fontSize: 12,

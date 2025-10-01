@@ -27,7 +27,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  String? cUSer = FirebaseAuth.instance.currentUser?.uid;
+  final cUSer = FirebaseAuth.instance.currentUser!.uid;
 
   validateUser() {
     final currentUser = FirebaseAuth.instance.currentUser;

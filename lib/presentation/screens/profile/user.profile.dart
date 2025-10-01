@@ -1,13 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
-import 'package:meditation_center/core/alerts/loading.popup.dart';
-import 'package:meditation_center/core/popup/popup.window.dart';
+import 'package:meditation_center/core/constance/app.constance.dart';
+import 'package:meditation_center/core/formatter/number.formatter.dart';
 import 'package:meditation_center/core/shimmer/user.account.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
-import 'package:meditation_center/data/models/posts.with.users.model.dart';
+import 'package:meditation_center/data/models/post.model.dart';
+import 'package:meditation_center/data/models/user.model.dart';
 import 'package:meditation_center/presentation/components/empty.animation.dart';
 import 'package:meditation_center/presentation/components/post.card.dart';
 import 'package:meditation_center/presentation/components/user.data.card.dart';
@@ -17,110 +17,32 @@ import 'package:meditation_center/providers/user.provider.dart';
 import 'package:provider/provider.dart';
 
 class UserProfile extends StatefulWidget {
-  final String userID;
-  const UserProfile({super.key, required this.userID});
+  final String userId;
+  const UserProfile({
+    super.key,
+    required this.userId,
+  });
 
   @override
   State<UserProfile> createState() => _UserProfileState();
 }
 
 class _UserProfileState extends State<UserProfile> {
-  final ScrollController _scrollController = ScrollController();
-  late Future<List<PostWithUsersModel>>? _postsFuture;
+  final currentUser = FirebaseAuth.instance.currentUser!.uid;
 
-  final cUser = FirebaseAuth.instance.currentUser!.uid;
-
-  String userName = "";
-  String userEmail = "";
-  String userImage = "";
-
-  int allComments = 0;
-  int allLikes = 0;
-
-  bool isCUser = false;
-  bool isAdmin = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _loadUserData();
-      _checkUser();
-      await _loadPosts();
-      await _checkAdmin();
-    });
-  }
-
-  Future<void> _loadUserData() async {
-    try {
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final user = await userProvider.getUserById(widget.userID);
-      if (user.name.isNotEmpty && user.email.isNotEmpty) {
-        if (!mounted) return;
-        setState(() {
-          userName = user.name;
-          userEmail = user.email;
-          userImage = user.profileImage;
-        });
-      } else {
-        AppTopSnackbar.showTopSnackBar(context, "Error loading user data");
-        context.pop();
-      }
-    } catch (e) {
-      AppTopSnackbar.showTopSnackBar(context, "Error loading user data");
-      context.pop();
-    }
-  }
-
-  void _checkUser() {
-    if (widget.userID == cUser) {
-      setState(() {
-        isCUser = true;
-      });
-    }
-  }
-
-  Future<void> _loadPosts() async {
-    final provider =
-        Provider.of<PostWithUserDataProvider>(context, listen: false);
-    _postsFuture = isCUser
-        ? provider.getPostsByUserId(widget.userID)
-        : provider.getApprovedPostsByUserId(widget.userID);
-    if (!mounted) return;
-    setState(() {}); 
-  }
-
-  Future<void> _checkAdmin() async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final user = await userProvider.getUserById(cUser);
-    if (!mounted) return;
-    setState(() {
-      isAdmin = user.isAdmin;
-    });
-  }
-
-  Future<void> _refreshPosts() async {
-    await _loadPosts();
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
+  Future<void> deletePost(String postID) async {
+    final postProvider = Provider.of<PostProvider>(context, listen: false);
+    await postProvider.deletePost(postID);
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).textTheme;
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.whiteColor,
         leading: IconButton(
-          onPressed: () {
-            context.pop();
-          },
+          onPressed: () => context.pop(),
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,
             color: AppColors.pureBlack,
@@ -129,167 +51,178 @@ class _UserProfileState extends State<UserProfile> {
         ),
       ),
       body: RefreshIndicator(
-        backgroundColor: AppColors.whiteColor,
-        color: AppColors.primaryColor,
-        onRefresh: _refreshPosts,
-        child: FutureBuilder<List<PostWithUsersModel>>(
-          future: _postsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Center(child: Text("Error loading posts"));
-            }
+        onRefresh: () async {
+          setState(() {});
+        },
+        child: Consumer<PostWithUserDataProvider>(
+          builder: (context, postDataProvider, child) =>
+              FutureBuilder<List<PostModel>>(
+            future: postDataProvider.getPostsByUserId(widget.userId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const UserProfileShimmer();
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text("Error loading posts"));
+              }
 
-            if (!snapshot.hasData) {
-              return UserProfileShimmer(size: size);
-            }
+              final posts = snapshot.data ?? [];
 
-            final posts = snapshot.data!;
-            allComments = posts.isNotEmpty
-                ? posts.map((e) => e.post.comments).fold(0, (a, b) => a + b)
-                : 0;
-            allLikes = posts.isNotEmpty
-                ? posts.map((e) => e.post.likes).fold(0, (a, b) => a + b)
-                : 0;
+              int totalPosts = posts.length;
+              int totalLikes = posts.fold(0, (sum, post) => sum + (post.likes));
+              int totalComments =
+                  posts.fold(0, (sum, post) => sum + (post.comments));
 
-            return SingleChildScrollView(
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+              return ListView(
+                padding: const EdgeInsets.symmetric(vertical: 20),
                 children: [
-                  const SizedBox(height: 20),
-                  Center(
-                    child: SizedBox(
-                      width: size.width * 0.7,
-                      child: UserDataCard(
-                        isDarkBorder: true,
-                        isDarkText: true,
-                        imageUrl: userImage,
-                        name: userName,
-                        email: userEmail,
+                  // User info
+                  Consumer<UserProvider>(
+                    builder: (context, userProvider, child) => FutureBuilder(
+                      future: userProvider.getUserById(widget.userId),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final user = snapshot.data as UserModel;
+                          return UserDataCard(
+                            imageUrl: user.profileImage,
+                            name: user.name,
+                            email: user.email,
+                            isDarkText: true,
+                          );
+                        }
+                        return UserDataCard(
+                          imageUrl: AppData.baseUserUrl,
+                          name: "",
+                          email: "",
+                          isDarkText: true,
+                        );
+                      },
+                    ),
+                  ),
+
+                  // **Dynamic counts**
+                  _detailsCard(totalPosts, totalLikes, totalComments),
+
+                  _headerCard(),
+
+                  if (posts.isEmpty)
+                    _emptyAnimation()
+                  else
+                    ...posts.map(
+                      (postData) => PostCard(
+                        postID: postData.id,
+                        isApproved: postData.isApproved,
+                        isHome: false,
+                        isCUser: currentUser == postData.userId,
+                        isReel: postData.isReel,
+                        approvedPage: false,
+                        onDelete: ()  {
+                          deletePost(postData.id);
+                        },
+                        approvedFun: () {},
+                        removeFun: () {},
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _itemCard(Icons.thumb_up, allLikes),
-                        Container(width: 1, height: 20, color: AppColors.gray),
-                        _itemCard(Icons.comment, allComments),
-                        Container(width: 1, height: 20, color: AppColors.gray),
-                        _itemCard(Icons.photo_size_select_actual, posts.length),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  posts.isNotEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Uploaded Posts",
-                                style: theme.bodyMedium!
-                                    .copyWith(fontWeight: FontWeight.bold),
-                              ),
-                              Icon(Icons.public),
-                            ],
-                          ),
-                        )
-                      : SizedBox.shrink(),
-                  posts.isNotEmpty ? SizedBox(height: 30) : const SizedBox.shrink(),
-                  posts.isNotEmpty
-                      ? ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: posts.length,
-                          itemBuilder: (context, index) {
-                            final post = posts[index];
-                            return GestureDetector(
-                              onLongPress: () {
-                                if (isAdmin) {
-                                  PopupWindow.showPopupWindow(
-                                    "Are you sure you want to delete this post? It will be gone forever.",
-                                    "Yes, Delete",
-                                    context,
-                                    () async {
-                                      final postProvider =
-                                          Provider.of<PostProvider>(context,
-                                              listen: false);
-                                      LoadingPopup.show('Deleting...');
-                                      await postProvider.deletePost(post.post.id);
-                                      EasyLoading.dismiss();
-                                      await _refreshPosts();
-                                      context.pop();
-                                    },
-                                    () => context.pop(),
-                                  );
-                                }
-                              },
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(vertical: 8),
-                                width: size.width * 0.8,
-                                decoration: BoxDecoration(
-                                  color: AppColors.gray.withOpacity(0.1),
-                                ),
-                                child: PostCard(
-                                  isReel: post.post.isReel,
-                                  removeFun: () {},
-                                  approvedFun: () {},
-                                  approvedPage: false,
-                                  isApproved: post.post.isApproved,
-                                  isCUser: isCUser,
-                                  isHome: false,
-                                  postID: post.post.id,
-                                  onDelete: () async {
-                                    final postProvider =
-                                        Provider.of<PostProvider>(context,
-                                            listen: false);
-                                    LoadingPopup.show('Deleting...');
-                                    await postProvider.deletePost(post.post.id);
-                                    EasyLoading.dismiss();
-                                    await _refreshPosts();
-                                  },
-                                ),
-                              ),
-                            );
-                          },
-                        )
-                      : Column(
-                          children: [
-                            SizedBox(height: size.height * 0.05),
-                            EmptyAnimation(title: "No posts yet !"),
-                          ],
-                        ),
                 ],
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
-  Widget _itemCard(IconData icon, int number) {
-    final tt = Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 15);
-    return Container(
-      width: 110,
-      height: 60,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
-      child: Center(
+  Widget _headerCard() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "Uploaded Posts",
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          FaIcon(
+            FontAwesomeIcons.earth,
+            size: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _emptyAnimation() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 30),
+      child: EmptyAnimation(title: "No posts yet!"),
+    );
+  }
+
+  Widget _detailsCard(int totalPosts, int totalLikes, int totalComments) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Container(
+        width: double.infinity,
+        height: 100,
+        decoration: BoxDecoration(
+          color: AppColors.primaryColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppColors.primaryColor, width: 1),
+        ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Icon(icon, size: 25),
-            const SizedBox(width: 10),
-            Text(number.toString(), style: tt),
+            _itemCard(
+              "Likes",
+              totalLikes,
+              FontAwesomeIcons.heart,
+            ),
+            _itemCard(
+              "Comments",
+              totalComments,
+              FontAwesomeIcons.comment,
+            ),
+            _itemCard(
+              "Posts",
+              totalPosts,
+              FontAwesomeIcons.noteSticky,
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _itemCard(
+    String title,
+    int count,
+    IconData icon,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          NumberFormatter.formatCount(count),
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: AppColors.primaryColor,
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            FaIcon(icon, size: 15, color: AppColors.pureBlack),
+            const SizedBox(width: 5),
+            Text(title,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(color: AppColors.pureBlack, fontSize: 15)),
+          ],
+        ),
+      ],
     );
   }
 }

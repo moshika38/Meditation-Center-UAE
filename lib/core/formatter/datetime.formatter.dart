@@ -1,4 +1,4 @@
-class DatetimeCalculate {
+class DatetimeFormatter {
   static String timeAgo(DateTime dateTime) {
     final Duration diff = DateTime.now().difference(dateTime);
 
