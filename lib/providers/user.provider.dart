@@ -40,21 +40,19 @@ class UserProvider extends ChangeNotifier {
 
   // is User Verified In Firestore
   Future<bool> isUserVerifiedInFirestore(String uid) async {
-  try {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get();
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
-    if (!snapshot.exists) return false;
+      if (!snapshot.exists) return false;
 
-    final data = snapshot.data() as Map<String, dynamic>;
-    return data['isVerify'] as bool? ?? false;
-  } catch (e) {
-    print("Error checking isVerify: $e");
-    return false;
+      final data = snapshot.data() as Map<String, dynamic>;
+      return data['isVerify'] as bool? ?? false;
+    } catch (e) {
+      print("Error checking isVerify: $e");
+      return false;
+    }
   }
-}
 
   // get user by id
   Future<UserModel> getUserById(String id) async {
@@ -108,9 +106,8 @@ class UserProvider extends ChangeNotifier {
 
   // update user name
   Future<bool> updateUserName(String newName) async {
-    final docRef = _firestore.collection('users').doc(
-          FirebaseAuth.instance.currentUser!.uid,
-        );
+    final id = FirebaseAuth.instance.currentUser!.uid;
+    final docRef = _firestore.collection('users').doc(id);
 
     try {
       await docRef.update({
@@ -121,6 +118,24 @@ class UserProvider extends ChangeNotifier {
     } catch (e) {
       notifyListeners();
       print('Error updating name: $e');
+      return false;
+    }
+  }
+
+  // update user last login
+  Future<bool> updateUserLastLogin() async {
+    final id = FirebaseAuth.instance.currentUser!.uid;
+    final docRef = _firestore.collection('users').doc(id);
+
+    try {
+      await docRef.update({
+        'lastLogin': DateTime.now(),
+      });
+      notifyListeners();
+      return true;
+    } catch (e) {
+      notifyListeners();
+      print('Error updating lastLogin: $e');
       return false;
     }
   }

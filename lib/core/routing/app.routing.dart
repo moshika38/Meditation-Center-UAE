@@ -10,10 +10,10 @@ import 'package:meditation_center/presentation/pages/help%20and%20supports/help.
 import 'package:meditation_center/presentation/pages/notice/notice%20viewer/notice.viewer.dart';
 import 'package:meditation_center/presentation/pages/home/post%20viewer/post.viewer.dart';
 import 'package:meditation_center/presentation/pages/social%20media/social.media.page.dart';
-import 'package:meditation_center/presentation/screens/auth/screens/create.screen.dart';
-import 'package:meditation_center/presentation/screens/auth/screens/forgot.password.dart';
-import 'package:meditation_center/presentation/screens/auth/screens/login.screen.dart';
-import 'package:meditation_center/presentation/screens/auth/screens/verify.screen.dart';
+import 'package:meditation_center/presentation/screens/auth/create.screen.dart';
+import 'package:meditation_center/presentation/screens/auth/forgot.password.dart';
+import 'package:meditation_center/presentation/screens/auth/login.screen.dart';
+import 'package:meditation_center/presentation/screens/auth/verify.screen.dart';
 import 'package:meditation_center/presentation/screens/main/main.screen.dart';
 import 'package:meditation_center/presentation/screens/profile/user.profile.dart';
 import 'package:meditation_center/presentation/screens/settings/settings.screen.dart';

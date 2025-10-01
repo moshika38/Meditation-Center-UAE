@@ -36,6 +36,11 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  Future<void> updateUserLastLogin() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    userProvider.updateUserLastLogin();
+  }
+
   Future<void> checkUpdate() async {
     final update = await UpdateServices().getAppUpdate();
 
@@ -121,16 +126,22 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     // validate User
     validateUser();
-    // check update
-    checkUpdate();
     // request permissions
     PermissionServices.requestPermissions();
     // setup  listeners
     listeners();
-    // subscribe to admin
-    subscribeOnce();
-    // check if post available
-    checkIfPostAvailableOrNot();
+
+    // async calls
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // check update
+      checkUpdate();
+      // subscribe to admin
+      subscribeOnce();
+      // check if post available
+      checkIfPostAvailableOrNot();
+      // update user last login
+      updateUserLastLogin();
+    });
   }
 
   @override

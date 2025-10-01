@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
-import 'package:meditation_center/presentation/screens/auth/services/auth.services.dart';
+import 'package:meditation_center/data/services/auth.services.dart';
 import 'package:meditation_center/providers/user.provider.dart';
 import 'package:provider/provider.dart';
 

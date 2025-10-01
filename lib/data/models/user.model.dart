@@ -1,12 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   final String? id;
   final String name;
   final String email;
   final String uid;
   final String profileImage;
-  final bool isAdmin; 
-  final bool isVerify; 
-  final bool allowNotification; 
+  final bool isAdmin;
+  final bool isVerify;
+  final bool allowNotification;
+  final DateTime? onCreated;
+  final DateTime? lastLogin;
 
   UserModel({
     this.id,
@@ -17,20 +21,33 @@ class UserModel {
     required this.isAdmin,
     required this.isVerify,
     required this.allowNotification,
+    this.onCreated,
+    this.lastLogin,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['id'] as String?,
-      name: json['name'] as String,
-      email: json['email'] as String,
-      uid: json['uid'] as String,
-      profileImage: json['profileImage'] as String,
-      isAdmin: json['isAdmin'] as bool,
-      isVerify: json['isVerify'] as bool,
-      allowNotification: json['allowNotification'] as bool,
-    );
-  }
+ factory UserModel.fromJson(Map<String, dynamic> json) {
+  return UserModel(
+    id: json['id'] as String?,
+    name: json['name'] as String,
+    email: json['email'] as String,
+    uid: json['uid'] as String,
+    profileImage: json['profileImage'] as String,
+    isAdmin: json['isAdmin'] as bool,
+    isVerify: json['isVerify'] as bool,
+    allowNotification: json['allowNotification'] as bool,
+    onCreated: json['onCreated'] != null
+        ? (json['onCreated'] is DateTime
+            ? json['onCreated'] as DateTime
+            : (json['onCreated'] as Timestamp).toDate())
+        : null,
+    lastLogin: json['lastLogin'] != null
+        ? (json['lastLogin'] is DateTime
+            ? json['lastLogin'] as DateTime
+            : (json['lastLogin'] as Timestamp).toDate())
+        : null,
+  );
+}
+
 
   Map<String, dynamic> toJson() {
     return {
@@ -42,6 +59,8 @@ class UserModel {
       'isAdmin': isAdmin,
       'isVerify': isVerify,
       'allowNotification': allowNotification,
+      'onCreated': onCreated,
+      'lastLogin': lastLogin,
     };
   }
 }

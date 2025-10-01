@@ -23,7 +23,7 @@ class NoticeCard extends StatefulWidget {
 }
 
 class _NoticeCardState extends State<NoticeCard> {
-  bool isShowMore = false;
+   
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -77,7 +77,7 @@ class _NoticeCardState extends State<NoticeCard> {
             ),
             const SizedBox(height: 10),
             SizedBox(
-              height: !isShowMore ? 50 : null,
+              height: 50 ,
               child: Text(
                 widget.body,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
@@ -85,41 +85,7 @@ class _NoticeCardState extends State<NoticeCard> {
                     ),
               ),
             ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 35,
-                  child: TextButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(
-                        AppColors.gray.withOpacity(0.3),
-                      ),
-                      shape: WidgetStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      padding: WidgetStateProperty.all(
-                        EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        isShowMore = !isShowMore;
-                      });
-                    },
-                    child: Text(
-                      !isShowMore ? "Show more" : "Show less",
-                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            fontSize: 14,
-                          ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            
           ],
         ),
       ),

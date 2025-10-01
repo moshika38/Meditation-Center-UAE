@@ -76,6 +76,7 @@ class AuthServices {
             isAdmin: false,
             isVerify: isVerify,
             allowNotification: true,
+            onCreated: DateTime.now(),
           ),
         );
       } else {

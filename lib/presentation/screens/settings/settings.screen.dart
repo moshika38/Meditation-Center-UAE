@@ -10,7 +10,7 @@ import 'package:meditation_center/data/models/user.model.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/presentation/components/user.data.card.dart';
-import 'package:meditation_center/presentation/screens/auth/services/auth.services.dart';
+import 'package:meditation_center/data/services/auth.services.dart';
 import 'package:meditation_center/providers/user.provider.dart';
 import 'package:provider/provider.dart';
 

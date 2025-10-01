@@ -7,7 +7,7 @@ import 'package:meditation_center/presentation/components/app.logo.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
-import 'package:meditation_center/presentation/screens/auth/services/auth.services.dart';
+import 'package:meditation_center/data/services/auth.services.dart';
 
 class CreateScreen extends StatefulWidget {
   const CreateScreen({super.key});
