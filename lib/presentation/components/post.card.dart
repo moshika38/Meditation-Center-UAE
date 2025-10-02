@@ -202,19 +202,7 @@ class _PostCardState extends State<PostCard>
                           : SizedBox.shrink(),
                     ],
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // show pending badge
-                      widget.isApproved == false
-                          ? widget.isCUser
-                              ? PendingIcon()
-                              : SizedBox.shrink()
-                          : SizedBox.shrink(),
-                    ],
-                  ),
 
-                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Row(
@@ -312,7 +300,12 @@ class _PostCardState extends State<PostCard>
                             ],
                           ),
                         )
-                      : SizedBox.shrink(),
+                      : Column(
+                          children: [
+                            // show pending badge
+                            widget.isCUser ? PendingIcon() : SizedBox.shrink()
+                          ],
+                        ),
 
                   widget.isApproved
                       ? const SizedBox(height: 10)
@@ -330,8 +323,8 @@ class _PostCardState extends State<PostCard>
                                 isLiked,
                                 () {
                                   setState(() {
-                                    isLiked = !isLiked;
                                     numOfLikes += isLiked ? 1 : -1;
+                                    isLiked = !isLiked;
                                   });
 
                                   // backend update background
@@ -339,7 +332,9 @@ class _PostCardState extends State<PostCard>
                                     postProvider.likePost(widget.postID, cUser);
                                   } else {
                                     postProvider.dislikePost(
-                                        widget.postID, cUser);
+                                      widget.postID,
+                                      cUser,
+                                    );
                                   }
                                 },
                               ),

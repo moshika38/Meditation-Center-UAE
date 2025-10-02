@@ -7,31 +7,38 @@ class PendingIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 120,
-      height: 30,
+      width: MediaQuery.of(context).size.width ,
+       
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-        color: AppColors.primaryColor,
+        borderRadius: BorderRadius.circular(10),
+        color: AppColors.youtubeColor,
       ),
       child: Center(
-        child:  Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.warning,
-              color: AppColors.whiteColor,
-              size: 15,
-            ),
-            const SizedBox(width: 8),
-            Text(
-                "Pending",
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  color: AppColors.whiteColor,
+        child:  Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.warning,
+                color: AppColors.whiteColor,
+                size: 15,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                    "This post is under review and will be approved soon.",
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: AppColors.whiteColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                
                 ),
-            
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

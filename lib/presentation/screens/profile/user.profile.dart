@@ -87,9 +87,10 @@ class _UserProfileState extends State<UserProfile> {
                           userData = user;
                         }
                         return UserDataCard(
-                          imageUrl: userData!=null? userData!.profileImage:"",
-                          name: userData!=null?  userData!.name:"",
-                          email: userData!=null? userData!.email:"",
+                          imageUrl:
+                              userData != null ? userData!.profileImage : "",
+                          name: userData != null ? userData!.name : "",
+                          email: userData != null ? userData!.email : "",
                           isDarkText: true,
                         );
                       },
@@ -105,18 +106,25 @@ class _UserProfileState extends State<UserProfile> {
                     _emptyAnimation()
                   else
                     ...posts.map(
-                      (postData) => PostCard(
-                        postID: postData.id,
-                        isApproved: postData.isApproved,
-                        isHome: false,
-                        isCUser: currentUser == postData.userId,
-                        isReel: postData.isReel,
-                        approvedPage: false,
-                        onDelete: () {
-                          deletePost(postData.id);
-                        },
-                        approvedFun: () {},
-                        removeFun: () {},
+                      (postData) => Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.gray.withOpacity(0.1),
+                        ),
+                        child: PostCard(
+                          postID: postData.id,
+                          isApproved: postData.isApproved,
+                          isHome: false,
+                          isCUser:
+                              currentUser == postData.userId ? true : false,
+                          isReel: postData.isReel,
+                          approvedPage: false,
+                          onDelete: () {
+                            deletePost(postData.id);
+                          },
+                          approvedFun: () {},
+                          removeFun: () {},
+                        ),
                       ),
                     ),
                 ],

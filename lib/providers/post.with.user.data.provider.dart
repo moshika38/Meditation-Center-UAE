@@ -160,19 +160,19 @@ class PostWithUserDataProvider extends ChangeNotifier {
     });
   }
 
-
-    Future<List<PostModel>> getPostsByUserId(String userId) async {
+// getPostsByUserId
+  Future<List<PostModel>> getPostsByUserId(String userId) async {
     try {
-      // Query the posts collection where 'userId' field equals the passed userId
       QuerySnapshot snapshot = await _firestore
           .collection('posts')
           .where('userId', isEqualTo: userId)
           .get();
 
-      // Map documents to PostModel
       List<PostModel> posts = snapshot.docs.map((doc) {
         return PostModel.fromJson(doc.data() as Map<String, dynamic>);
       }).toList();
+
+      posts.sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
       return posts;
     } catch (e) {
@@ -180,8 +180,6 @@ class PostWithUserDataProvider extends ChangeNotifier {
       return [];
     }
   }
-
-   
 
 // get approved posts by user id
 
