@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/core/formatter/number.formatter.dart';
 import 'package:meditation_center/core/shimmer/user.account.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
@@ -29,6 +28,8 @@ class UserProfile extends StatefulWidget {
 
 class _UserProfileState extends State<UserProfile> {
   final currentUser = FirebaseAuth.instance.currentUser!.uid;
+
+  UserModel? userData;
 
   Future<void> deletePost(String postID) async {
     final postProvider = Provider.of<PostProvider>(context, listen: false);
@@ -83,17 +84,12 @@ class _UserProfileState extends State<UserProfile> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           final user = snapshot.data as UserModel;
-                          return UserDataCard(
-                            imageUrl: user.profileImage,
-                            name: user.name,
-                            email: user.email,
-                            isDarkText: true,
-                          );
+                          userData = user;
                         }
                         return UserDataCard(
-                          imageUrl: AppData.baseUserUrl,
-                          name: "",
-                          email: "",
+                          imageUrl: userData!=null? userData!.profileImage:"",
+                          name: userData!=null?  userData!.name:"",
+                          email: userData!=null? userData!.email:"",
                           isDarkText: true,
                         );
                       },
@@ -116,7 +112,7 @@ class _UserProfileState extends State<UserProfile> {
                         isCUser: currentUser == postData.userId,
                         isReel: postData.isReel,
                         approvedPage: false,
-                        onDelete: ()  {
+                        onDelete: () {
                           deletePost(postData.id);
                         },
                         approvedFun: () {},
