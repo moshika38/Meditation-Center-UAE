@@ -55,7 +55,12 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => PostProvider()),
-        ChangeNotifierProvider(create: (_) => PostWithUserDataProvider()),
+        ChangeNotifierProxyProvider<UserProvider, PostWithUserDataProvider>(
+          create: (context) =>
+              PostWithUserDataProvider(context.read<UserProvider>()),
+          update: (context, userProvider, postWithUserDataProvider) =>
+              PostWithUserDataProvider(userProvider),
+        ),
         ChangeNotifierProvider(create: (_) => CommentProvider()),
         ChangeNotifierProvider(create: (_) => NoticeProvider()),
         ChangeNotifierProvider(create: (_) => EventsProvider()),

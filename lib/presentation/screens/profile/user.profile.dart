@@ -183,10 +183,20 @@ class _UserProfileState extends State<UserProfile> {
               totalLikes,
               FontAwesomeIcons.heart,
             ),
+            Container(
+              width: 1,
+              height: 30,
+              color: AppColors.gray,
+            ),
             _itemCard(
               "Comments",
               totalComments,
               FontAwesomeIcons.comment,
+            ),
+            Container(
+              width: 1,
+              height: 30,
+              color: AppColors.gray,
             ),
             _itemCard(
               "Posts",
@@ -207,24 +217,26 @@ class _UserProfileState extends State<UserProfile> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          NumberFormatter.formatCount(count),
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                color: AppColors.primaryColor,
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        const SizedBox(height: 10),
         Row(
           children: [
-            FaIcon(icon, size: 15, color: AppColors.pureBlack),
+            Text(
+              NumberFormatter.formatCount(count),
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: AppColors.primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
             const SizedBox(width: 5),
-            Text(title,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(color: AppColors.pureBlack, fontSize: 15)),
+            FaIcon(icon, size: 15, color: AppColors.primaryColor),
           ],
+        ),
+        const SizedBox(height: 5),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                color: AppColors.pureBlack,
+                fontSize: 15,
+              ),
         ),
       ],
     );

@@ -3,9 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:meditation_center/data/models/post.model.dart';
 import 'package:meditation_center/data/models/posts.with.users.model.dart';
 import 'package:meditation_center/data/models/user.model.dart';
+import 'package:meditation_center/providers/user.provider.dart'; // Added import
 
 class PostWithUserDataProvider extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final UserProvider _userProvider; // Added UserProvider field
+
+  PostWithUserDataProvider(this._userProvider); // Modified constructor
 
   Future<List<PostWithUsersModel>> getAllPosts() async {
     // 1. Fetch posts
@@ -132,29 +136,8 @@ class PostWithUserDataProvider extends ChangeNotifier {
       final data = docSnapshot.data()!;
       final post = PostModel.fromJson(data);
 
-      // Fetch user
-      final userSnapshot = await _firestore
-          .collection('users')
-          .where('uid', isEqualTo: post.userId)
-          .limit(1)
-          .get();
-
-      UserModel user;
-      if (userSnapshot.docs.isNotEmpty) {
-        final uDoc = userSnapshot.docs.first;
-        user = UserModel.fromJson({...uDoc.data(), 'id': uDoc.id});
-      } else {
-        user = UserModel(
-          id: null,
-          name: 'Unknown',
-          email: '',
-          uid: '',
-          profileImage: '',
-          isAdmin: false,
-          isVerify: false,
-          allowNotification: false,
-        );
-      }
+      // Fetch user using UserProvider
+      final user = await _userProvider.getUserById(post.userId);
 
       return PostWithUsersModel(post: post, user: user);
     });

@@ -7,19 +7,46 @@ workflows:
       flutter: stable
       xcode: latest
       cocoapods: default
+      # Define the environment group where you securely stored DOTENV_CONTENT
+      groups:
+        - SECRETS # <-- Make sure 'SECRETS' is the group name in Codemagic UI
+        
     scripts:
-      - name: Get Flutter packages
+      - name: Clean & get Flutter packages
         script: |
+          flutter clean
           flutter pub get
-      - name: Install iOS pods
+          
+      # -----------------------------------------------------------------
+      # NEW STEP: Create the .env file from the secure environment variable
+      # This fixes the "No file or variants found for asset: .env" error.
+      # -----------------------------------------------------------------
+      - name: Create .env file from SECRETS
+        script: |
+          # Use printf to correctly handle multi-line content (like private keys)
+          # and write it to the .env file in the project root ($CM_BUILD_DIR)
+          printf "%s\n" "$DOTENV_CONTENT" > .env
+          
+          # Optional: Log the first few lines to confirm the file was created
+          echo "Verification: First 3 lines of .env"
+          head -n 3 .env
+          
+      # -----------------------------------------------------------------
+      
+      - name: Clean & install CocoaPods
         script: |
           cd ios
-          pod install
+          pod deintegrate
+          # The next two lines help resolve dependency warnings (like those for IPHONEOS_DEPLOYMENT_TARGET)
+          pod repo update
+          pod install 
           cd ..
+          
       - name: Build for iOS Simulator
         script: |
           flutter build ios --debug \
             --no-codesign \
             --simulator
+            
     artifacts:
       - build/ios/iphonesimulator/*.app
