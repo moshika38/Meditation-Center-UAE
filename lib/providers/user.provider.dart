@@ -31,9 +31,11 @@ class UserProvider extends ChangeNotifier {
         'isVerify': isVerify,
       });
       print("isVerify updated");
+      notifyListeners();
       return true;
     } catch (e) {
       print("Error updating isVerify: $e");
+      notifyListeners();
       return false;
     }
   }

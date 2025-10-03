@@ -177,21 +177,27 @@ class _UpcomingProgramState extends State<UpcomingProgram> {
                             ),
                       ),
                       const SizedBox(height: 12),
-                      _rowText(event.time, Icons.timelapse, false),
+                      _rowText("දිනය : ${event.date}", Icons.timelapse, false),
+
                       const SizedBox(height: 12),
-                      _rowText(event.date, Icons.date_range, false),
+                      _rowText("වේලාව : ${event.time}", Icons.date_range, false),
+
                       event.place != ""
                           ? const SizedBox(height: 12)
                           : SizedBox.shrink(),
+
                       event.place != ""
-                          ? _rowText(event.place ?? "", Icons.place, false)
+                          ? _rowText("ස්ථානය : ${event.place}" , Icons.place, false)
                           : SizedBox.shrink(),
+
                       event.contact != ""
                           ? const SizedBox(height: 12)
                           : SizedBox.shrink(),
+
                       event.contact != ""
-                          ? _rowText(event.contact ?? "", Icons.person, false)
+                          ? _rowText("වැඩි විස්තර සදහා : ${event.contact}" , Icons.person, false)
                           : SizedBox.shrink(),
+
                       const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,

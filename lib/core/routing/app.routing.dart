@@ -18,6 +18,7 @@ import 'package:meditation_center/presentation/screens/main/main.screen.dart';
 import 'package:meditation_center/presentation/screens/profile/user.profile.dart';
 import 'package:meditation_center/presentation/screens/settings/settings.screen.dart';
 import 'package:meditation_center/presentation/screens/splash/splash.screen.dart';
+import 'package:meditation_center/presentation/screens/terms/terms.screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -112,7 +113,14 @@ class AppRouting {
           builder: (context, state) {
             final userID = state.extra as String;
             return UserProfile(userId: userID);
-            
+          },
+        ),
+        // no - animation
+        GoRoute(
+          path: "/terms",
+          name: "terms",
+          builder: (context, state) {
+            return TermsAndConditionsPage();
           },
         ),
         // no - animation

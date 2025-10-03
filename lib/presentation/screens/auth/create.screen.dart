@@ -23,7 +23,7 @@ class _CreateScreenState extends State<CreateScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController conformPasswordController = TextEditingController();
-  bool isAgree = true;
+  bool isAgree = false;
 
   bool isNameError = false;
   bool isEmailError = false;
@@ -43,18 +43,18 @@ class _CreateScreenState extends State<CreateScreen> {
         if (passwordController.text == conformPasswordController.text) {
           if (!isAgree) {
             AppTopSnackbar.showTopSnackBar(
-                context, "Please accept the terms and conditions");
+                context, "Please read and agree with the terms and conditions");
             return;
           }
           // show loading
-              LoadingPopup.show('Creating...');
+          LoadingPopup.show('Creating...');
 
           final result = await AuthServices.createAccountWithEmailAndPassword(
             emailController.text,
             passwordController.text,
             nameController.text,
           );
-            if (!mounted) return;
+          if (!mounted) return;
 
           if (result == 'Successfully') {
             await AuthServices.sendEmailVerification(emailController.text);
@@ -204,14 +204,35 @@ class _CreateScreenState extends State<CreateScreen> {
                                 });
                               },
                             ),
-                            Text(
-                              "Agree with t & c",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall!
-                                  .copyWith(
-                                    color: AppColors.textColor,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Read and agree with ",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall!
+                                      .copyWith(
+                                        color: AppColors.textColor,
+                                      ),
+                                ),
+                                SizedBox(width: 5),
+                                GestureDetector(
+                                  onTap: (){
+                                    // go tot t & c
+                                    context.push('/terms');
+                                  },
+                                  child: Text(
+                                    "T & C",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .copyWith(
+                                          color: AppColors.primaryColor,
+                                        ),
                                   ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
