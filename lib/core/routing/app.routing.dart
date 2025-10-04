@@ -15,6 +15,7 @@ import 'package:meditation_center/presentation/screens/auth/forgot.password.dart
 import 'package:meditation_center/presentation/screens/auth/login.screen.dart';
 import 'package:meditation_center/presentation/screens/auth/verify.screen.dart';
 import 'package:meditation_center/presentation/screens/main/main.screen.dart';
+import 'package:meditation_center/presentation/screens/privacy/privacy.policy.screen.dart';
 import 'package:meditation_center/presentation/screens/profile/user.profile.dart';
 import 'package:meditation_center/presentation/screens/settings/settings.screen.dart';
 import 'package:meditation_center/presentation/screens/splash/splash.screen.dart';
@@ -121,6 +122,14 @@ class AppRouting {
           name: "terms",
           builder: (context, state) {
             return TermsAndConditionsPage();
+          },
+        ),
+        // no - animation
+        GoRoute(
+          path: "/privacy",
+          name: "privacy",
+          builder: (context, state) {
+            return PrivacyPolicyScreen();
           },
         ),
         // no - animation
