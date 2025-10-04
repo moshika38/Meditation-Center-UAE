@@ -6,6 +6,7 @@ import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/presentation/components/booking.card.dart';
+import 'package:meditation_center/presentation/pages/item%20menus/widgets/month.date.picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ItemMenuPage extends StatelessWidget {
@@ -18,7 +19,7 @@ class ItemMenuPage extends StatelessWidget {
       "මාසික සමාජිකත්වය ලබා ගැනීම සඳහා",
       "දානමය පිංකම් භාරගැනීම සඳහා",
       "⁠සම්බුද්ධ වන්දනා පිංකම් භාරගැනීමට",
-      "⁠ආලෝක පූජාව භාරගැනීම සඳහා",
+      "දෛනික ⁠ආලෝක පූජාව භාරගැනීම සඳහා",
       "⁠විශේෂ පිංකම් පිළිබඳ විස්තර සදහා",
       "⁠whatsapp එකමුතුවට සම්බන්ධ වීම සඳහා",
       "⁠අප සන්නිවේදන ජාලය",
@@ -26,8 +27,7 @@ class ItemMenuPage extends StatelessWidget {
     ];
 
     Future<void> launchWhatsapp(String number, String text) async {
-      final Uri url =
-          Uri.parse('https://wa.me/$number/?text=තෙරුවන් සරණයි !\n$text');
+      final Uri url = Uri.parse('https://wa.me/$number/?text=$text');
 
       if (!await launchUrl(
         url,
@@ -53,7 +53,7 @@ class ItemMenuPage extends StatelessWidget {
 
       if (!await launchUrl(
         url,
-        mode: LaunchMode.externalApplication,  
+        mode: LaunchMode.externalApplication,
       )) {
         throw 'Could not launch $url';
       }
@@ -72,30 +72,31 @@ class ItemMenuPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               //  crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                  const SizedBox(height: 20),
-                  Text(
-                    "Reach Us by Phone",
-                    style: theme.textTheme.bodyMedium!
-                        .copyWith(fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
+                const SizedBox(height: 20),
+                Text(
+                  "Reach Us by Phone",
+                  style: theme.textTheme.bodyMedium!
+                      .copyWith(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
                 Container(
-                   
                   decoration: BoxDecoration(
                     color: AppColors.pureBlack,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        FaIcon(FontAwesomeIcons.phone, color: Colors.white, size: 16),
+                        FaIcon(FontAwesomeIcons.phone,
+                            color: Colors.white, size: 16),
                         const SizedBox(width: 10),
                         Text(
                           "+97 155 332 2301",
-                          style: theme.textTheme.bodySmall !.copyWith(
+                          style: theme.textTheme.bodySmall!.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
@@ -164,10 +165,6 @@ class ItemMenuPage extends StatelessWidget {
                 return GestureDetector(
                   onTap: () {
                     switch (menuItems[index]) {
-                      case "⁠ඉදිරි වැඩසටහන් පෙළගැස්ම":
-                        // details add page
-                        break;
-
                       case "⁠whatsapp එකමුතුවට සම්බන්ධ වීම සඳහා":
                         // whatsapp group link
                         LoadingPopup.show('Logging...');
@@ -183,6 +180,29 @@ class ItemMenuPage extends StatelessWidget {
                       case "⁠අප හා සම්බන්ධ වීමට":
                         contactUS();
                         // contact detail page
+                        break;
+                      case "⁠විශේෂ පිංකම් පිළිබඳ විස්තර සදහා":
+                        launchWhatsapp(
+                          AppData.whatsAppNumber,
+                          "ඉදිරියේදී පැවැත්වෙන විශේෂ පිංකම් මොනවාද?",
+                        );
+                        break;
+                      case "මාසික සමාජිකත්වය ලබා ගැනීම සඳහා":
+                        launchWhatsapp(
+                          AppData.whatsAppNumber,
+                          "අජ්මාන් ශ්‍රී ලංකා භාවනා මධ්‍යස්ථානයෙහි මාසික සාමාජිකත්ව ආරාම පූජාවට දායක විය හැක්කෙ කෙසේද?",
+                        );
+                        break;
+                      case "දානමය පිංකම් භාරගැනීම සඳහා":
+                        MonthDatePicker.showPopupWindow(context,"උදෑසන / දහවල දානමය පිංකම සදහා දායකත්වය ලබා ගැනීමට හැකිද?");
+                        break;
+                      case "⁠සම්බුද්ධ වන්දනා පිංකම් භාරගැනීමට":
+                        MonthDatePicker.showPopupWindow(context,"සවස සම්බුද්ධ වන්දනා පිංකම සදහා දායකත්වය සදහා දායකත්වය ලබා ගැනීමට හැකිද?");
+
+                        break;
+                      case "දෛනික ⁠ආලෝක පූජාව භාරගැනීම සඳහා":
+                        MonthDatePicker.showPopupWindow(context,"දෛනික ⁠ආලෝක පූජා දායකත්වය සදහා දායකත්වය ලබා ගැනීමට හැකිද?");
+
                         break;
 
                       default:

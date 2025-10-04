@@ -30,41 +30,41 @@ class VerifyScreen extends StatelessWidget {
     void verify() async {
       LoadingPopup.show('Verifying...');
       final result = await AuthServices.isEmailVerified();
-      final updateResult = await updateStatus(result);
-
-      if (updateResult) {
-        context.go('/main');
-        EasyLoading.dismiss();
-        EasyLoading.showSuccess('Verified !', duration: Duration(seconds: 2));
-      } else {
-        EasyLoading.dismiss();
-        AppTopSnackbar.showTopSnackBar(context, "Email not verified !");
+      if (result) {
+        final updateResult = await updateStatus(result);
+        if (updateResult) {
+          context.go('/main');
+          EasyLoading.dismiss();
+          EasyLoading.showSuccess('Verified !', duration: Duration(seconds: 2));
+        } else {
+          EasyLoading.dismiss();
+          AppTopSnackbar.showTopSnackBar(context, "Email not verified !");
+        }
       }
     }
 
     reSend() async {
-  LoadingPopup.show('Sending...');
-  try {
-    final user = FirebaseAuth.instance.currentUser;
-    await user?.reload();  
-    final refreshedUser = FirebaseAuth.instance.currentUser;
+      LoadingPopup.show('Sending...');
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        await user?.reload();
+        final refreshedUser = FirebaseAuth.instance.currentUser;
 
-    if (refreshedUser != null ) {
-      await refreshedUser.sendEmailVerification();
-      print("Verification email sent to ${refreshedUser.email}");
-      EasyLoading.dismiss();
-      EasyLoading.showSuccess('Sent !', duration: Duration(seconds: 2));
-    } else {
-      EasyLoading.dismiss();
-      AppTopSnackbar.showTopSnackBar(context, "User already verified !");
+        if (refreshedUser != null) {
+          await refreshedUser.sendEmailVerification();
+          print("Verification email sent to ${refreshedUser.email}");
+          EasyLoading.dismiss();
+          EasyLoading.showSuccess('Sent !', duration: Duration(seconds: 2));
+        } else {
+          EasyLoading.dismiss();
+          AppTopSnackbar.showTopSnackBar(context, "User already verified !");
+        }
+      } catch (e) {
+        EasyLoading.dismiss();
+        print("Error resend: $e");
+        AppTopSnackbar.showTopSnackBar(context, "Please try again !");
+      }
     }
-  } catch (e) {
-    EasyLoading.dismiss();
-    print("Error resend: $e");
-    AppTopSnackbar.showTopSnackBar(context, "Please try again !");
-  }
-}
-
 
     return Scaffold(
       body: SafeArea(
