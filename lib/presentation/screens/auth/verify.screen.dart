@@ -27,32 +27,32 @@ class VerifyScreen extends StatelessWidget {
     }
 
     void verify() async {
-  LoadingPopup.show('Verifying...');
-  try {
-    final user = FirebaseAuth.instance.currentUser;
-    await user?.reload();  
-    final refreshedUser = FirebaseAuth.instance.currentUser;
+      LoadingPopup.show('Verifying...');
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        await user?.reload();
+        final refreshedUser = FirebaseAuth.instance.currentUser;
 
-    if (refreshedUser != null && refreshedUser.emailVerified) {
-      final updateResult = await updateStatus(true);
-      EasyLoading.dismiss();
-      if (updateResult) {
-        context.go('/main');
-        EasyLoading.showSuccess('Verified !', duration: Duration(seconds: 2));
-      } else {
-        AppTopSnackbar.showTopSnackBar(context, "Database update failed !");
+        if (refreshedUser != null && refreshedUser.emailVerified) {
+          final updateResult = await updateStatus(true);
+          EasyLoading.dismiss();
+          if (updateResult) {
+            context.go('/main');
+            EasyLoading.showSuccess('Verified !',
+                duration: Duration(seconds: 2));
+          } else {
+            AppTopSnackbar.showTopSnackBar(context, "Database update failed !");
+          }
+        } else {
+          EasyLoading.dismiss();
+          AppTopSnackbar.showTopSnackBar(context, "Email not verified yet !");
+        }
+      } catch (e) {
+        EasyLoading.dismiss();
+        AppTopSnackbar.showTopSnackBar(context, "Something went wrong !");
+        print('Verify error: $e');
       }
-    } else {
-      EasyLoading.dismiss();
-      AppTopSnackbar.showTopSnackBar(context, "Email not verified yet !");
     }
-  } catch (e) {
-    EasyLoading.dismiss();
-    AppTopSnackbar.showTopSnackBar(context, "Something went wrong !");
-    print('Verify error: $e');
-  }
-}
-
 
     reSend() async {
       LoadingPopup.show('Sending...');

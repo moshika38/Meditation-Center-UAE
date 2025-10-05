@@ -1,9 +1,10 @@
 import 'package:cloudinary_sdk/cloudinary_sdk.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class CloudinarySdk {
   static final cloudinary = Cloudinary.full(
-    apiKey: "471975712971444",
-    apiSecret: "HKHhCHpS3mPOXPfEK2Ag0W-9ygE",
-    cloudName: "dwwhwh1s4",
+    apiKey: dotenv.env['CLOUDINARY_API_KEY']!,
+    apiSecret: dotenv.env['CLOUDINARY_API_SECRET']!,
+    cloudName: dotenv.env['CLOUDINARY_CLOUD_NAME']!,
   );
 }

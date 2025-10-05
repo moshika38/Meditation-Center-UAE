@@ -205,6 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style:
                                 Theme.of(context).textTheme.bodySmall!.copyWith(
                                       color: AppColors.textColor,
+                                      fontWeight: FontWeight.bold,
                                     ),
                           ),
                         ),
@@ -228,11 +229,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }
                               },
                               child: _socialIcon(
-                                  "assets/icons/google.png", 40, 40),
+                                  "assets/icons/google.png", 40, 40, "Google"),
                             ),
-                            SizedBox(width: 5),
+                            SizedBox(width: 10),
                             // facebook login btn
-                            _socialIcon("assets/icons/facebook.png", 40, 40),
+                            GestureDetector(
+                              onTap: () async {
+                                // facebook login
+                              },
+                              child: _socialIcon("assets/icons/facebook.png",
+                                  40, 40, "Facebook"),
+                            ),
                           ],
                         ),
                         Spacer(),
@@ -280,13 +287,37 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _socialIcon(String iconPath, double? width, double? height) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: Image.asset(
-        iconPath,
-        width: width ?? 40,
-        height: height ?? 40,
+  Widget _socialIcon(
+      String iconPath, double? width, double? height, String text) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+            color: AppColors.primaryColor,
+            width: 1,
+          )),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 5),
+        child: Row(
+          children: [
+            Text(
+              text,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall!
+                  .copyWith(color: AppColors.primaryColor),
+            ),
+            SizedBox(width: 5),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: Image.asset(
+                iconPath,
+                width: 30,
+                height: 30,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
