@@ -94,8 +94,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
     return VisibilityDetector(
       key: _videoPlayerKey,
       onVisibilityChanged: (visibilityInfo) {
-        if (!initialized || _hasError)
+        if (!initialized || _hasError) {
           return; // Skip if error or not initialized
+        }
         var visiblePercentage = visibilityInfo.visibleFraction * 100;
         if (visiblePercentage > 50 && widget.autoPlay) {
           if (!_controller.value.isPlaying) {

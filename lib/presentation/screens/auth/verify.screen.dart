@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
-import 'package:meditation_center/data/services/auth.services.dart';
 import 'package:meditation_center/providers/user.provider.dart';
 import 'package:provider/provider.dart';
 
@@ -28,20 +27,32 @@ class VerifyScreen extends StatelessWidget {
     }
 
     void verify() async {
-      LoadingPopup.show('Verifying...');
-      final result = await AuthServices.isEmailVerified();
-      if (result) {
-        final updateResult = await updateStatus(result);
-        if (updateResult) {
-          context.go('/main');
-          EasyLoading.dismiss();
-          EasyLoading.showSuccess('Verified !', duration: Duration(seconds: 2));
-        } else {
-          EasyLoading.dismiss();
-          AppTopSnackbar.showTopSnackBar(context, "Email not verified !");
-        }
+  LoadingPopup.show('Verifying...');
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+    await user?.reload();  
+    final refreshedUser = FirebaseAuth.instance.currentUser;
+
+    if (refreshedUser != null && refreshedUser.emailVerified) {
+      final updateResult = await updateStatus(true);
+      EasyLoading.dismiss();
+      if (updateResult) {
+        context.go('/main');
+        EasyLoading.showSuccess('Verified !', duration: Duration(seconds: 2));
+      } else {
+        AppTopSnackbar.showTopSnackBar(context, "Database update failed !");
       }
+    } else {
+      EasyLoading.dismiss();
+      AppTopSnackbar.showTopSnackBar(context, "Email not verified yet !");
     }
+  } catch (e) {
+    EasyLoading.dismiss();
+    AppTopSnackbar.showTopSnackBar(context, "Something went wrong !");
+    print('Verify error: $e');
+  }
+}
+
 
     reSend() async {
       LoadingPopup.show('Sending...');
