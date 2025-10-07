@@ -39,6 +39,7 @@ void main() async {
 
   // Get verification status before running the app
   final user = FirebaseAuth.instance.currentUser;
+  await user?.reload();
   final bool isUserVerified = user != null
       ? await UserProvider().isUserVerifiedInFirestore(user.uid)
       : false;

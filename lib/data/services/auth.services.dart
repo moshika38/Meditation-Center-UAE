@@ -12,8 +12,8 @@ class AuthServices {
     try {
       final credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: emailAddress, password: password);
-      if (credential.user != null) {
-        credential.user!.displayName;
+     if (credential.user != null) {
+          credential.user?.displayName;
         return "Successfully";
       }
     } on FirebaseAuthException catch (e) {
@@ -58,8 +58,14 @@ class AuthServices {
   }
 
   static void checkUserStatus(String name, bool isVerify) async {
-    final isUserIdExists = await UserServices()
-        .isUserIdExists(FirebaseAuth.instance.currentUser!.uid);
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      print('Error: checkUserStatus called with no current user.');
+      return;
+    }
+
+    final isUserIdExists = await UserServices().isUserIdExists(currentUser.uid);
 
     if (!isUserIdExists) {
       // user not exists, then add to collection
@@ -86,13 +92,18 @@ class AuthServices {
   }
 
   // send email verification
+
   static Future<String> sendEmailVerification(String emailAddress) async {
-    try {
-      await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-      return 'Successfully';
-    } catch (e) {
-      return e.toString();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        await user.sendEmailVerification();
+        return 'Successfully';
+      } catch (e) {
+        return e.toString();
+      }
     }
+    return 'No authenticated user found.';
   }
 
   // password reset

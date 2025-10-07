@@ -8,74 +8,82 @@ import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/providers/user.provider.dart';
 import 'package:provider/provider.dart';
 
-class VerifyScreen extends StatelessWidget {
+class VerifyScreen extends StatefulWidget {
   const VerifyScreen({super.key});
+
+  @override
+  State<VerifyScreen> createState() => _VerifyScreenState();
+}
+
+class _VerifyScreenState extends State<VerifyScreen> {
+  
+
+  Future<bool> updateStatus(bool isVerify) async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final check = await userProvider.updateIsVerify(uid, isVerify);
+    if (check) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void verify() async {
+    LoadingPopup.show('Verifying...');
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      await user?.reload();
+      final refreshedUser = FirebaseAuth.instance.currentUser;
+
+      if (refreshedUser != null && refreshedUser.emailVerified) {
+        final updateResult = await updateStatus(true);
+        EasyLoading.dismiss();
+        if (updateResult) {
+          context.go('/main');
+          EasyLoading.showSuccess('Verified !', duration: Duration(seconds: 2));
+        } else {
+          AppTopSnackbar.showTopSnackBar(context, "Database update failed !");
+        }
+      } else {
+        EasyLoading.dismiss();
+        AppTopSnackbar.showTopSnackBar(context, "Email not verified yet !");
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      AppTopSnackbar.showTopSnackBar(context, "Something went wrong !");
+      print('Verify error: $e');
+    }
+  }
+
+  reSend() async {
+    LoadingPopup.show('Sending...');
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      await user?.reload();
+      final refreshedUser = FirebaseAuth.instance.currentUser;
+
+      if (refreshedUser != null) {
+        await refreshedUser.sendEmailVerification();
+        print("Verification email sent to ${refreshedUser.email}");
+        EasyLoading.dismiss();
+        EasyLoading.showSuccess('Sent !', duration: Duration(seconds: 2));
+      } else {
+        EasyLoading.dismiss();
+        AppTopSnackbar.showTopSnackBar(context, "User already verified !");
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      print("Error resend: $e");
+      AppTopSnackbar.showTopSnackBar(context, "Please try again !");
+    }
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    Future<bool> updateStatus(bool isVerify) async {
-      final uid = FirebaseAuth.instance.currentUser!.uid;
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final check = await userProvider.updateIsVerify(uid, isVerify);
-      if (check) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    void verify() async {
-      LoadingPopup.show('Verifying...');
-      try {
-        final user = FirebaseAuth.instance.currentUser;
-        await user?.reload();
-        final refreshedUser = FirebaseAuth.instance.currentUser;
-
-        if (refreshedUser != null && refreshedUser.emailVerified) {
-          final updateResult = await updateStatus(true);
-          EasyLoading.dismiss();
-          if (updateResult) {
-            context.go('/main');
-            EasyLoading.showSuccess('Verified !',
-                duration: Duration(seconds: 2));
-          } else {
-            AppTopSnackbar.showTopSnackBar(context, "Database update failed !");
-          }
-        } else {
-          EasyLoading.dismiss();
-          AppTopSnackbar.showTopSnackBar(context, "Email not verified yet !");
-        }
-      } catch (e) {
-        EasyLoading.dismiss();
-        AppTopSnackbar.showTopSnackBar(context, "Something went wrong !");
-        print('Verify error: $e');
-      }
-    }
-
-    reSend() async {
-      LoadingPopup.show('Sending...');
-      try {
-        final user = FirebaseAuth.instance.currentUser;
-        await user?.reload();
-        final refreshedUser = FirebaseAuth.instance.currentUser;
-
-        if (refreshedUser != null) {
-          await refreshedUser.sendEmailVerification();
-          print("Verification email sent to ${refreshedUser.email}");
-          EasyLoading.dismiss();
-          EasyLoading.showSuccess('Sent !', duration: Duration(seconds: 2));
-        } else {
-          EasyLoading.dismiss();
-          AppTopSnackbar.showTopSnackBar(context, "User already verified !");
-        }
-      } catch (e) {
-        EasyLoading.dismiss();
-        print("Error resend: $e");
-        AppTopSnackbar.showTopSnackBar(context, "Please try again !");
-      }
-    }
 
     return Scaffold(
       body: SafeArea(

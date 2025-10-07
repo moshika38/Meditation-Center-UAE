@@ -10,7 +10,7 @@ class UserModel {
   final bool isVerify;
   final bool allowNotification;
   final DateTime? onCreated;
-  final DateTime? lastLogin;
+   
 
   UserModel({
     this.id,
@@ -22,7 +22,7 @@ class UserModel {
     required this.isVerify,
     required this.allowNotification,
     this.onCreated,
-    this.lastLogin,
+     
   });
 
  factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -40,11 +40,7 @@ class UserModel {
             ? json['onCreated'] as DateTime
             : (json['onCreated'] as Timestamp).toDate())
         : null,
-    lastLogin: json['lastLogin'] != null
-        ? (json['lastLogin'] is DateTime
-            ? json['lastLogin'] as DateTime
-            : (json['lastLogin'] as Timestamp).toDate())
-        : null,
+   
   );
 }
 
@@ -60,7 +56,7 @@ class UserModel {
       'isVerify': isVerify,
       'allowNotification': allowNotification,
       'onCreated': onCreated,
-      'lastLogin': lastLogin,
+       
     };
   }
 }

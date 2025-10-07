@@ -145,16 +145,16 @@ class _ApprovePostsPageState extends State<ApprovePostsPage> {
                           provider.ApprovedPostByID(post.post.id);
                           SendPushNotification.sendNotificationUsingApi(
                             topic: AppData.allUserTopic,
-                            title: "New Post",
+                            title: "නව පළ කිරීමක් 🔔",
                             body:
-                                "'${post.user.name}' uploaded a new post",
+                                "'${post.user.name}' විසින් අලුත් පළ කිරීමක් කරන ලදී...",
                             data: {
                               "post_id": post.post.id,
                               "user_id": post.user.id,
                             },
                           );
                           context.pop();
-                          _refreshUnapprovedPosts(); // refresh after approve
+                          _refreshUnapprovedPosts();  
                         },
                         () {
                           context.pop();

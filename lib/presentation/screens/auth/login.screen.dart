@@ -290,15 +290,19 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _socialIcon(
       String iconPath, double? width, double? height, String text) {
     return Container(
+      width: MediaQuery.of(context).size.width * 0.4,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100),
-          border: Border.all(
-            color: AppColors.primaryColor,
-            width: 1,
-          )),
+        borderRadius: BorderRadius.circular(100),
+        border: Border.all(
+          color: AppColors.primaryColor,
+          width: 1,
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               text,
