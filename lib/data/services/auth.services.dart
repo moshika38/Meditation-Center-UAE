@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/data/models/user.model.dart';
@@ -61,7 +62,7 @@ class AuthServices {
     final currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser == null) {
-      print('Error: checkUserStatus called with no current user.');
+      debugPrint('Error: checkUserStatus called with no current user.');
       return;
     }
 
@@ -86,7 +87,7 @@ class AuthServices {
           ),
         );
       } else {
-        print('User not found');
+        debugPrint('User not found');
       }
     }
   }
@@ -127,7 +128,7 @@ class AuthServices {
       }
       return false;
     } catch (e) {
-      print('Verification check error: $e');
+      debugPrint('Verification check error: $e');
       return false;
     }
   }
@@ -166,7 +167,7 @@ class AuthServices {
     try {
       await FirebaseAuth.instance.signOut();
     } catch (e) {
-      print(e);
+      debugPrint(e as String?);
     }
   }
 

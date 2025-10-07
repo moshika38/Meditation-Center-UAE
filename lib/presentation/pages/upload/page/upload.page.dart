@@ -53,7 +53,7 @@ class _UploadPageState extends State<UploadPage> {
         imageList.clear();
         imageList.add(pickedFile);
       });
-      print("Video picked: ${pickedFile.path}");
+      debugPrint("Video picked: ${pickedFile.path}");
       setState(() => isEnabled = true);
     }
   }
@@ -72,7 +72,7 @@ class _UploadPageState extends State<UploadPage> {
         });
       }
     } catch (e) {
-      print("Error picking images: $e");
+      debugPrint("Error picking images: $e");
     } finally {
       setState(() => isEnabled = true);
     }

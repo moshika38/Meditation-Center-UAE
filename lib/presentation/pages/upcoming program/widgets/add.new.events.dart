@@ -94,7 +94,7 @@ class AddNewEvents {
                         onChanged: (value) {
                           setState(() {
                             notify = value!;
-                             print(notify);
+                             debugPrint(notify.toString());
                           });
                         },
                       ),

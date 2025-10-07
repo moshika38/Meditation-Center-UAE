@@ -52,7 +52,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
     } catch (e) {
       EasyLoading.dismiss();
       AppTopSnackbar.showTopSnackBar(context, "Something went wrong !");
-      print('Verify error: $e');
+      debugPrint('Verify error: $e');
     }
   }
 
@@ -65,7 +65,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
 
       if (refreshedUser != null) {
         await refreshedUser.sendEmailVerification();
-        print("Verification email sent to ${refreshedUser.email}");
+        debugPrint("Verification email sent to ${refreshedUser.email}");
         EasyLoading.dismiss();
         EasyLoading.showSuccess('Sent !', duration: Duration(seconds: 2));
       } else {
@@ -74,7 +74,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
       }
     } catch (e) {
       EasyLoading.dismiss();
-      print("Error resend: $e");
+      debugPrint("Error resend: $e");
       AppTopSnackbar.showTopSnackBar(context, "Please try again !");
     }
   }

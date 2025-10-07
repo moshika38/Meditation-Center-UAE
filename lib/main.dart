@@ -18,7 +18,7 @@ import 'package:provider/provider.dart';
 
 // Firebase Messaging Background Handler
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("📩 BG Message Data: ${message.data}");
+  debugPrint("📩 BG Message Data: ${message.data}");
 }
 
 void main() async {
@@ -46,7 +46,7 @@ void main() async {
 
   // re-subscribe to topics
   FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
-    print("🔄 Token refreshed: $newToken");
+    debugPrint("🔄 Token refreshed: $newToken");
     await FirebaseMessaging.instance.subscribeToTopic('all_users');
   });
 
@@ -95,7 +95,7 @@ class MyApp extends StatelessWidget {
         final mediaQuery = MediaQuery.of(context);
         return MediaQuery(
           data: mediaQuery.copyWith(
-            textScaleFactor: 1.0,
+            textScaler: TextScaler.linear(1.0),
           ),
           child: child,
         );

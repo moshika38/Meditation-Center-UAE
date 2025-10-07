@@ -44,10 +44,10 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> checkUpdate() async {
     final update = await UpdateServices().getAppUpdate();
 
-    print("App Version: ${update.appVersion}");
+    debugPrint("App Version: ${update.appVersion}");
     final currentV = AppData.appVersion;
     if (update.appVersion > currentV) {
-      print("Update Available");
+      debugPrint("Update Available");
       UpdateBanner.showUpdateBanner(context, () {
         UpdateServices().launchURL(update.appLink);
       });
@@ -68,18 +68,18 @@ class _MainScreenState extends State<MainScreen> {
           message.notification?.body ?? "No Body",
         );
       } else {
-        print("👋 Notification is from current user or data missing");
+        debugPrint("👋 Notification is from current user or data missing");
       }
     });
 
     FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message != null) {
-        print("📩 App opened from terminated by notification: ${message.data}");
+        debugPrint("📩 App opened from terminated by notification: ${message.data}");
       }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print("📩 App opened from background by notification: ${message.data}");
+      debugPrint("📩 App opened from background by notification: ${message.data}");
     });
   }
 
@@ -89,12 +89,12 @@ class _MainScreenState extends State<MainScreen> {
     final user = await provider.getUserById(id);
 
     if (user.isAdmin) {
-      final prefs = await SharedPreferences.getInstance();
-      final alreadySubscribed = prefs.getBool('subscribed_admins') ?? false;
+      final preference = await SharedPreferences.getInstance();
+      final alreadySubscribed = preference.getBool('subscribed_admins') ?? false;
 
       if (!alreadySubscribed) {
         await FirebaseMessaging.instance.subscribeToTopic('admins');
-        await prefs.setBool('subscribed_admins', true);
+        await preference.setBool('subscribed_admins', true);
       }
     }
   }

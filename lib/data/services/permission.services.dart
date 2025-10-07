@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionServices {
@@ -6,7 +7,7 @@ class PermissionServices {
     try {
       // Notification permission (iOS only)
       if (await Permission.notification.request().isDenied) {
-        print("Notification permission denied");
+        debugPrint("Notification permission denied");
       }
 
       // Storage / Photos / Media (Android & iOS)
@@ -20,12 +21,12 @@ class PermissionServices {
       bool allGranted = statuses.values.every((status) => status.isGranted);
 
       if (!allGranted) {
-        print("Some permissions are denied");
+        debugPrint("Some permissions are denied");
       }
 
       return allGranted;
     } catch (e) {
-      print("Error requesting permissions: $e");
+      debugPrint("Error requesting permissions: $e");
       return false;
     }
   }

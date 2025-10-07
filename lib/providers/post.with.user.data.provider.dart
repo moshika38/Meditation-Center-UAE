@@ -159,7 +159,7 @@ class PostWithUserDataProvider extends ChangeNotifier {
 
       return posts;
     } catch (e) {
-      print("Error fetching posts: $e");
+      debugPrint("Error fetching posts: $e");
       return [];
     }
   }
@@ -232,7 +232,7 @@ class PostWithUserDataProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       notifyListeners();
-      print('Error updating name: $e');
+      debugPrint('Error updating name: $e');
       return false;
     }
   }

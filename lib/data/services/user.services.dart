@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 import 'package:meditation_center/data/models/user.model.dart';
 
@@ -22,7 +23,7 @@ class UserServices {
     try {
       await docRef.set({...user.toJson()});
     } catch (e) {
-      print('Error creating task: $e');
+      debugPrint('Error creating task: $e');
     }
   }
 
@@ -48,7 +49,7 @@ class UserServices {
     try {
       await docRef.delete();
     } catch (e) {
-      print('Error deleting task: $e');
+      debugPrint('Error deleting task: $e');
     }
   }
 }

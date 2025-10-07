@@ -31,7 +31,7 @@ class CommentProvider extends ChangeNotifier {
 
       return true;
     } catch (e) {
-      print('Error creating comment: $e');
+      debugPrint('Error creating comment: $e');
       notifyListeners();
       return false;
     }

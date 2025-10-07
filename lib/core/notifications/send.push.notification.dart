@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:meditation_center/core/notifications/get.service.key.dart';
 
@@ -38,14 +39,14 @@ class SendPushNotification {
       body: jsonEncode(message),
     );
 
-    // print response
+    // debugPrint response
     if (response.statusCode == 200) {
-      print("Push Notification sent successfully");
-      print("Response: ${response.body}");
+      debugPrint("Push Notification sent successfully");
+      debugPrint("Response: ${response.body}");
     } else {
-      print("Failed to send Push notification");
-      print("Status Code: ${response.statusCode}");
-      print("Response: ${response.body}");
+      debugPrint("Failed to send Push notification");
+      debugPrint("Status Code: ${response.statusCode}");
+      debugPrint("Response: ${response.body}");
     }
   }
 }

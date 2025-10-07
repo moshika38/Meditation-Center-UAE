@@ -14,12 +14,12 @@ class UserProvider extends ChangeNotifier {
       await _firestore.collection('users').doc(uid).update({
         'profileImage': newImageUrl,
       });
-      print("Profile image updated successfully");
+      debugPrint("Profile image updated successfully");
       notifyListeners();
       return true;
     } catch (e) {
       notifyListeners();
-      print("Error updating profile image: $e");
+      debugPrint("Error updating profile image: $e");
       return false;
     }
   }
@@ -30,11 +30,11 @@ class UserProvider extends ChangeNotifier {
       await _firestore.collection('users').doc(uid).update({
         'isVerify': isVerify,
       });
-      print("isVerify updated");
+      debugPrint("isVerify updated");
       notifyListeners();
       return true;
     } catch (e) {
-      print("Error updating isVerify: $e");
+      debugPrint("Error updating isVerify: $e");
       notifyListeners();
       return false;
     }
@@ -51,7 +51,7 @@ class UserProvider extends ChangeNotifier {
       final data = snapshot.data() as Map<String, dynamic>;
       return data['isVerify'] as bool? ?? false;
     } catch (e) {
-      print("Error checking isVerify: $e");
+      debugPrint("Error checking isVerify: $e");
       return false;
     }
   }
@@ -119,7 +119,7 @@ class UserProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       notifyListeners();
-      print('Error updating name: $e');
+      debugPrint('Error updating name: $e');
       return false;
     }
   }
@@ -137,7 +137,7 @@ class UserProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       notifyListeners();
-      print('Error updating lastLogin: $e');
+      debugPrint('Error updating lastLogin: $e');
       return false;
     }
   }
@@ -149,12 +149,12 @@ class UserProvider extends ChangeNotifier {
       await _firestore.collection('users').doc(uid).update({
         'allowNotification': isSwitch,
       });
-      print("Notification settings updated successfully");
+      debugPrint("Notification settings updated successfully");
       notifyListeners();
       return true;
     } catch (e) {
       notifyListeners();
-      print("Error updating notification settings: $e");
+      debugPrint("Error updating notification settings: $e");
       return false;
     }
   }

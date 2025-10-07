@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
@@ -33,10 +34,10 @@ class PostsDeleteServices {
       }
 
       _config.isLoaded = true;
-      print("DEBUG: Cloudinary Keys loaded successfully.");
+      debugPrint("DEBUG: Cloudinary Keys loaded successfully.");
       return true;
     } catch (e) {
-      print(
+      debugPrint(
           '🚨 ENVIRONMENT ERROR: Failed to load Cloudinary keys. Check .env file or CI/CD vars. $e');
       _config.isLoaded = false;
       return false;
@@ -67,21 +68,21 @@ class PostsDeleteServices {
         final deletedImageCount = responseBody['deleted_counts']?['image'] ?? 0;
 
         if (deletedImageCount > 0) {
-          print(
+          debugPrint(
               '✅ Successfully deleted $deletedImageCount images from $folderPrefix.');
           return true;
         } else {
-          print(
+          debugPrint(
               '⚠️ 200 OK, but no images were found or deleted. Folder may already be empty.');
           return true;
         }
       } else {
-        print('❌ Failed to delete assets. Status: ${response.statusCode}');
-        print('Response Body: ${response.body}');
+        debugPrint('❌ Failed to delete assets. Status: ${response.statusCode}');
+        debugPrint('Response Body: ${response.body}');
         return false;
       }
     } catch (e) {
-      print('🚨 Error during asset deletion: $e');
+      debugPrint('🚨 Error during asset deletion: $e');
       return false;
     }
   }
@@ -101,19 +102,19 @@ class PostsDeleteServices {
       );
 
       if (response.statusCode == 200) {
-        print('✅ Successfully deleted the folder: $fullFolderPath');
+        debugPrint('✅ Successfully deleted the folder: $fullFolderPath');
         return true;
       } else {
-        print('❌ Failed to delete folder. Status: ${response.statusCode}');
+        debugPrint('❌ Failed to delete folder. Status: ${response.statusCode}');
         if (response.statusCode == 400 &&
             response.body.contains('Folder is not empty')) {
-          print(
+          debugPrint(
               '💡 Note: The folder is not considered empty (perhaps due to derived images or backups).');
         }
         return false;
       }
     } catch (e) {
-      print('🚨 Error during folder deletion: $e');
+      debugPrint('🚨 Error during folder deletion: $e');
       return false;
     }
   }

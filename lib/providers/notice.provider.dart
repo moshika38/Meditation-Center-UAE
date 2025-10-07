@@ -73,7 +73,7 @@ class NoticeProvider extends ChangeNotifier {
 
       return true;
     } catch (e) {
-      print('Error creating comment: $e');
+      debugPrint('Error creating comment: $e');
       notifyListeners();
       return false;
     }
@@ -105,7 +105,7 @@ class NoticeProvider extends ChangeNotifier {
         return null;
       }
     } catch (e) {
-      print('Error fetching notice by ID: $e');
+      debugPrint('Error fetching notice by ID: $e');
       return null;
     }
   }
@@ -116,7 +116,7 @@ class NoticeProvider extends ChangeNotifier {
       await _firestore.collection('notice').doc(noticeID).delete();
       return true;
     } catch (e) {
-      print('Error deleting notice: $e');
+      debugPrint('Error deleting notice: $e');
       return false;
     }
   }

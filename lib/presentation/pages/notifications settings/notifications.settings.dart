@@ -32,10 +32,10 @@ class _NotificationsSettingsState extends State<NotificationsSettings> {
     final provider = Provider.of<UserProvider>(context, listen: false);
     if (nValue) {
       messaging.subscribeToTopic('all_users');
-      print("🛑  Subscribed to all_users topic");
+      debugPrint("🛑  Subscribed to all_users topic");
     } else {
       messaging.unsubscribeFromTopic('all_users');
-      print("🛑 Unsubscribed from all_users topic");
+      debugPrint("🛑 Unsubscribed from all_users topic");
     }
     await provider.updateNotificationSettings(nValue);
   }

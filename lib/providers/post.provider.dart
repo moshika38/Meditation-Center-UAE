@@ -103,7 +103,7 @@ class PostProvider extends ChangeNotifier {
         return true;
       }
     } catch (e) {
-      print('Error creating post: $e');
+      debugPrint('Error creating post: $e');
       notifyListeners();
       return false;
     }
@@ -206,7 +206,7 @@ class PostProvider extends ChangeNotifier {
         if (response.isSuccessful) {
           uploadedUrls.add(response.secureUrl!);
         } else {
-          print("Cloudinary upload failed for image $index: ${response.error}");
+          debugPrint("Cloudinary upload failed for image $index: ${response.error}");
         }
 
         // mark file as fully uploaded
@@ -324,7 +324,7 @@ class PostProvider extends ChangeNotifier {
 
       return true;
     } catch (e) {
-      print("Error deleting post = $e");
+      debugPrint("Error deleting post = $e");
       return false;
     }
   }

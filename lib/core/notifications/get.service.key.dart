@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:googleapis_auth/auth_io.dart';
 
@@ -38,7 +39,7 @@ class GetServiceKey {
     );
 
     final accessServiceKey = client.credentials.accessToken.data;
-    print("Service key is : $accessServiceKey");
+    debugPrint("Service key is : $accessServiceKey");
     return accessServiceKey;
   }
 }
