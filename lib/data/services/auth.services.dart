@@ -13,8 +13,8 @@ class AuthServices {
     try {
       final credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: emailAddress, password: password);
-     if (credential.user != null) {
-          credential.user?.displayName;
+      if (credential.user != null) {
+        credential.user?.displayName;
         return "Successfully";
       }
     } on FirebaseAuthException catch (e) {
@@ -132,6 +132,24 @@ class AuthServices {
       return false;
     }
   }
+
+  // sing out
+  static Future<void> logOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+    } catch (e) {
+      debugPrint(e as String?);
+    }
+  }
+
+  // check if  email is valid
+  static bool isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+    );
+    return emailRegex.hasMatch(email);
+  }
+
   // google authentication
 
   Future<bool> signInWithGoogle() async {
@@ -162,20 +180,5 @@ class AuthServices {
     }
   }
 
-  // sing out
-  static Future<void> logOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-    } catch (e) {
-      debugPrint(e as String?);
-    }
-  }
-
-  // check if  email is valid
-  static bool isValidEmail(String email) {
-    final emailRegex = RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-    );
-    return emailRegex.hasMatch(email);
-  }
+  
 }

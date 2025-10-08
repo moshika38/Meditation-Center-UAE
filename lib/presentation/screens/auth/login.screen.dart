@@ -211,37 +211,45 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.02),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // google login btn
-                            GestureDetector(
-                              onTap: () async {
-                                LoadingPopup.show('Logging...');
-                                final status =
-                                    await AuthServices().signInWithGoogle();
-                                if (status) {
-                                  context.go('/main');
-                                  EasyLoading.dismiss();
-                                } else {
-                                  EasyLoading.dismiss();
-                                }
-                              },
-                              child: _socialIcon(
-                                  "assets/icons/google.png", 40, 40, "Google"),
+
+                        // google login btn
+                        GestureDetector(
+                          onTap: () async {
+                            LoadingPopup.show('Logging...');
+                            final status =
+                                await AuthServices().signInWithGoogle();
+                            if (status) {
+                              context.go('/main');
+                              EasyLoading.dismiss();
+                            } else {
+                              EasyLoading.dismiss();
+                            }
+                          },
+                          child: Center(
+                            child: _socialIcon(
+                              "assets/icons/google.png",
+                              40,
+                              40,
+                              "Continue with google",
                             ),
-                            SizedBox(width: 10),
-                            // facebook login btn
-                            GestureDetector(
-                              onTap: () async {
-                                // facebook login
-                              },
-                              child: _socialIcon("assets/icons/facebook.png",
-                                  40, 40, "Facebook"),
-                            ),
-                          ],
+                          ),
                         ),
+                        // SizedBox(
+                        //     height: MediaQuery.of(context).size.height * 0.02),
+                        // GestureDetector(
+                        //   onTap: () async {
+                        //    // TODO: implement facebook login
+                        //   },
+                        //   child: Center(
+                        //     child: _socialIcon(
+                        //       "assets/icons/facebook.png",
+                        //       40,
+                        //       40,
+                        //       "Continue with facebook",
+                        //     ),
+                        //   ),
+                        // ),
+
                         Spacer(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -290,7 +298,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _socialIcon(
       String iconPath, double? width, double? height, String text) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.4,
+      width: MediaQuery.of(context).size.width * 0.85,
+      height: 48,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(100),
         border: Border.all(
@@ -304,14 +313,6 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              text,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(color: AppColors.primaryColor),
-            ),
-            SizedBox(width: 5),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Image.asset(
@@ -319,6 +320,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 30,
                 height: 30,
               ),
+            ),
+            SizedBox(width: 10),
+            Text(
+              text,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall!
+                  .copyWith(color: AppColors.primaryColor),
             ),
           ],
         ),
