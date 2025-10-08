@@ -88,14 +88,11 @@ class MyApp extends StatelessWidget {
         isVerify: isVerifyUser,
       ).appRouter,
       builder: (context, child) {
-        // EasyLoading wrap
         child = EasyLoading.init()(context, child);
-
-        //  ignore user font settings
         final mediaQuery = MediaQuery.of(context);
         return MediaQuery(
           data: mediaQuery.copyWith(
-            textScaler: TextScaler.linear(1.0),
+            textScaler: TextScaler.linear(0.8),
           ),
           child: child,
         );
