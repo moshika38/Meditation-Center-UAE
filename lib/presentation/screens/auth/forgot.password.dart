@@ -25,8 +25,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     });
 
     if (!isErr) {
-      
-          LoadingPopup.show('Sending...');
+      LoadingPopup.show('Sending...');
 
       if (AuthServices.isValidEmail(forgotPasswordController.text)) {
         // send reset password link
@@ -44,7 +43,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
@@ -59,39 +58,47 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 ),
               ),
               Spacer(),
-              Text(
-                "Forgot Password",
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-              Text(
-                "Enter your email address to receive a link to reset your password.",
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-              AppInput(
-                hasError: isErr,
-                controller: forgotPasswordController,
-                hintText:
-                    isErr ? ": Please enter email address" : "Email address",
-                prefixIcon: Icons.email_outlined,
-                suffixIcon: Icons.cancel_sharp,
-                onTapIcon: () {
-                  setState(() {
-                    forgotPasswordController.clear();
-                  });
-                },
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-              AppButtons(
-                icon: Icons.send,
-                isPrimary: true,
-                text: "Send",
-                width: double.infinity,
-                height: 50,
-                onTap: () {
-                  reset();
-                },
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Forgot Password",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                    Text(
+                      "Enter your email address to receive a link to reset your password.",
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                    AppInput(
+                      hasError: isErr,
+                      controller: forgotPasswordController,
+                      hintText: isErr
+                          ? ": Please enter email address"
+                          : "Email address",
+                      prefixIcon: Icons.email_outlined,
+                      suffixIcon: Icons.cancel_sharp,
+                      onTapIcon: () {
+                        setState(() {
+                          forgotPasswordController.clear();
+                        });
+                      },
+                    ),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+                    AppButtons(
+                      icon: Icons.send,
+                      isPrimary: true,
+                      text: "Send",
+                      width: double.infinity,
+                      height: 50,
+                      onTap: () {
+                        reset();
+                      },
+                    ),
+                  ],
+                ),
               ),
               Spacer(),
               Spacer(),
@@ -118,7 +125,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

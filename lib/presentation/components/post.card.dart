@@ -149,7 +149,7 @@ class _PostCardState extends State<PostCard>
                       PostCardUserInfo(
                         isNotHome: widget.approvedPage == true,
                         userId: postData.user.uid,
-                        userName: postData.user.name,
+                        userName: "postData.user.name moshika kumarasm nananda",
                         userImage: postData.user.profileImage,
                         time: postData.post.dateTime,
                       ),
@@ -190,7 +190,7 @@ class _PostCardState extends State<PostCard>
                                           color: AppColors.whiteColor),
                                       SizedBox(width: 8),
                                       Text(
-                                        "Delete post",
+                                        "Delete",
                                         style: TextStyle(
                                             color: AppColors.whiteColor),
                                       ),

@@ -210,7 +210,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.02),
+                          height: MediaQuery.of(context).size.height * 0.02,
+                        ),
 
                         // google login btn
                         GestureDetector(
@@ -234,21 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                        // SizedBox(
-                        //     height: MediaQuery.of(context).size.height * 0.02),
-                        // GestureDetector(
-                        //   onTap: () async {
-                        //    // TODO: implement facebook login
-                        //   },
-                        //   child: Center(
-                        //     child: _socialIcon(
-                        //       "assets/icons/facebook.png",
-                        //       40,
-                        //       40,
-                        //       "Continue with facebook",
-                        //     ),
-                        //   ),
-                        // ),
+                        
 
                         Spacer(),
                         Row(

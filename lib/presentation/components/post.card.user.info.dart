@@ -55,7 +55,7 @@ class PostCardUserInfo extends StatelessWidget {
             SizedBox(
               width: isNotHome
                   ? MediaQuery.of(context).size.width * 0.4
-                  : MediaQuery.of(context).size.width * 0.6,
+                  : MediaQuery.of(context).size.width * 0.55,
               child: Text(
                 userName,
                 style: Theme.of(context).textTheme.bodySmall,
