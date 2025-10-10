@@ -149,7 +149,7 @@ class _PostCardState extends State<PostCard>
                       PostCardUserInfo(
                         isNotHome: widget.approvedPage == true,
                         userId: postData.user.uid,
-                        userName: "postData.user.name moshika kumarasm nananda",
+                        userName: postData.user.name ,
                         userImage: postData.user.profileImage,
                         time: postData.post.dateTime,
                       ),
