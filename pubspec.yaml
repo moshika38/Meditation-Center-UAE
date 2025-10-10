@@ -64,7 +64,5 @@ flutter:
     - .env  
     - assets/logo/
     - assets/icons/
-    - assets/jpg/
-    - assets/video/
     - assets/lottie/
     - assets/app/app_icon.png
