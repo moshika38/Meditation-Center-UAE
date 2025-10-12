@@ -52,7 +52,6 @@
 #       - build/ios/iphonesimulator/*.app
 
 
-
 workflows:
   android-release-workflow:
     name: Android Release Build (APK Only)
@@ -102,7 +101,8 @@ workflows:
         script: |
           # Build a standard signed release APK file.
           # We use the --release flag for an optimized, signed release build.
-          flutter build apk --release
+          # FIX: Added --android-skip-build-dependency-validation to bypass the AGP/Gradle version checks.
+          flutter build apk --release --android-skip-build-dependency-validation
           
     artifacts:
       # Capture the signed release APK file
