@@ -58,7 +58,7 @@ workflows:
     name: Android Release Build (APK Only)
     # Android builds are usually cheaper and faster on Linux instances.
     # FIX: Changed 'linux_g1_small' to the correct, supported instance type 'linux'.
-    instance_type: mac_mini
+    instance_type: mac_mini_m2
     max_build_duration: 60
     environment:
       flutter: stable
