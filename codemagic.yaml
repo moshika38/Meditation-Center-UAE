@@ -57,7 +57,8 @@ workflows:
   android-release-workflow:
     name: Android Release Build (APK Only)
     # Android builds are usually cheaper and faster on Linux instances.
-    instance_type: linux_g1_small
+    # FIX: Changed 'linux_g1_small' to the correct, supported instance type 'linux'.
+    instance_type: linux
     max_build_duration: 60
     environment:
       flutter: stable
