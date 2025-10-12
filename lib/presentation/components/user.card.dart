@@ -34,6 +34,7 @@ class UserCard extends StatelessWidget {
               ),
               child: CircleAvatar(
                 radius: 60,
+                // ignore: deprecated_member_use
                 backgroundColor: AppColors.secondaryColor.withOpacity(0.2),
                 child: ClipOval(
                   child: Image.network(

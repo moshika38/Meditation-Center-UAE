@@ -221,6 +221,7 @@ class PostWithUserDataProvider extends ChangeNotifier {
   }
 
 // approve post
+  // ignore: non_constant_identifier_names
   Future<bool> ApprovedPostByID(String postID) async {
     final docRef = _firestore.collection('posts').doc(postID);
 

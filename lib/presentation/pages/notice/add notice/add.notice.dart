@@ -189,6 +189,7 @@ class _AddNoticeState extends State<AddNotice> {
             width: double.infinity,
             height: 300,
             decoration: BoxDecoration(
+              // ignore: deprecated_member_use
               color: AppColors.gray.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
@@ -211,6 +212,7 @@ class _AddNoticeState extends State<AddNotice> {
     return IconButton(
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.all(
+          // ignore: deprecated_member_use
           AppColors.gray.withOpacity(0.3),
         ),
         shape: WidgetStateProperty.all(

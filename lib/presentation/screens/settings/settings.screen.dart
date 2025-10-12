@@ -223,6 +223,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
           decoration: BoxDecoration(
+            // ignore: deprecated_member_use
             color: AppColors.whiteColor.withOpacity(0.2),
             borderRadius: BorderRadius.circular(20),
           ),

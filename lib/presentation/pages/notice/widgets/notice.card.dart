@@ -29,6 +29,7 @@ class _NoticeCardState extends State<NoticeCard> {
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: AppColors.gray.withOpacity(0.15),
         borderRadius: BorderRadius.circular(8),
       ),

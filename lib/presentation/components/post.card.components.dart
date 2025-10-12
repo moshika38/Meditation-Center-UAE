@@ -82,6 +82,7 @@ class PostCardComponents {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
+          // ignore: deprecated_member_use
           color: AppColors.gray.withOpacity(0.0),
         ),
         child: Row(

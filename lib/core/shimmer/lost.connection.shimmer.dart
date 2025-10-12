@@ -13,7 +13,9 @@ class GenericLostConnectionShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
+      // ignore: deprecated_member_use
       baseColor: AppColors.gray.withOpacity(0.3),
+      // ignore: deprecated_member_use
       highlightColor: AppColors.gray.withOpacity(0.1),
       period: const Duration(milliseconds: 1500),
       child: SingleChildScrollView(

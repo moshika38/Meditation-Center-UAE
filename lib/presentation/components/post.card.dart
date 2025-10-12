@@ -237,6 +237,7 @@ class _PostCardState extends State<PostCard>
                           videoPath: postData.post.assetsUrls.first,
                         )
                       : Container(
+                          // ignore: deprecated_member_use
                           color: AppColors.gray.withOpacity(0.05),
                           width: double.infinity,
                           child: Column(

@@ -16,14 +16,17 @@ class NoticeCardShimmer extends StatelessWidget {
           physics: BouncingScrollPhysics(),
           itemBuilder: (context, index) => Shimmer.fromColors(
             baseColor: AppColors.gray
+                // ignore: deprecated_member_use
                 .withOpacity(0.2),  
             highlightColor: AppColors.gray
+                // ignore: deprecated_member_use
                 .withOpacity(0.1), 
             child: Container(
               width: double.infinity,
               margin: const EdgeInsets.only(bottom: 20),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: AppColors.gray.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(8),
               ),

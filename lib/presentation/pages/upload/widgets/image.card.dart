@@ -24,6 +24,7 @@ class ImageCard {
             ),
           ),
           Container(
+            // ignore: deprecated_member_use
             color: AppColors.textColor.withOpacity(0.4),
             child: Center(
               child: IconButton(

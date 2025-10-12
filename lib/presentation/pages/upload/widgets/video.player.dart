@@ -30,6 +30,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
   Future<void> _initializeVideoPlayer() async {
     try {
       if (widget.videoPath.startsWith("http")) {
+        // ignore: deprecated_member_use
         _controller = VideoPlayerController.network(widget.videoPath);
       } else {
         _controller = VideoPlayerController.file(File(widget.videoPath));

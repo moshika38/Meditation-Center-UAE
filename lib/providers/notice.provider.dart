@@ -29,8 +29,8 @@ class NoticeProvider extends ChangeNotifier {
           resourceType: CloudinaryResourceType.image,
           folder: "notice",
           fileName: docRef.id,
-          progressCallback: (count, total) {
-            debugPrint("Uploading... $count/$total");
+          progressCallback: (byteCount, total) {
+            debugPrint("Uploading... $byteCount/$total");
           },
         ),
       );

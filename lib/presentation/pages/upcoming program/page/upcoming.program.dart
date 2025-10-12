@@ -161,6 +161,7 @@ class _UpcomingProgramState extends State<UpcomingProgram> {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
+                  // ignore: deprecated_member_use
                   color: AppColors.primaryColor.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(10),
                 ),

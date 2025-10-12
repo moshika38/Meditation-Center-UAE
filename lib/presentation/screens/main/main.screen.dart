@@ -48,6 +48,7 @@ class _MainScreenState extends State<MainScreen> {
     final currentV = AppData.appVersion;
     if (update.appVersion > currentV) {
       debugPrint("Update Available");
+       
       UpdateBanner.showUpdateBanner(context, () {
         UpdateServices().launchURL(update.appLink);
       });

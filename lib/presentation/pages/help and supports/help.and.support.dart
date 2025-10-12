@@ -39,7 +39,7 @@ class HelpAndSupport extends StatelessWidget {
                   const SizedBox(height: 10),
                   Text(
                     "ඔබට අපගේ Meditation Center app එක භාවිතා කරන අතරතුර ගැටළු ඇත්නම් "
-                    "පහත උපදෙස් බලන්න. තවමත් ගැටලු විසඳන්න බැරි නම් "
+                    "පහත උපදෙස් බලන්න. තවමත් ගැටළු විසඳන්න බැරි නම් "
                     "support team එකට සම්බන්ධ වෙන්න.",
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: AppColors.whiteColor,
@@ -120,6 +120,7 @@ class HelpAndSupport extends StatelessWidget {
   Widget _buildFaqItem(BuildContext context, String question, String answer) {
     return Container(
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: AppColors.whiteColor.withOpacity(0.2),
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),

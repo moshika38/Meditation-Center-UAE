@@ -122,8 +122,8 @@ class PostProvider extends ChangeNotifier {
           resourceType: CloudinaryResourceType.video,
           folder: "videos/$postsID",
           fileName: "${userID}_${DateTime.now().millisecondsSinceEpoch}",
-          progressCallback: (count, total) async {
-            double progress = (count / total) * 100;
+          progressCallback: (byteCount, total) async {
+            double progress = (byteCount / total) * 100;
 
             uploadProgress = progress;
             notifyListeners();
@@ -184,9 +184,9 @@ class PostProvider extends ChangeNotifier {
             folder: "posts/$postsID",
             fileName:
                 "${userID}_${DateTime.now().millisecondsSinceEpoch}_$index",
-            progressCallback: (count, total) async {
+            progressCallback: (byteCount, total) async {
               // total uploaded = already finished files + current file progress
-              int currentUploaded = uploadedBytes + count;
+              int currentUploaded = uploadedBytes + byteCount;
               double overallProgress =
                   (currentUploaded / totalBytesAllFiles) * 100;
 

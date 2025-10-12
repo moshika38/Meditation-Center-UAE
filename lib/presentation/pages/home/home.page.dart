@@ -157,6 +157,7 @@ class _HomePageState extends State<HomePage> {
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
+                    // ignore: deprecated_member_use
                     color: AppColors.gray.withOpacity(0.1),
                   ),
                   child: PostCard(

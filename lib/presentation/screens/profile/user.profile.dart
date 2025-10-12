@@ -135,6 +135,7 @@ class _UserProfileState extends State<UserProfile> {
                       (postData) => Container(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
+                          // ignore: deprecated_member_use
                           color: AppColors.gray.withOpacity(0.1),
                         ),
                         child: PostCard(
@@ -175,6 +176,7 @@ class _UserProfileState extends State<UserProfile> {
                 ),
           ),
           FaIcon(
+            // ignore: deprecated_member_use
             FontAwesomeIcons.earth,
             size: 20,
           ),
@@ -197,6 +199,7 @@ class _UserProfileState extends State<UserProfile> {
         width: double.infinity,
         height: 100,
         decoration: BoxDecoration(
+          // ignore: deprecated_member_use
           color: AppColors.primaryColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: AppColors.primaryColor, width: 1),

@@ -76,8 +76,8 @@ class UserProvider extends ChangeNotifier {
           resourceType: CloudinaryResourceType.image,
           folder: "users",
           fileName: userID,
-          progressCallback: (count, total) {
-            debugPrint("Uploading... $count/$total");
+          progressCallback: (byteCount, total) {
+            debugPrint("Uploading... $byteCount/$total");
           },
         ),
       );
