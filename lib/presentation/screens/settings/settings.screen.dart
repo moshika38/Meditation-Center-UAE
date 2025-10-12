@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meditation_center/connection/connection.checker.dart';
+import 'package:meditation_center/connection/lost.connection.alert.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
@@ -23,6 +25,31 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool isSwitch = false;
+  bool isConnect = false;
+
+  void showLostConnectionAlert() {
+    LostConnectionAlert.showAlert(context, onCheckAgain: () {
+      initConnectivity();
+    });
+  }
+
+  initConnectivity() async {
+    final result = await ConnectionChecker().checkConnection();
+    if (!result) {
+      isConnect = false;
+      setState(() {});
+      showLostConnectionAlert();
+    } else {
+      isConnect = true;
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initConnectivity();
+  }
 
   logOut() async {
     LoadingPopup.show('Logging out...');
@@ -61,7 +88,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
       body: SafeArea(
-        child: LayoutBuilder(
+        child: isConnect?  LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
               child: ConstrainedBox(
@@ -178,7 +205,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             );
           },
-        ),
+        ):AccountPageShimmer(),
       ),
     );
   }

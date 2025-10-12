@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:meditation_center/connection/connection.checker.dart';
+import 'package:meditation_center/connection/lost.connection.alert.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/core/shimmer/upload.shimmer.dart';
@@ -31,6 +33,25 @@ class _UploadPageState extends State<UploadPage> {
   bool isComplete = true;
   bool isAdmin = false;
   bool isReel = false;
+  bool isConnect = false;
+
+   void showLostConnectionAlert() {
+    LostConnectionAlert.showAlert(context, onCheckAgain: () {
+      initConnectivity();
+    });
+  }
+
+  initConnectivity() async {
+    final result = await ConnectionChecker().checkConnection();
+    if (!result) {
+      isConnect = false;
+      setState(() {});
+      showLostConnectionAlert();
+    }else{
+      isConnect = true;
+      setState(() {});
+    }
+  }
 
   // check is admin
   void _checkIsAdmin() async {
@@ -125,12 +146,13 @@ class _UploadPageState extends State<UploadPage> {
   @override
   void initState() {
     super.initState();
+    initConnectivity();
     _checkIsAdmin();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return isConnect?Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Consumer(
         builder: (
@@ -296,6 +318,6 @@ class _UploadPageState extends State<UploadPage> {
           },
         ),
       ),
-    );
+    ):UploadPageShimmer();
   }
 }

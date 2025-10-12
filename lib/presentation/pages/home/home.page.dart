@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meditation_center/connection/connection.checker.dart';
+import 'package:meditation_center/connection/lost.connection.alert.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
@@ -35,6 +37,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   bool isAdmin = false;
+  bool isConnect = false;
 
   // check user is admin or not
   void checkAdmin() async {
@@ -48,12 +51,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _loadPosts() {
+    initConnectivity();
     final provider =
         Provider.of<PostWithUserDataProvider>(context, listen: false);
     _postsFuture = provider.getAllPosts();
   }
 
   Future<void> _refreshPosts() async {
+    initConnectivity();
     try {
       LoadingPopup.show("Refreshing posts...");
       _loadPosts();
@@ -64,10 +69,28 @@ class _HomePageState extends State<HomePage> {
       EasyLoading.dismiss();
     }
   }
+ void showLostConnectionAlert() {
+    LostConnectionAlert.showAlert(context, onCheckAgain: () {
+      initConnectivity();
+    });
+  }
+
+  
+  initConnectivity() async {
+    final result = await ConnectionChecker().checkConnection();
+    if (!result) {
+      isConnect = false;
+      setState(() {});
+      showLostConnectionAlert();
+    }else{
+      isConnect = true;
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
+    return isConnect? RefreshIndicator(
       backgroundColor: AppColors.whiteColor,
       color: AppColors.primaryColor,
       onRefresh: _refreshPosts,
@@ -153,6 +176,6 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
-    );
+    ):PostShimmer();
   }
 }

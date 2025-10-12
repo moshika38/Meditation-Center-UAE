@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meditation_center/connection/connection.checker.dart';
+import 'package:meditation_center/connection/lost.connection.alert.dart';
 import 'package:meditation_center/core/formatter/number.formatter.dart';
 import 'package:meditation_center/core/shimmer/user.account.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
@@ -28,8 +30,8 @@ class UserProfile extends StatefulWidget {
 
 class _UserProfileState extends State<UserProfile> {
   final currentUser = FirebaseAuth.instance.currentUser!.uid;
-
   UserModel? userData;
+  bool isConnect = false;
 
   Future<void> deletePost(String postID) async {
     final postProvider = Provider.of<PostProvider>(context, listen: false);
@@ -37,9 +39,33 @@ class _UserProfileState extends State<UserProfile> {
     setState(() {});
   }
 
+  void showLostConnectionAlert() {
+    LostConnectionAlert.showAlert(context, onCheckAgain: () {
+      initConnectivity();
+    });
+  }
+
+  initConnectivity() async {
+    final result = await ConnectionChecker().checkConnection();
+    if (!result) {
+      isConnect = false;
+      setState(() {});
+      showLostConnectionAlert();
+    }else{
+      isConnect = true;
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initConnectivity();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return isConnect?Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.whiteColor,
         leading: IconButton(
@@ -133,7 +159,7 @@ class _UserProfileState extends State<UserProfile> {
           ),
         ),
       ),
-    );
+    ):UserProfileShimmer();
   }
 
   Widget _headerCard() {

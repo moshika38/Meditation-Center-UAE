@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:meditation_center/connection/connection.checker.dart';
+import 'package:meditation_center/connection/lost.connection.alert.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
@@ -25,6 +27,25 @@ class AccountSettings extends StatefulWidget {
 class _AccountSettingsState extends State<AccountSettings> {
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _nameController = TextEditingController();
+  bool isConnect = false;
+
+  void showLostConnectionAlert() {
+    LostConnectionAlert.showAlert(context, onCheckAgain: () {
+      initConnectivity();
+    });
+  }
+
+  initConnectivity() async {
+    final result = await ConnectionChecker().checkConnection();
+    if (!result) {
+      isConnect = false;
+      setState(() {});
+      showLostConnectionAlert();
+    }else{
+      isConnect = true;
+      setState(() {});
+    }
+  }
 
   Future<void> _pickImageFromGallery() async {
     final XFile? pickedFile = await _picker.pickImage(
@@ -93,11 +114,18 @@ class _AccountSettingsState extends State<AccountSettings> {
     }
   }
 
+   @override
+  void initState() {
+    super.initState();
+    initConnectivity();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final height = MediaQuery.of(context).size.height;
-    return Scaffold(
+    return  Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.primaryColor,
       appBar: AppBar(
@@ -120,7 +148,7 @@ class _AccountSettingsState extends State<AccountSettings> {
           ),
         ),
       ),
-      body: Padding(
+      body:isConnect? Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         child: Consumer(
           builder: (
@@ -203,7 +231,7 @@ class _AccountSettingsState extends State<AccountSettings> {
             },
           ),
         ),
-      ),
+      ):SizedBox.shrink(),
     );
   }
 }
