@@ -1,70 +1,15 @@
-# workflows:
-#   ios-simulator-workflow:
-#     name: iOS Simulator Workflow
-#     instance_type: mac_mini_m2
-#     max_build_duration: 60
-#     environment:
-#       flutter: stable
-#       xcode: latest
-#       cocoapods: default
-#       # Define the environment group where you securely stored DOTENV_CONTENT
-#       groups:
-#         - SECRETS # <-- Make sure 'SECRETS' is the group name in Codemagic UI
-        
-#     scripts:
-#       - name: Clean & get Flutter packages
-#         script: |
-#           flutter clean
-#           flutter pub get
-          
-#       # -----------------------------------------------------------------
-#       # NEW STEP: Create the .env file from the secure environment variable
-#       # This fixes the "No file or variants found for asset: .env" error.
-#       # -----------------------------------------------------------------
-#       - name: Create .env file from SECRETS
-#         script: |
-#           # Use printf to correctly handle multi-line content (like private keys)
-#           # and write it to the .env file in the project root ($CM_BUILD_DIR)
-#           printf "%s\n" "$DOTENV_CONTENT" > .env
-          
-#           # Optional: Log the first few lines to confirm the file was created
-#           echo "Verification: First 3 lines of .env"
-#           head -n 3 .env
-          
-#       # -----------------------------------------------------------------
-      
-#       - name: Clean & install CocoaPods
-#         script: |
-#           cd ios
-#           pod deintegrate
-#           # The next two lines help resolve dependency warnings (like those for IPHONEOS_DEPLOYMENT_TARGET)
-#           pod repo update
-#           pod install 
-#           cd ..
-          
-#       - name: Build for iOS Simulator
-#         script: |
-#           flutter build ios --debug \
-#             --no-codesign \
-#             --simulator
-            
-#     artifacts:
-#       - build/ios/iphonesimulator/*.app
-
-
 workflows:
-  android-release-workflow:
-    name: Android Release Build (APK Only)
-    # Android builds are usually cheaper and faster on Linux instances.
-    # FIX: Changed 'linux_g1_small' to the correct, supported instance type 'linux'.
+  ios-simulator-workflow:
+    name: iOS Simulator Workflow
     instance_type: mac_mini_m2
     max_build_duration: 60
     environment:
       flutter: stable
-      # You can remove 'xcode' and 'cocoapods' as they are not needed for Linux/Android builds.
-      # Define the environment group where you securely stored DOTENV_CONTENT and Android signing credentials
+      xcode: latest
+      cocoapods: default
+      # Define the environment group where you securely stored DOTENV_CONTENT
       groups:
-        - SECRETS 
+        - SECRETS # <-- Make sure 'SECRETS' is the group name in Codemagic UI
         
     scripts:
       - name: Clean & get Flutter packages
@@ -73,8 +18,8 @@ workflows:
           flutter pub get
           
       # -----------------------------------------------------------------
-      # FIX: Create the .env file from the secure environment variable
-      # This fixes the "The asset file '.env' doesn't exist" warning.
+      # NEW STEP: Create the .env file from the secure environment variable
+      # This fixes the "No file or variants found for asset: .env" error.
       # -----------------------------------------------------------------
       - name: Create .env file from SECRETS
         script: |
@@ -87,23 +32,21 @@ workflows:
           head -n 3 .env
           
       # -----------------------------------------------------------------
-      # NOTE: CocoaPods step is removed as it is for iOS
-      # -----------------------------------------------------------------
       
-      - name: Set Android Keystore Properties
+      - name: Clean & install CocoaPods
         script: |
-          # This step prepares the necessary environment variables for signing,
-          # assuming you have uploaded your Keystore file to Codemagic and 
-          # linked the necessary variables (CM_KEYSTORE_PATH, etc.) in the SECRETS group.
-          echo "Setting up signing environment variables..."
-      
-      - name: Build Android APK
-        script: |
-          # Build a standard signed release APK file.
-          # We use the --release flag for an optimized, signed release build.
-          # FIX: Added --android-skip-build-dependency-validation to bypass the AGP/Gradle version checks.
-          flutter build apk --release --android-skip-build-dependency-validation
+          cd ios
+          pod deintegrate
+          # The next two lines help resolve dependency warnings (like those for IPHONEOS_DEPLOYMENT_TARGET)
+          pod repo update
+          pod install 
+          cd ..
           
+      - name: Build for iOS Simulator
+        script: |
+          flutter build ios --debug \
+            --no-codesign \
+            --simulator
+            
     artifacts:
-      # Capture the signed release APK file
-      - build/app/outputs/apk/release/app-release.apk
+      - build/ios/iphonesimulator/*.app

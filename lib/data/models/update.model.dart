@@ -1,5 +1,5 @@
 class AppUpdateModel {
-  final int appVersion;
+  final String appVersion;
   final String appLink;
 
   AppUpdateModel({required this.appVersion, required this.appLink});

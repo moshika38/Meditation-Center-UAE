@@ -46,7 +46,7 @@ class _MainScreenState extends State<MainScreen> {
 
     debugPrint("App Version: ${update.appVersion}");
     final currentV = AppData.appVersion;
-    if (update.appVersion > currentV) {
+    if (update.appVersion != currentV) {
       debugPrint("Update Available");
        
       UpdateBanner.showUpdateBanner(context, () {

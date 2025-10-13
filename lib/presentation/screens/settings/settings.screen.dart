@@ -205,7 +205,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             );
           },
-        ):AccountPageShimmer(),
+        ):Padding(
+          padding: const EdgeInsets.all(20),
+          child: AccountPageShimmer(),
+        ),
       ),
     );
   }

@@ -14,11 +14,11 @@ class UpdateServices {
         return AppUpdateModel.fromMap(docSnapshot.data()!);
       } else {
         return AppUpdateModel(
-            appVersion: 0,
+            appVersion: "0",
             appLink: 'Document does not exist');
       }
     } catch (e) {
-      return AppUpdateModel(appVersion: 0, appLink: 'Error: $e');
+      return AppUpdateModel(appVersion: "0", appLink: 'Error: $e');
     }
   }
 
