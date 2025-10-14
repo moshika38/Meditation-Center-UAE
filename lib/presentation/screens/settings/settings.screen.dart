@@ -7,6 +7,7 @@ import 'package:meditation_center/connection/connection.checker.dart';
 import 'package:meditation_center/connection/lost.connection.alert.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/constance/app.constance.dart';
+import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/core/shimmer/account.shimmer.dart';
 import 'package:meditation_center/data/models/user.model.dart';
@@ -53,6 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     initConnectivity();
+    CrashlyticsHelper.logScreenView("Settings Screen");
   }
 
   logOut() async {
@@ -69,6 +71,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+     
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
       appBar: AppBar(

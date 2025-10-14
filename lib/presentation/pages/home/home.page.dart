@@ -6,6 +6,7 @@ import 'package:meditation_center/connection/connection.checker.dart';
 import 'package:meditation_center/connection/lost.connection.alert.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
+import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/posts.with.users.model.dart';
@@ -34,6 +35,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _loadPosts();
     checkAdmin();
+    CrashlyticsHelper.logScreenView("HomePage");
   }
 
   bool isAdmin = false;
@@ -90,6 +92,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+     
     return isConnect? RefreshIndicator(
       backgroundColor: AppColors.whiteColor,
       color: AppColors.primaryColor,

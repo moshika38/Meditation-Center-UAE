@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_center/connection/connection.checker.dart';
 import 'package:meditation_center/connection/lost.connection.alert.dart';
+import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/core/formatter/number.formatter.dart';
 import 'package:meditation_center/core/shimmer/user.account.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
@@ -61,6 +62,7 @@ class _UserProfileState extends State<UserProfile> {
   void initState() {
     super.initState();
     initConnectivity();
+    CrashlyticsHelper.logScreenView("User Profile");
   }
 
   @override

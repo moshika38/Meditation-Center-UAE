@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meditation_center/connection/connection.checker.dart';
 import 'package:meditation_center/connection/lost.connection.alert.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
+import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/core/shimmer/upload.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
@@ -148,6 +150,7 @@ class _UploadPageState extends State<UploadPage> {
     super.initState();
     initConnectivity();
     _checkIsAdmin();
+    CrashlyticsHelper.logScreenView("Upload Page");
   }
 
   @override
@@ -233,6 +236,7 @@ class _UploadPageState extends State<UploadPage> {
                         width: MediaQuery.of(context).size.width * 0.44,
                         height: 50,
                         onTap: () {
+                          FirebaseCrashlytics.instance.log("Clicked Upload Button");
                           if (imageList.isNotEmpty) {
                             setState(() => isEnabled = false);
 

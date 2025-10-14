@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
 import 'package:meditation_center/presentation/components/app.input.dart';
 import 'package:meditation_center/presentation/components/app.logo.dart';
@@ -38,6 +39,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         EasyLoading.dismiss();
       }
     }
+  }
+
+  @override
+  void initState() {
+     
+    super.initState();
+    CrashlyticsHelper.logScreenView("Forgot Password Screen");
   }
 
   @override

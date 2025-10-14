@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:go_router/go_router.dart';
+import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
 import 'package:meditation_center/presentation/components/app.input.dart';
 import 'package:meditation_center/presentation/components/app.logo.dart';
@@ -90,6 +91,13 @@ class _LoginScreenState extends State<LoginScreen> {
         AppTopSnackbar.showTopSnackBar(context, "Please enter a valid email");
       }
     }
+  }
+
+  @override
+  void initState() {
+     
+    super.initState();
+    CrashlyticsHelper.logScreenView("Login Screen");
   }
 
   @override

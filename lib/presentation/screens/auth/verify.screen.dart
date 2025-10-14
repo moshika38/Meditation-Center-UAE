@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
@@ -80,6 +81,12 @@ class _VerifyScreenState extends State<VerifyScreen> {
   }
 
   
+  @override
+  void initState() {
+     
+    super.initState();
+    CrashlyticsHelper.logScreenView("Verify Screen");
+  }
 
   @override
   Widget build(BuildContext context) {
