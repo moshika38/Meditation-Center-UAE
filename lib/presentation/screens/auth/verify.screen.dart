@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
@@ -85,7 +85,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
   void initState() {
      
     super.initState();
-    CrashlyticsHelper.logScreenView("Verify Screen");
+     FirebaseCrashlytics.instance.log("User opened Verify Screen");
+    FirebaseCrashlytics.instance.setCustomKey('screen', 'Verify Screen');
   }
 
   @override

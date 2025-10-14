@@ -1,7 +1,7 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
 import 'package:meditation_center/presentation/components/app.input.dart';
 import 'package:meditation_center/presentation/components/app.logo.dart';
@@ -87,7 +87,8 @@ class _CreateScreenState extends State<CreateScreen> {
   void initState() {
      
     super.initState();
-    CrashlyticsHelper.logScreenView("Create Account Screen");
+     FirebaseCrashlytics.instance.log("User opened Create Screen");
+    FirebaseCrashlytics.instance.setCustomKey('screen', 'Create Screen');
   }
 
   @override

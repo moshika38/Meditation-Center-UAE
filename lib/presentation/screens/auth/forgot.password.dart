@@ -1,6 +1,6 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
 import 'package:meditation_center/presentation/components/app.input.dart';
 import 'package:meditation_center/presentation/components/app.logo.dart';
@@ -45,7 +45,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   void initState() {
      
     super.initState();
-    CrashlyticsHelper.logScreenView("Forgot Password Screen");
+     FirebaseCrashlytics.instance.log("User opened ForgotPassword Screen");
+    FirebaseCrashlytics.instance.setCustomKey('screen', 'ForgotPassword Screen');
   }
 
   @override

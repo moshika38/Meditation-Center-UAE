@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:meditation_center/connection/connection.checker.dart';
 import 'package:meditation_center/connection/lost.connection.alert.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
-import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/core/shimmer/upload.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
@@ -37,7 +36,7 @@ class _UploadPageState extends State<UploadPage> {
   bool isReel = false;
   bool isConnect = false;
 
-   void showLostConnectionAlert() {
+  void showLostConnectionAlert() {
     LostConnectionAlert.showAlert(context, onCheckAgain: () {
       initConnectivity();
     });
@@ -49,7 +48,7 @@ class _UploadPageState extends State<UploadPage> {
       isConnect = false;
       setState(() {});
       showLostConnectionAlert();
-    }else{
+    } else {
       isConnect = true;
       setState(() {});
     }
@@ -150,178 +149,197 @@ class _UploadPageState extends State<UploadPage> {
     super.initState();
     initConnectivity();
     _checkIsAdmin();
-    CrashlyticsHelper.logScreenView("Upload Page");
+    FirebaseCrashlytics.instance.log("User opened Upload Screen");
+    FirebaseCrashlytics.instance.setCustomKey('screen', 'Upload Screen');
   }
 
   @override
   Widget build(BuildContext context) {
-    return isConnect?Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Consumer(
-        builder: (
-          BuildContext context,
-          UserProvider userProvider,
-          Widget? child,
-        ) =>
-            FutureBuilder(
-          future:
-              userProvider.getUserById(FirebaseAuth.instance.currentUser!.uid),
-          builder: (context, snapshot) {
-            // error getting user
-            if (snapshot.hasError) {
-              AppTopSnackbar.showTopSnackBar(context, "Something went wrong");
-            }
-            // loading user data
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              UploadPageShimmer();
-            }
-            if (snapshot.hasData) {
-              final user = snapshot.data as UserModel;
+    return isConnect
+        ? Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Consumer(
+              builder: (
+                BuildContext context,
+                UserProvider userProvider,
+                Widget? child,
+              ) =>
+                  FutureBuilder(
+                future: userProvider
+                    .getUserById(FirebaseAuth.instance.currentUser!.uid),
+                builder: (context, snapshot) {
+                  // error getting user
+                  if (snapshot.hasError) {
+                    AppTopSnackbar.showTopSnackBar(
+                        context, "Something went wrong");
+                  }
+                  // loading user data
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    UploadPageShimmer();
+                  }
+                  if (snapshot.hasData) {
+                    final user = snapshot.data as UserModel;
 
-              return Column(
-                children: [
-                  !isComplete ? const SizedBox(height: 20) : SizedBox.shrink(),
-                  !isComplete
-                      ? Text(
-                          "Uploading ...",
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    color: AppColors.primaryColor,
-                                  ),
-                        )
-                      : SizedBox.shrink(),
+                    return Column(
+                      children: [
+                        !isComplete
+                            ? const SizedBox(height: 20)
+                            : SizedBox.shrink(),
+                        !isComplete
+                            ? Text(
+                                "Uploading ...",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                      color: AppColors.primaryColor,
+                                    ),
+                              )
+                            : SizedBox.shrink(),
 
-                  const SizedBox(height: 20),
-                  TextFieldInput.textFormField(
-                    context,
-                    descriptionController,
-                    isEnabled,
-                    "What's on your mind?",
-                    5,
-                  ),
-                  const SizedBox(height: 20),
-                  // pick image btn
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AppButtons(
-                        text: "Select",
-                        isPrimary: true,
-                        icon: Icons.image,
-                        width: MediaQuery.of(context).size.width * 0.44,
-                        height: 50,
-                        onTap: () {
-                          imageList.clear();
-                          if (isEnabled) {
-                            isAdmin
-                                ? UploadTypeSelector.showSelector(
-                                    context,
-                                    () {
-                                      // select video
-                                      _pickVideoFromGallery();
-                                    },
-                                    () {
-                                      // select images
-                                      _pickImagesFromGallery();
-                                    },
-                                  )
-                                : _pickImagesFromGallery();
-                          }
-                        },
-                      ),
-                      AppButtons(
-                        text: "Upload",
-                        isPrimary: true,
-                        icon: Icons.upload,
-                        width: MediaQuery.of(context).size.width * 0.44,
-                        height: 50,
-                        onTap: () {
-                          FirebaseCrashlytics.instance.log("Clicked Upload Button");
-                          if (imageList.isNotEmpty) {
-                            setState(() => isEnabled = false);
-
-                            isComplete
-                                ? conformUploadSelectedIMages(
-                                    " This action cannot be undone. Are you sure you want to continue?",
-                                    user.name,
-                                    imageList,
-                                  )
-                                : null;
-                          } else {
-                            // show error
-                            AppTopSnackbar.showTopSnackBar(
-                                context, "Please select images to upload");
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  imageList.isNotEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("Selected:  ${imageList.length}",
-                                  style: Theme.of(context).textTheme.bodySmall),
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    imageList.clear();
-                                  });
-                                },
-                                child: Text(
-                                  "Clear",
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : const SizedBox.shrink(),
-                  const SizedBox(height: 10),
-                  imageList.isNotEmpty
-                      ? Expanded(
-                          child: SingleChildScrollView(
-                            child: GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: imageList.length,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: isReel ? 1 : 2,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                childAspectRatio: 1,
-                              ),
-                              itemBuilder: (context, index) {
-                                //  images preview
-                                return ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: ImageCard.imageCard(
-                                    imageList[index].path,
-                                    () {
-                                      setState(() {
-                                        imageList.removeAt(index);
-                                      });
-                                    },
-                                    isReel,
-                                  ),
-                                );
+                        const SizedBox(height: 20),
+                        TextFieldInput.textFormField(
+                          context,
+                          descriptionController,
+                          isEnabled,
+                          "What's on your mind?",
+                          5,
+                        ),
+                        const SizedBox(height: 20),
+                        // pick image btn
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AppButtons(
+                              text: "Select",
+                              isPrimary: true,
+                              icon: Icons.image,
+                              width: MediaQuery.of(context).size.width * 0.44,
+                              height: 50,
+                              onTap: () {
+                                imageList.clear();
+                                if (isEnabled) {
+                                  isAdmin
+                                      ? UploadTypeSelector.showSelector(
+                                          context,
+                                          () {
+                                            // select video
+                                            _pickVideoFromGallery();
+                                          },
+                                          () {
+                                            // select images
+                                            _pickImagesFromGallery();
+                                          },
+                                        )
+                                      : _pickImagesFromGallery();
+                                }
                               },
                             ),
-                          ),
-                        )
-                      : BottomText(),
-                ],
-              );
-            } else {
-              return UploadPageShimmer();
-            }
-          },
-        ),
-      ),
-    ):UploadPageShimmer();
+                            AppButtons(
+                              text: "Upload",
+                              isPrimary: true,
+                              icon: Icons.upload,
+                              width: MediaQuery.of(context).size.width * 0.44,
+                              height: 50,
+                              onTap: () {
+                                FirebaseCrashlytics.instance
+                                    .log("Clicked Upload Button");
+                                FirebaseCrashlytics.instance.setCustomKey(
+                                    'last_action', 'Clicked Upload Button');
+
+                                if (imageList.isNotEmpty) {
+                                  setState(() => isEnabled = false);
+
+                                  isComplete
+                                      ? conformUploadSelectedIMages(
+                                          " This action cannot be undone. Are you sure you want to continue?",
+                                          user.name,
+                                          imageList,
+                                        )
+                                      : null;
+                                } else {
+                                  // show error
+                                  AppTopSnackbar.showTopSnackBar(context,
+                                      "Please select images to upload");
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        imageList.isNotEmpty
+                            ? Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Selected:  ${imageList.length}",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall),
+                                    TextButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          imageList.clear();
+                                        });
+                                      },
+                                      child: Text(
+                                        "Clear",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                        const SizedBox(height: 10),
+                        imageList.isNotEmpty
+                            ? Expanded(
+                                child: SingleChildScrollView(
+                                  child: GridView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: imageList.length,
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: isReel ? 1 : 2,
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 10,
+                                      childAspectRatio: 1,
+                                    ),
+                                    itemBuilder: (context, index) {
+                                      //  images preview
+                                      return ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: ImageCard.imageCard(
+                                          imageList[index].path,
+                                          () {
+                                            setState(() {
+                                              imageList.removeAt(index);
+                                            });
+                                          },
+                                          isReel,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              )
+                            : BottomText(),
+                      ],
+                    );
+                  } else {
+                    return UploadPageShimmer();
+                  }
+                },
+              ),
+            ),
+          )
+        : UploadPageShimmer();
   }
 }
