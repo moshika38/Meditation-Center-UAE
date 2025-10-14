@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/formatter/number.formatter.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
+import 'package:meditation_center/presentation/components/native.share.dart';
 import 'package:meditation_center/presentation/components/pending.icon.dart';
 import 'package:meditation_center/presentation/components/post.card.Components.dart';
 import 'package:meditation_center/presentation/components/post.card.user.info.dart';
@@ -149,7 +152,7 @@ class _PostCardState extends State<PostCard>
                       PostCardUserInfo(
                         isNotHome: widget.approvedPage == true,
                         userId: postData.user.uid,
-                        userName: postData.user.name ,
+                        userName: postData.user.name,
                         userImage: postData.user.profileImage,
                         time: postData.post.dateTime,
                       ),
@@ -354,7 +357,15 @@ class _PostCardState extends State<PostCard>
                                 Icons.share_outlined,
                                 "Share",
                                 false,
-                                () {},
+                                () {
+                                  // share content
+                                  LoadingPopup.show('Sharing...');
+                                  NativeShare.share(
+                                    text: postData.post.description ?? "",
+                                    url: postData.post.assetsUrls.first,
+                                  );
+                                  EasyLoading.dismiss();
+                                },
                               ),
                             ],
                           ),
