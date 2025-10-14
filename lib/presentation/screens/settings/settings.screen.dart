@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +14,7 @@ import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/presentation/components/user.data.card.dart';
 import 'package:meditation_center/data/services/auth.services.dart';
+import 'package:meditation_center/presentation/screens/settings/test.dart';
 import 'package:meditation_center/providers/user.provider.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +28,8 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool isSwitch = false;
   bool isConnect = false;
+
+
 
   void showLostConnectionAlert() {
     LostConnectionAlert.showAlert(context, onCheckAgain: () {
@@ -146,7 +150,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   "Help & Support",
                                   "Get assistance",
                                   () {
-                                    context.push('/help_and_support');
+                                    // context.push('/help_and_support');
+                                    Navigator.push(context,MaterialPageRoute(builder: (context)=>TestPage()));
                                   },
                                 ),
                                 _items(
@@ -154,7 +159,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   "Account settings",
                                   "Manage your account",
                                   () {
-                                    context.push('/account_settings');
+                                    // context.push('/account_settings');
+                                     FirebaseCrashlytics.instance.crash();
                                   },
                                 ),
                                 _items(
@@ -162,7 +168,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   "Notifications ",
                                   "Manage notification settings",
                                   () {
-                                    context.push('/notifications');
+                                    // context.push('/notifications');
+                                    Future.delayed(Duration(seconds: 2), () {
+  throw Exception("🚨 Test async error");
+});
+
                                   },
                                 ),
                                 _items(
