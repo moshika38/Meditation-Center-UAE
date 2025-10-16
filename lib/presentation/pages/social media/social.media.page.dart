@@ -10,169 +10,130 @@ class SocialMediaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<_SocialMediaInfo> socialMediaList = [
+      _SocialMediaInfo(
+        icon: FontAwesomeIcons.facebookF,
+        title: 'Follow us on Facebook',
+        color: AppColors.facebookColor,
+        url: 'https://www.facebook.com/p/Ceylon-Meditation-Center-UAE-61571288357698/?',
+      ),
+      _SocialMediaInfo(
+        icon: FontAwesomeIcons.whatsapp,
+        title: 'Chat on WhatsApp',
+        color: AppColors.whatsappColor,
+        url: 'https://wa.me/${AppData.whatsAppNumber}',
+      ),
+      _SocialMediaInfo(
+        icon: FontAwesomeIcons.instagram,
+        title: 'Follow us on Instagram',
+        color: AppColors.instagramColor,
+        url: 'https://www.instagram.com/ceylonmeditationcenteruae',
+      ),
+      _SocialMediaInfo(
+        icon: FontAwesomeIcons.tiktok,
+        title: 'Follow us on TikTok',
+        color: Colors.black,
+        url: 'https://www.tiktok.com/@ceylon_meditation_center',
+      ),
+      _SocialMediaInfo(
+        icon: FontAwesomeIcons.youtube,
+        title: 'Subscribe on YouTube',
+        color: AppColors.youtubeColor,
+        url: 'https://youtube.com/@ahangamarathanawansathero1850?si=cFiGdYH6dNAnB6bZ',
+      ),
+      _SocialMediaInfo(
+        icon: FontAwesomeIcons.link,
+        title: 'Visit our website',
+        color: AppColors.websiteColor,
+        url: 'https://ceylonmeditationcenter.com/',
+      ),
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Social Media',
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.whiteColor,
-                fontSize: 20,
-              ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         backgroundColor: AppColors.primaryColor,
         leading: IconButton(
-          onPressed: () {
-            context.pop();
-          },
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.whiteColor,
-            size: 20,
-          ),
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildSocialMediaCard(
-                context,
-                FaIcon(FontAwesomeIcons.facebookF, color: AppColors.whiteColor),
-                "Follow us on Facebook",
-                AppColors.facebookColor,
-                () async {
-                  final Uri url = Uri.parse(
-                      "https://www.facebook.com/p/Ceylon-Meditation-Center-UAE-61571288357698/?");
-
-                  if (!await launchUrl(
-                    url,
-                    mode: LaunchMode.externalApplication,
-                  )) {
-                    throw Exception('Could not launch $url');
-                  }
-                },
-              ),
-              _buildSocialMediaCard(
-                context,
-                FaIcon(FontAwesomeIcons.whatsapp, color: AppColors.whiteColor),
-                "Chat on WhatsApp",
-                AppColors.whatsappColor,
-                () async {
-                  final number =AppData.whatsAppNumber;
-                  final Uri url = Uri.parse('https://wa.me/$number');
-
-                  if (!await launchUrl(
-                    url,
-                    mode: LaunchMode.externalApplication,
-                  )) {
-                    throw Exception('Could not launch $url');
-                  }
-                },
-              ),
-              _buildSocialMediaCard(
-                context,
-                FaIcon(FontAwesomeIcons.instagram, color: AppColors.whiteColor),
-                "Follow us on Instagram",
-                AppColors.instagramColor,
-                () async {
-                  final Uri url = Uri.parse(
-                      "https://www.instagram.com/ceylonmeditationcenteruae");
-
-                  if (!await launchUrl(
-                    url,
-                    mode: LaunchMode.externalApplication,
-                  )) {
-                    throw Exception('Could not launch $url');
-                  }
-                },
-              ),
-              _buildSocialMediaCard(
-                context,
-                FaIcon(FontAwesomeIcons.tiktok, color: AppColors.whiteColor),
-                "Follow us on Tiktok",
-                AppColors.pureBlack,
-                () async {
-                  final Uri url = Uri.parse(
-                      "https://www.tiktok.com/@ceylon_meditation_center");
-
-                  if (!await launchUrl(
-                    url,
-                    mode: LaunchMode.externalApplication,
-                  )) {
-                    throw Exception('Could not launch $url');
-                  }
-                },
-              ),
-              _buildSocialMediaCard(
-                context,
-                FaIcon(FontAwesomeIcons.youtube, color: AppColors.whiteColor),
-                "Subscribe on YouTube",
-                AppColors.youtubeColor,
-                () {
-                  // Handle Facebook tap
-                },
-              ),
-              _buildSocialMediaCard(
-                context,
-                FaIcon(FontAwesomeIcons.link, color: AppColors.whiteColor),
-                "Visit our website",
-                AppColors.websiteColor,
-                () async {
-                  final Uri url =
-                      Uri.parse("https://ceylonmeditationcenter.com/");
-
-                  if (!await launchUrl(
-                    url,
-                    mode: LaunchMode.externalApplication,
-                  )) {
-                    throw Exception('Could not launch $url');
-                  }
-                },
-              ),
-            ],
-          ),
+        padding: const EdgeInsets.all(16.0),
+        child: ListView.separated(
+          itemCount: socialMediaList.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 16),
+          itemBuilder: (context, index) {
+            final social = socialMediaList[index];
+            return _buildBeautifulCard(context, social);
+          },
         ),
       ),
     );
   }
 
-  Widget _buildSocialMediaCard(
-    BuildContext context,
-    FaIcon icon,
-    String title,
-    Color color,
-    VoidCallback onTap,
-  ) {
+  Widget _buildBeautifulCard(BuildContext context, _SocialMediaInfo social) {
     return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Container(
-          width: double.infinity,
-          height: 80,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            color: color,
+      onTap: () async {
+        final Uri url = Uri.parse(social.url);
+        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+          throw Exception('Could not launch $url');
+        }
+      },
+      child: Container(
+        height: 80,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [social.color.withOpacity(0.9), social.color],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              icon,
-              const SizedBox(width: 30),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.whiteColor,
-                      fontSize: 18,
-                    ),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: social.color.withOpacity(0.4),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            const SizedBox(width: 24),
+            FaIcon(social.icon, color: Colors.white, size: 28),
+            const SizedBox(width: 24),
+            Expanded(
+              child: Text(
+                social.title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
-            ],
-          ),
+            ),
+            const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 20),
+            const SizedBox(width: 16),
+          ],
         ),
       ),
     );
   }
+}
+
+class _SocialMediaInfo {
+  final IconData icon;
+  final String title;
+  final Color color;
+  final String url;
+
+  _SocialMediaInfo({
+    required this.icon,
+    required this.title,
+    required this.color,
+    required this.url,
+  });
 }
