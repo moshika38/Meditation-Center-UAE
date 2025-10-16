@@ -35,7 +35,7 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
               ),
               const SizedBox(height: 8),
               const Text(
-                "Meditation Center UAE",
+                "CMC UAE — Ceylon Meditation Center",
                 style: TextStyle(
                   fontSize: 16,
                   fontStyle: FontStyle.italic,
@@ -44,56 +44,41 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
               ),
 
               const SizedBox(height: 20),
-
               // Section 1
               const Text(
-                "1. හැඳින්වීම",
+                "1. Introduction",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
               const Text(
-                "මෙම නීති සහ කොන්දේසි ඔබ (පරිශීලකයා) සහ Meditation Center UAE අතර ඇති නීතිමය ගිවිසුමකි. "
-                "මෙම සේවාව භාවිතා කිරීමෙන් ඔබ මෙම කොන්දේසි පිළිගනී.",
+                "These Terms and Conditions form a legal agreement between you (the user) and CMC UAE. "
+                "By using this app, you acknowledge that you have read and accepted these terms.",
               ),
 
               const SizedBox(height: 16),
-
               // Section 2
               const Text(
-                "2. සේවාව පිළිබඳ සාමාන්‍ය කරුණු",
+                "2. About Our Services",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
               const Text(
-                "අපගේ ඇප් එක දායකයින්ගේ පහසුව සඳහා නිර්මාණය කර ඇති අතර, "
-                "මෙය පුද්ගලික භාවිතය සඳහා පමණක් යොදාගත යුතුය.",
+                "The CMC UAE app is designed to provide users with information about programs, meditation events, and special announcements conducted by the Ceylon Meditation Center. "
+                "Push notifications are used to inform users about special updates and activities.",
               ),
 
               const SizedBox(height: 16),
-
-              // Section 3
-              const Text(
-                "3. සෞඛ්‍ය සහ වෛද්‍ය ඉවහල් කිරීම",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                "මෙම ඇප් තුළ ඇති අන්තර්ගතය මනෝසමාධි සහ සෞඛ්‍ය උපකාර සඳහා පමණක් වන අතර, "
-                "එය වෘත්තීය වෛද්‍ය උපදෙස් ලෙස සැලකිය නොහැක. "
-                "ඔබට සෞඛ්‍ය ගැටළු ඇති නම්, වෘත්තීය වෛද්‍ය උපදෙස් ලබාගන්න.",
-              ),
-
-              const SizedBox(height: 16),
+              // Section 3 (Removed Health/Medical Section)
 
               // Section 4
               const Text(
-                "4. පරිශීලක ගිණුම් සහ පෞද්ගලිකත්වය",
+                "3. User Accounts and Privacy",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
               RichText(
                 text: TextSpan(
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 14,
                     height: 1.5,
@@ -101,7 +86,8 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                   children: [
                     const TextSpan(
                       text:
-                          "ඔබ ගිණුමක් සාදන විට සත්‍ය සහ නිරවද්‍ය තොරතුරු ලබාදිය යුතුය. ඔබගේ පෞද්ගලික තොරතුරු අපගේ ",
+                          "When creating an account, you must provide accurate and truthful information. "
+                          "Your personal data will be protected in accordance with the app’s rules and our ",
                     ),
                     TextSpan(
                       text: "Privacy Policy",
@@ -115,71 +101,77 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                           context.push('/privacy');
                         },
                     ),
-                    const TextSpan(
-                      text: " එකට අනුකූලව ආරක්ෂා කරනු ලබයි.",
-                    ),
+                    const TextSpan(text: "."),
                   ],
                 ),
               ),
 
               const SizedBox(height: 16),
-
               // Section 5
               const Text(
-                "5. අන්තර්ගත හිමිකම",
+                "4. Content Ownership",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
               const Text(
-                "ඇප් තුළ පවතින සියලුම අන්තර්ගතය, ඇතුළු පාඨ, රූප, විඩියෝ, සහ සංකල්පනාවන්, "
-                "Meditation Center UAE හි අයිතියට යටත් වේ. "
-                "අනවසරයෙන් පිටපත් කිරීම හෝ බෙදාහැරීම තහනම්.",
+                "All content within the CMC UAE app — including text, images, videos, and concepts — "
+                "is the property of Ceylon Meditation Center UAE. Unauthorized copying or distribution is strictly prohibited.",
               ),
 
               const SizedBox(height: 16),
 
               // Section 6
               const Text(
-                "6. භාවිතයේ සීමා",
+                "5. Usage Restrictions",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
               const Text(
-                "ඔබ මෙම සේවාව නීතිවිරෝධී, අපහාසජනක, හෝ අනවසර ක්‍රියා සඳහා භාවිතා කිරීමට නොහැක. "
-                "අපට ඔබගේ ගිණුම අත්හිටුවන හෝ අවලංගු කරන අයිතිය ඇත.",
+                "You may not use this service for illegal, unauthorized, or unlawful purposes. "
+                "CMC UAE reserves the right to suspend or terminate any account that violates these terms.",
               ),
 
               const SizedBox(height: 16),
 
               // Section 7
               const Text(
-                "7. වගකීමේ සීමාව",
+                "6. Push Notifications and Announcements",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
               const Text(
-                "මෙම සේවාව “as-is” ආකාරයෙන් ලබා දෙන අතර, Meditation Center UAE "
-                "ඇප් භාවිතය හේතුවෙන් ඇතිවිය හැකි සෘජු හෝ අහඹු හානියක් සඳහා වගකීම නොදරයි.",
+                "The app sends push notifications to inform users about temple programs, meditation events, and announcements. "
+                "You may choose to disable push notifications at any time through your device settings.",
               ),
 
               const SizedBox(height: 16),
-
               // Section 8
               const Text(
-                "8. නීතිමය බලපාලනය",
+                "7. Limitation of Liability",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
               const Text(
-                "මෙම නීති සහ කොන්දේසි එක්සත් අරාබි එමිරේට්ස් (UAE) නීති යටතේ පාලනය සහ "
-                "අර්ථකථනය කෙරේ. විවාද ඇතිවුවහොත්, එය UAE අධිකරණ බලතල යටතේ විසඳනු ලබයි.",
+                "This service is provided 'as-is'. CMC UAE shall not be held responsible for any damages or losses "
+                "arising from the use of this app.",
+              ),
+
+              const SizedBox(height: 16),
+              // Section 9
+              const Text(
+                "8. Governing Law",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                "These Terms and Conditions are governed by the laws of the United Arab Emirates (UAE).",
               ),
 
               const SizedBox(height: 30),
 
               const Center(
                 child: Text(
-                  "© 2025 Meditation Center UAE",
+                  "© 2025 Ceylon Meditation Center UAE",
                   style: TextStyle(color: Colors.grey, fontSize: 14),
                 ),
               )

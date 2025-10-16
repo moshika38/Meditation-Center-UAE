@@ -205,6 +205,7 @@ class _PostCardState extends State<PostCard>
                           : SizedBox.shrink(),
                     ],
                   ),
+                   SizedBox(height: 10),
 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
