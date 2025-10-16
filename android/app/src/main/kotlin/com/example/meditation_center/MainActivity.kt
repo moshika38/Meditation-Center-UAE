@@ -1,4 +1,4 @@
-package com.example.meditation_center
+package com.meditationcenter.uae
 
 import android.content.Intent
 import android.os.Bundle

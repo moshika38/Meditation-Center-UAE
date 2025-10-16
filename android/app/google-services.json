@@ -7,17 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:282843198069:android:e9807c7d41ea72d1587e3c",
+        "mobilesdk_app_id": "1:282843198069:android:77cb21ae122c70be587e3c",
         "android_client_info": {
-          "package_name": "com.example.meditation_center"
+          "package_name": "com.meditationcenter.uae"
         }
       },
       "oauth_client": [
         {
-          "client_id": "282843198069-c62jb8956rocutrutcsv2v5n1gvvksnl.apps.googleusercontent.com",
+          "client_id": "282843198069-i0vg3a8eq61akvg7nfm0tivt0qqssntq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.meditation_center",
+            "package_name": "com.meditationcenter.uae",
             "certificate_hash": "0a75696e5ab803a7be8dd18f8464c73b4fc3863f"
           }
         },
