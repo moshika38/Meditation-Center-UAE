@@ -1,5 +1,5 @@
 class AppData {
-  static const String appVersion = "1.0.0+1";
+  
   static const String  baseUserUrl = 'https://res.cloudinary.com/dwwhwh1s4/image/upload/v1760618212/download_ezwyhd.png';
   static const String  whatsAppNumber = '+971553322301';
   static const String  whatsAppGroup = 'https://chat.whatsapp.com/L7WHkRU0gxhCEi2wcVG5i3';

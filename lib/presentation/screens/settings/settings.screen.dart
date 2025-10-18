@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:meditation_center/connection/connection.checker.dart';
 import 'package:meditation_center/connection/lost.connection.alert.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
-import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/core/shimmer/account.shimmer.dart';
 import 'package:meditation_center/data/models/user.model.dart';
@@ -15,6 +14,7 @@ import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/presentation/components/user.data.card.dart';
 import 'package:meditation_center/data/services/auth.services.dart';
 import 'package:meditation_center/providers/user.provider.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -27,6 +27,17 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool isSwitch = false;
   bool isConnect = false;
+
+  String appVersion = '';
+  String buildNumber = '';
+
+  Future<void> loadAppVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      appVersion = info.version;
+      buildNumber = info.buildNumber;
+    });
+  }
 
   void showLostConnectionAlert() {
     LostConnectionAlert.showAlert(context, onCheckAgain: () {
@@ -50,7 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     initConnectivity();
-
+    loadAppVersion();
     FirebaseCrashlytics.instance.log("User opened Settings Screen");
     FirebaseCrashlytics.instance.setCustomKey('screen', 'Settings Screen');
   }
@@ -196,7 +207,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       ),
                                       Spacer(),
                                       Text(
-                                        "v ${AppData.appVersion}",
+                                        "v $appVersion + $buildNumber",
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium!

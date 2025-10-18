@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "282843198069-33bd8epig9d5kceg451asj7sp63aqsro.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.meditationcenter.uae",
+            "certificate_hash": "85484da47b25313b36d73e3d57ce4c476d9d3e9d"
+          }
+        },
+        {
           "client_id": "282843198069-i0vg3a8eq61akvg7nfm0tivt0qqssntq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

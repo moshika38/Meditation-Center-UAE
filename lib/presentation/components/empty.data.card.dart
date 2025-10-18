@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
-class EmptyAnimation extends StatelessWidget {
+class EmptyDataCard extends StatelessWidget {
   final String title;
-  const EmptyAnimation({super.key, required this.title});
+  const EmptyDataCard({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +16,10 @@ class EmptyAnimation extends StatelessWidget {
               .bodySmall!
               .copyWith(fontWeight: FontWeight.bold),
         ),
-        Lottie.asset(
-          'assets/lottie/empty.json',
-          width: MediaQuery.of(context).size.width * 0.5,
+         SizedBox(height: 20),
+        Image.asset(
+          'assets/icons/empty.png',
+          width:   MediaQuery.of(context).size.width * 0.3,
         ),
       ],
     );

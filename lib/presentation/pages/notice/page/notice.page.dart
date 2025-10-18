@@ -5,7 +5,7 @@ import 'package:meditation_center/core/shimmer/notice.shimmer.dart';
 import 'package:meditation_center/data/models/notice.model.dart';
 import 'package:meditation_center/data/models/user.model.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
-import 'package:meditation_center/presentation/components/empty.animation.dart';
+import 'package:meditation_center/presentation/components/empty.data.card.dart';
 import 'package:meditation_center/presentation/pages/notice/widgets/notice.card.dart';
 import 'package:meditation_center/providers/notice.provider.dart';
 import 'package:meditation_center/providers/user.provider.dart';
@@ -72,7 +72,7 @@ class _NoticePageState extends State<NoticePage> {
                     (snapshot.data as List<NoticeModel>).isEmpty) {
                   return const Expanded(
                     child: Center(
-                      child: EmptyAnimation(title: "No notices yet !"),
+                      child: EmptyDataCard(title: "No notices yet !"),
                     ),
                   );
                 }

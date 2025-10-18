@@ -7,7 +7,7 @@ import 'package:meditation_center/core/shimmer/comment.shimmer.dart';
 import 'package:meditation_center/data/models/comment.model.dart';
 import 'package:meditation_center/presentation/components/app.input.dart';
 import 'package:meditation_center/presentation/components/comment.card.dart';
-import 'package:meditation_center/presentation/components/empty.animation.dart';
+import 'package:meditation_center/presentation/components/empty.data.card.dart';
 import 'package:meditation_center/providers/comment.provider.dart';
 import 'package:meditation_center/providers/user.provider.dart';
 import 'package:provider/provider.dart';
@@ -103,7 +103,7 @@ class _CommentPageState extends State<CommentPage> {
                       final comments = snapshot.data ?? [];
 
                       if (comments.isEmpty) {
-                        return const EmptyAnimation(title: "No comments yet !");
+                        return const EmptyDataCard(title: "No comments yet !");
                       }
 
                       return ListView.builder(

@@ -3,11 +3,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/core/notifications/local.notification.dart';
 import 'package:meditation_center/data/services/permission.services.dart';
-import 'package:meditation_center/data/services/update.services.dart';
-import 'package:meditation_center/presentation/components/update.banner.dart';
 import 'package:meditation_center/presentation/pages/home/home.page.dart';
 import 'package:meditation_center/presentation/pages/item%20menus/pages/item.menu.page.dart';
 import 'package:meditation_center/presentation/pages/notice/page/notice.page.dart';
@@ -41,20 +38,6 @@ class _MainScreenState extends State<MainScreen> {
     userProvider.updateUserLastLogin();
   }
 
-  Future<void> checkUpdate() async {
-    final update = await UpdateServices().getAppUpdate();
-
-    debugPrint("App Version: ${update.appVersion}");
-    final currentV = AppData.appVersion;
-    if (update.appVersion != currentV) {
-      debugPrint("Update Available");
-       
-      UpdateBanner.showUpdateBanner(context, () {
-        UpdateServices().launchURL(update.appLink);
-      });
-    }
-  }
-
   void listeners() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       final cUser = FirebaseAuth.instance.currentUser;
@@ -75,52 +58,97 @@ class _MainScreenState extends State<MainScreen> {
 
     FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message != null) {
-        debugPrint("📩 App opened from terminated by notification: ${message.data}");
+        debugPrint(
+            "📩 App opened from terminated by notification: ${message.data}");
       }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      debugPrint("📩 App opened from background by notification: ${message.data}");
+      debugPrint(
+          "📩 App opened from background by notification: ${message.data}");
     });
   }
 
   Future<void> subscribeOnce() async {
-    final id = FirebaseAuth.instance.currentUser!.uid;
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      return;
+    }
+
+    final id = currentUser.uid;
     final provider = Provider.of<UserProvider>(context, listen: false);
-    final user = await provider.getUserById(id);
 
-    if (user.isAdmin) {
-      final preference = await SharedPreferences.getInstance();
-      final alreadySubscribed = preference.getBool('subscribed_admins') ?? false;
+    try {
+      final user = await provider.getUserById(id);
 
-      if (!alreadySubscribed) {
-        await FirebaseMessaging.instance.subscribeToTopic('admins');
-        await preference.setBool('subscribed_admins', true);
+      if (user.isAdmin) {
+        final preference = await SharedPreferences.getInstance();
+        final alreadySubscribed =
+            preference.getBool('subscribed_admins') ?? false;
+
+        if (!alreadySubscribed) {
+          await FirebaseMessaging.instance.subscribeToTopic('admins');
+          await preference.setBool('subscribed_admins', true);
+        }
       }
+    } catch (e) {
+      debugPrint("Error fetching user for subscription: $e");
     }
   }
 
   bool isAvailable = false;
   Future<void> checkIfPostAvailableOrNot() async {
-    final id = FirebaseAuth.instance.currentUser!.uid;
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      return;
+    }
+
+    final id = currentUser.uid;
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final postProvider = Provider.of<PostProvider>(context, listen: false);
-    final user = await userProvider.getUserById(id);
 
-    if (user.isAdmin) {
-      postProvider.unapprovedPostsStream().listen((posts) {
-        if (posts.isNotEmpty) {
-          setState(() {
-            isAvailable = true;
-          });
-        } else {
-          setState(() {
-            isAvailable = false;
-          });
-        }
-      });
+    try {
+      final user = await userProvider.getUserById(id);
+
+      if (user.isAdmin) {
+        postProvider.unapprovedPostsStream().listen((posts) {
+          if (posts.isNotEmpty) {
+            setState(() {
+              isAvailable = true;
+            });
+          } else {
+            setState(() {
+              isAvailable = false;
+            });
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint("Error checking post availability: $e");
     }
   }
+
+  // Future<void> _checkForUpdate() async {
+  //   final newVersion = NewVersionPlus(
+  //     iOSId: 'com.meditationcenter.uae',
+  //     androidId: 'com.meditationcenter.uae',
+  //   );
+
+  //   final status = await newVersion.getVersionStatus();
+  //   if (status != null && status.canUpdate) {
+  //     newVersion.showUpdateDialog(
+  //       context: context,
+  //       versionStatus: status,
+  //       dialogTitle: "Update Available 🚀",
+  //       dialogText:
+  //           "A new version (${status.storeVersion}) is available! You're using ${status.localVersion}.",
+  //       updateButtonText: "Update Now",
+  //       dismissButtonText: "Later",
+  //     );
+  //   }
+  // }
 
   @override
   void initState() {
@@ -134,8 +162,6 @@ class _MainScreenState extends State<MainScreen> {
 
     // async calls
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // check update
-      checkUpdate();
       // subscribe to admin
       subscribeOnce();
       // check if post available
@@ -143,6 +169,9 @@ class _MainScreenState extends State<MainScreen> {
       // update user last login
       updateUserLastLogin();
     });
+
+    // check for update
+    // _checkForUpdate();
   }
 
   @override

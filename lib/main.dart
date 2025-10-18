@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,6 +25,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void main() async {
+  HttpClient.enableTimelineLogging = false;
   WidgetsFlutterBinding.ensureInitialized();
   // load env file
   await dotenv.load(fileName: ".env");
@@ -97,6 +99,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Mediation Center UAE',
       debugShowCheckedModeBanner: false,
+      showPerformanceOverlay: false,
       theme: AppTheme.lightTheme,
       routerConfig: AppRouting(
         isVerify: isVerifyUser,

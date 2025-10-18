@@ -10,7 +10,7 @@ import 'package:meditation_center/core/shimmer/user.account.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/post.model.dart';
 import 'package:meditation_center/data/models/user.model.dart';
-import 'package:meditation_center/presentation/components/empty.animation.dart';
+import 'package:meditation_center/presentation/components/empty.data.card.dart';
 import 'package:meditation_center/presentation/components/post.card.dart';
 import 'package:meditation_center/presentation/components/user.data.card.dart';
 import 'package:meditation_center/providers/post.provider.dart';
@@ -190,7 +190,7 @@ class _UserProfileState extends State<UserProfile> {
   Widget _emptyAnimation() {
     return Padding(
       padding: const EdgeInsets.only(top: 30),
-      child: EmptyAnimation(title: "No posts yet!"),
+      child: EmptyDataCard(title: "No posts yet!"),
     );
   }
 

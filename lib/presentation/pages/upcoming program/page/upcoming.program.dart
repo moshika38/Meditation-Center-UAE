@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_center/core/formatter/datetime.formatter.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
+import 'package:meditation_center/presentation/components/empty.data.card.dart';
 import 'package:meditation_center/presentation/pages/upcoming%20program/widgets/add.new.events.dart';
 import 'package:provider/provider.dart';
-
 import 'package:meditation_center/core/shimmer/notice.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/event.model.dart';
 import 'package:meditation_center/data/models/user.model.dart';
-import 'package:meditation_center/presentation/components/empty.animation.dart';
 import 'package:meditation_center/providers/events.provider.dart';
 import 'package:meditation_center/providers/user.provider.dart';
 
@@ -74,7 +73,7 @@ class _UpcomingProgramState extends State<UpcomingProgram> {
 
                 if (events.isEmpty) {
                   return Expanded(
-                    child: EmptyAnimation(title: "No upcoming events yet !"),
+                    child: EmptyDataCard(title: "No upcoming events yet !"),
                   );
                 }
 

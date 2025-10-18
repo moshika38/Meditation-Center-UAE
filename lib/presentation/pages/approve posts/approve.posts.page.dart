@@ -8,7 +8,7 @@ import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/core/shimmer/post.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/posts.with.users.model.dart';
-import 'package:meditation_center/presentation/components/empty.animation.dart';
+import 'package:meditation_center/presentation/components/empty.data.card.dart';
 import 'package:meditation_center/presentation/components/post.card.dart';
 import 'package:meditation_center/providers/post.provider.dart';
 import 'package:meditation_center/providers/post.with.user.data.provider.dart';
@@ -92,7 +92,7 @@ class _ApprovePostsPageState extends State<ApprovePostsPage> {
 
             if (posts.isEmpty) {
               return const Center(
-                child: EmptyAnimation(title: "No posts yet!"),
+                child: EmptyDataCard(title: "No posts yet!"),
               );
             }
 

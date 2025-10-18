@@ -10,7 +10,7 @@ import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/posts.with.users.model.dart';
-import 'package:meditation_center/presentation/components/empty.animation.dart';
+import 'package:meditation_center/presentation/components/empty.data.card.dart';
 import 'package:meditation_center/presentation/components/post.card.dart';
 import 'package:meditation_center/core/shimmer/post.shimmer.dart';
 import 'package:meditation_center/providers/post.provider.dart';
@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _loadPosts();
     checkAdmin();
-     FirebaseCrashlytics.instance.log("User opened Home Screen");
+    FirebaseCrashlytics.instance.log("User opened Home Screen");
     FirebaseCrashlytics.instance.setCustomKey('screen', 'Home Screen');
   }
 
@@ -45,11 +45,20 @@ class _HomePageState extends State<HomePage> {
   // check user is admin or not
   void checkAdmin() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final user = await userProvider.getUserById(cUser);
-    if (user.isAdmin) {
-      setState(() {
-        isAdmin = true;
-      });
+
+    //
+
+    try {
+      final user = await userProvider.getUserById(cUser);
+      if (user.isAdmin) {
+        setState(() {
+          isAdmin = true;
+        });
+      }
+    } catch (e) {
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current,
+          reason: "Error in checkAdmin Firestore access");
+      debugPrint("Firestore unavailable error: $e");
     }
   }
 
@@ -72,20 +81,20 @@ class _HomePageState extends State<HomePage> {
       EasyLoading.dismiss();
     }
   }
- void showLostConnectionAlert() {
+
+  void showLostConnectionAlert() {
     LostConnectionAlert.showAlert(context, onCheckAgain: () {
       initConnectivity();
     });
   }
 
-  
   initConnectivity() async {
     final result = await ConnectionChecker().checkConnection();
     if (!result) {
       isConnect = false;
       setState(() {});
       showLostConnectionAlert();
-    }else{
+    } else {
       isConnect = true;
       setState(() {});
     }
@@ -93,94 +102,99 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-     
-    return isConnect? RefreshIndicator(
-      backgroundColor: AppColors.whiteColor,
-      color: AppColors.primaryColor,
-      onRefresh: _refreshPosts,
-      child: FutureBuilder<List<PostWithUsersModel>>(
-        future: _postsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              EasyLoading.dismiss();
-              AppTopSnackbar.showTopSnackBar(context, "Something went wrong");
-            });
-            return Center(
-              child: EmptyAnimation(title: "Error loading posts !"),
-            );
-          }
+    return isConnect
+        ? RefreshIndicator(
+            backgroundColor: AppColors.whiteColor,
+            color: AppColors.primaryColor,
+            onRefresh: _refreshPosts,
+            child: FutureBuilder<List<PostWithUsersModel>>(
+              future: _postsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    EasyLoading.dismiss();
+                    AppTopSnackbar.showTopSnackBar(
+                        context, "Something went wrong");
+                  });
+                  return Center(
+                    child: EmptyDataCard(title: "Error loading posts !"),
+                  );
+                }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
-              child: const PostShimmer(),
-            );
-          }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 20),
+                    child: const PostShimmer(),
+                  );
+                }
 
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            EasyLoading.dismiss();
-          });
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  EasyLoading.dismiss();
+                });
 
-          final posts = snapshot.data ?? [];
+                final posts = snapshot.data ?? [];
 
-          if (posts.isEmpty) {
-            return const Center(child: EmptyAnimation(title: "No posts yet!"));
-          }
+                if (posts.isEmpty) {
+                  return const Center(
+                      child: EmptyDataCard(title: "No posts yet!"));
+                }
 
-          return ListView.builder(
-            controller: _scrollController,
-            itemCount: posts.length,
-            cacheExtent: 1000,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              return GestureDetector(
-                onLongPress: () {
-                  if (isAdmin) {
-                    // admin can delete any post
-                    PopupWindow.showPopupWindow(
-                      "Are you sure? you want to delete this post?if you delete this post, it will be gone forever",
-                      "Yes, Delete",
-                      context,
-                      () {
-                        // delete post by admin
-                        LoadingPopup.show('Deleting...');
-                        final postProvider =
-                            Provider.of<PostProvider>(context, listen: false);
-                        postProvider.deletePost(post.post.id);
-                        EasyLoading.dismiss();
-                        _refreshPosts();
-                        context.pop();
+                return ListView.builder(
+                  controller: _scrollController,
+                  itemCount: posts.length,
+                  cacheExtent: 1000,
+                  itemBuilder: (context, index) {
+                    final post = posts[index];
+                    return GestureDetector(
+                      onLongPress: () {
+                        if (isAdmin) {
+                          // admin can delete any post
+                          PopupWindow.showPopupWindow(
+                            "Are you sure? you want to delete this post?if you delete this post, it will be gone forever",
+                            "Yes, Delete",
+                            context,
+                            () {
+                              // delete post by admin
+                              LoadingPopup.show('Deleting...');
+                              final postProvider = Provider.of<PostProvider>(
+                                  context,
+                                  listen: false);
+                              postProvider.deletePost(post.post.id);
+                              EasyLoading.dismiss();
+                              _refreshPosts();
+                              context.pop();
+                            },
+                            () {
+                              context.pop();
+                            },
+                          );
+                        }
                       },
-                      () {
-                        context.pop();
-                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          // ignore: deprecated_member_use
+                          color: AppColors.gray.withOpacity(0.1),
+                        ),
+                        child: PostCard(
+                          isReel: post.post.isReel,
+                          removeFun: () {},
+                          approvedFun: () {},
+                          approvedPage: false,
+                          isApproved: post.post.isApproved,
+                          isCUser: post.user.uid == cUser,
+                          isHome: true,
+                          postID: post.post.id,
+                          onDelete: () {},
+                        ),
+                      ),
                     );
-                  }
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    // ignore: deprecated_member_use
-                    color: AppColors.gray.withOpacity(0.1),
-                  ),
-                  child: PostCard(
-                    isReel: post.post.isReel,
-                    removeFun: () {},
-                    approvedFun: () {},
-                    approvedPage: false,
-                    isApproved: post.post.isApproved,
-                    isCUser: post.user.uid == cUser,
-                    isHome: true,
-                    postID: post.post.id,
-                    onDelete: () {},
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    ):PostShimmer();
+                  },
+                );
+              },
+            ),
+          )
+        : PostShimmer();
   }
 }
