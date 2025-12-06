@@ -178,21 +178,34 @@ class _MainScreenState extends State<MainScreen> {
       child: Builder(
         builder: (BuildContext innerContext) {
           return Scaffold(
-            extendBody: true, 
+            extendBody: true,
             appBar: AppBar(
               elevation: 0,
-               
               toolbarHeight: 80,
               automaticallyImplyLeading: false,
               title: Padding(
                 padding: const EdgeInsets.only(left: 10),
-                child: Text(
-                  'Mediation Center',
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: AppColors.whiteColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                      ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Mediation Center',
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: AppColors.whiteColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                          ),
+                    ),
+                    Text(
+                      'CMC-UAE',
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                            color: AppColors.secondaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                    ),
+                  ],
                 ),
               ),
               actions: [
@@ -237,12 +250,9 @@ class _MainScreenState extends State<MainScreen> {
             ),
             body: _pages[_currentIndex],
             bottomNavigationBar: SafeArea(
-              
               child: Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 10,
-                ),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 height: 60,
                 decoration: BoxDecoration(
                   color: AppColors.whiteColor,
