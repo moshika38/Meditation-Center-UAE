@@ -56,6 +56,7 @@ class _NotificationsSettingsState extends State<NotificationsSettings> {
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: AppColors.primaryColor,
         leading: IconButton(
           onPressed: () {
@@ -68,7 +69,7 @@ class _NotificationsSettingsState extends State<NotificationsSettings> {
           ),
         ),
         title: Text(
-          'Animation Settings',
+          'Notification Settings',
           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.whiteColor,

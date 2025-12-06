@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_center/core/notifications/local.notification.dart';
@@ -11,6 +12,7 @@ import 'package:meditation_center/presentation/pages/notice/page/notice.page.dar
 import 'package:meditation_center/presentation/pages/upcoming%20program/page/upcoming.program.dart';
 import 'package:meditation_center/presentation/pages/upload/page/upload.page.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
+import 'package:meditation_center/presentation/screens/main/navigation_setup/nav.items.dart';
 import 'package:meditation_center/providers/post.provider.dart';
 import 'package:meditation_center/providers/user.provider.dart';
 import 'package:provider/provider.dart';
@@ -130,26 +132,6 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  // Future<void> _checkForUpdate() async {
-  //   final newVersion = NewVersionPlus(
-  //     iOSId: 'com.meditationcenter.uae',
-  //     androidId: 'com.meditationcenter.uae',
-  //   );
-
-  //   final status = await newVersion.getVersionStatus();
-  //   if (status != null && status.canUpdate) {
-  //     newVersion.showUpdateDialog(
-  //       context: context,
-  //       versionStatus: status,
-  //       dialogTitle: "Update Available 🚀",
-  //       dialogText:
-  //           "A new version (${status.storeVersion}) is available! You're using ${status.localVersion}.",
-  //       updateButtonText: "Update Now",
-  //       dismissButtonText: "Later",
-  //     );
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -161,18 +143,32 @@ class _MainScreenState extends State<MainScreen> {
     listeners();
 
     // async calls
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // subscribe to admin
-      subscribeOnce();
-      // check if post available
-      checkIfPostAvailableOrNot();
-      // update user last login
-      updateUserLastLogin();
-    });
-
-    // check for update
-    // _checkForUpdate();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) async {
+        // subscribe to admin
+        subscribeOnce();
+        // check if post available
+        checkIfPostAvailableOrNot();
+        // update user last login
+        updateUserLastLogin();
+      },
+    );
   }
+
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = const [
+    // HomePage
+    HomePage(),
+    // notice page
+    NoticePage(),
+    // PostPage
+    UploadPage(),
+    // UpcomingProgram,
+    UpcomingProgram(),
+    // BookingPage
+    ItemMenuPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +178,11 @@ class _MainScreenState extends State<MainScreen> {
       child: Builder(
         builder: (BuildContext innerContext) {
           return Scaffold(
+            extendBody: true, 
             appBar: AppBar(
+              elevation: 0,
+               
+              toolbarHeight: 80,
               automaticallyImplyLeading: false,
               title: Padding(
                 padding: const EdgeInsets.only(left: 10),
@@ -210,9 +210,13 @@ class _MainScreenState extends State<MainScreen> {
                   onPressed: () {
                     context.push('/profile', extra: cUSer);
                   },
-                  icon: Icon(Icons.account_circle),
-                  color: AppColors.whiteColor,
-                  iconSize: 30,
+                  icon: SvgPicture.asset(
+                    "assets/svg/user.svg",
+                    colorFilter:
+                        ColorFilter.mode(AppColors.whiteColor, BlendMode.srcIn),
+                    width: 30,
+                    height: 30,
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 10),
@@ -220,43 +224,46 @@ class _MainScreenState extends State<MainScreen> {
                     onPressed: () {
                       context.push('/settings');
                     },
-                    icon: Icon(Icons.settings),
-                    color: AppColors.whiteColor,
-                    iconSize: 30,
+                    icon: SvgPicture.asset(
+                      "assets/svg/settings.svg",
+                      colorFilter: ColorFilter.mode(
+                          AppColors.whiteColor, BlendMode.srcIn),
+                      width: 30,
+                      height: 30,
+                    ),
                   ),
                 ),
               ],
-              bottom: const TabBar(
-                labelColor: AppColors.whiteColor,
-                dividerColor: AppColors.primaryColor,
-                automaticIndicatorColorAdjustment: true,
-                unselectedLabelColor: AppColors.secondaryColor,
-                indicatorColor: AppColors.primaryColor,
-                tabs: [
-                  Tab(icon: Icon(Icons.home_rounded, size: 30)),
-                  Tab(icon: FaIcon(FontAwesomeIcons.scroll, size: 22)),
-                  Tab(icon: Icon(Icons.add_circle_rounded, size: 28)),
-                  Tab(icon: FaIcon(FontAwesomeIcons.calendar, size: 22)),
-                  Tab(icon: FaIcon(FontAwesomeIcons.listUl, size: 22)),
-                ],
-              ),
             ),
-            body: TabBarView(
-              children: [
-                // HomePage
-                HomePage(),
-                // notice page
-                NoticePage(),
-
-                // PostPage
-                UploadPage(),
-
-                // UpcomingProgram,
-                UpcomingProgram(),
-
-                // BookingPage
-                ItemMenuPage(),
-              ],
+            body: _pages[_currentIndex],
+            bottomNavigationBar: SafeArea(
+              
+              child: Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 10,
+                ),
+                height: 60,
+                decoration: BoxDecoration(
+                  color: AppColors.whiteColor,
+                  border: Border.all(
+                    width: 1.5,
+                    color: AppColors.primaryColor,
+                  ),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: NavItems(
+                    currentIndex: _currentIndex,
+                    onTap: (int index) {
+                      setState(() {
+                        _currentIndex = index;
+                      });
+                    },
+                  ),
+                ),
+              ),
             ),
           );
         },

@@ -10,6 +10,7 @@ class HelpAndSupport extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: AppColors.primaryColor,
         leading: IconButton(
           onPressed: () {

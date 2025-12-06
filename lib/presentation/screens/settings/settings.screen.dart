@@ -83,6 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: AppColors.primaryColor,
         leading: IconButton(
           onPressed: () {

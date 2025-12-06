@@ -129,6 +129,7 @@ class _AccountSettingsState extends State<AccountSettings> {
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.primaryColor,
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: AppColors.primaryColor,
         leading: IconButton(
           onPressed: () {

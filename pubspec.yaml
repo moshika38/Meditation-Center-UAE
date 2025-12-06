@@ -47,7 +47,8 @@ dependencies:
   firebase_crashlytics: ^5.0.3
   firebase_analytics: ^12.0.3
   package_info_plus: ^8.0.2
-  new_version_plus: ^0.0.12
+  flutter_svg: ^2.2.0
+  
   
    
   
@@ -71,3 +72,4 @@ flutter:
     - assets/logo/
     - assets/icons/
     - assets/app/app_icon.png
+    - assets/svg/

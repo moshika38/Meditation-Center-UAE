@@ -96,24 +96,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Mediation Center UAE',
-      debugShowCheckedModeBanner: false,
-      showPerformanceOverlay: false,
-      theme: AppTheme.lightTheme,
-      routerConfig: AppRouting(
-        isVerify: isVerifyUser,
-      ).appRouter,
-      builder: (context, child) {
-        child = EasyLoading.init()(context, child);
-        final mediaQuery = MediaQuery.of(context);
-        return MediaQuery(
-          data: mediaQuery.copyWith(
-            textScaler: TextScaler.linear(0.8),
-          ),
-          child: child,
-        );
-      },
-    );
-  }
+  return MaterialApp.router(
+    title: 'Mediation Center UAE',
+    debugShowCheckedModeBanner: false,
+    showPerformanceOverlay: false,
+    theme: AppTheme.lightTheme.copyWith(
+        useMaterial3: false,
+    ),
+    routerConfig: AppRouting(
+      isVerify: isVerifyUser,
+    ).appRouter,
+    builder: (context, child) {
+      child = EasyLoading.init()(context, child);
+      final mediaQuery = MediaQuery.of(context);
+
+      return MediaQuery(
+        data: mediaQuery.copyWith(
+          textScaler: TextScaler.linear(0.8),
+        ),
+        child: child,
+      );
+    },
+  );
+}
+
 }

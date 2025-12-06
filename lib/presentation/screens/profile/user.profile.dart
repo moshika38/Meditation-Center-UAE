@@ -69,6 +69,7 @@ class _UserProfileState extends State<UserProfile> {
   Widget build(BuildContext context) {
     return isConnect?Scaffold(
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: AppColors.whiteColor,
         leading: IconButton(
           onPressed: () => context.pop(),
