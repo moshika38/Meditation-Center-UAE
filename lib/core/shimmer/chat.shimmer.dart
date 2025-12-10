@@ -9,62 +9,67 @@ class ChatInboxShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final baseColor = Colors.grey[300]!;
     final highlightColor = Colors.grey[100]!;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final avatarSize = screenWidth * 0.135;
+    final nameWidth = screenWidth * 0.45;
+    final messageWidth = screenWidth * 0.6;
+    final timeWidth = screenWidth * 0.11;
+    final dotSize = screenWidth * 0.033;
 
     return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: screenWidth * 0.02),
       itemCount: itemCount,
-      separatorBuilder: (_, __) => const Divider(height: 0),
+      separatorBuilder: (_, __) => Divider(height: 0),
       itemBuilder: (_, index) {
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.033,
+            vertical: screenWidth * 0.026,
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Avatar shimmer
               Shimmer.fromColors(
                 baseColor: baseColor,
                 highlightColor: highlightColor,
                 child: Container(
-                  width: 54,
-                  height: 54,
+                  width: avatarSize,
+                  height: avatarSize,
                   decoration: BoxDecoration(
                     color: baseColor,
                     shape: BoxShape.circle,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
-              // Message preview + name
+              SizedBox(width: screenWidth * 0.033),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // name line
                     Shimmer.fromColors(
                       baseColor: baseColor,
                       highlightColor: highlightColor,
                       child: Container(
-                        width: MediaQuery.of(context).size.width * 0.45,
-                        height: 14,
+                        width: nameWidth,
+                        height: avatarSize * 0.25,
                         color: baseColor,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    // last message line
+                    SizedBox(height: screenWidth * 0.02),
                     Shimmer.fromColors(
                       baseColor: baseColor,
                       highlightColor: highlightColor,
                       child: Container(
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        height: 12,
+                        width: messageWidth,
+                        height: avatarSize * 0.21,
                         color: baseColor,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
-              // time / unread dot column
+              SizedBox(width: screenWidth * 0.033),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -72,18 +77,18 @@ class ChatInboxShimmer extends StatelessWidget {
                     baseColor: baseColor,
                     highlightColor: highlightColor,
                     child: Container(
-                      width: 40,
-                      height: 12,
+                      width: timeWidth,
+                      height: avatarSize * 0.21,
                       color: baseColor,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: screenWidth * 0.02),
                   Shimmer.fromColors(
                     baseColor: baseColor,
                     highlightColor: highlightColor,
                     child: Container(
-                      width: 12,
-                      height: 12,
+                      width: dotSize,
+                      height: dotSize,
                       decoration: BoxDecoration(
                         color: baseColor,
                         shape: BoxShape.circle,

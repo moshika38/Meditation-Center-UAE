@@ -6,6 +6,7 @@ import 'package:meditation_center/data/services/download.services.dart';
 
 class PostViewer extends StatefulWidget {
   final List<String> imagesList;
+
   const PostViewer({
     super.key,
     required this.imagesList,
@@ -36,27 +37,26 @@ class _PostViewerState extends State<PostViewer> {
 
   @override
   Widget build(BuildContext context) {
+    // final size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: AppColors.pureBlack,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                onPressed: () {
-                  context.pop();
-                },
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                  size: 20,
+      body: SafeArea(
+        child: Column(
+          children: [
+             
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () => context.pop(),
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: PopupMenuButton<int>(
+                PopupMenuButton<int>(
                   icon: const Icon(
                     Icons.more_vert_outlined,
                     color: Colors.white,
@@ -70,7 +70,7 @@ class _PostViewerState extends State<PostViewer> {
                     if (value == 1) {
                       DownloadServices().saveGif(
                         widget.imagesList[index],
-                        "image.${DateTime.now()}",
+                        "image_${DateTime.now()}",
                         context,
                       );
                     }
@@ -89,37 +89,36 @@ class _PostViewerState extends State<PostViewer> {
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          Center(
-            child: GestureDetector(
-              onHorizontalDragEnd: (details) {
-                if (details.primaryVelocity! < 0) {
-                  // swipe left → next
-                  _next();
-                } else if (details.primaryVelocity! > 0) {
-                  // swipe right → previous
-                  _previous();
-                }
-              },
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.95,
-                height: MediaQuery.of(context).size.width * 1.9,
+              ],
+            ),
+
+            // ------------ Image Area (SAFE HEIGHT) ------------
+            Expanded(
+              child: GestureDetector(
+                onHorizontalDragEnd: (details) {
+                  if (details.primaryVelocity! < 0) {
+                    _next();
+                  } else if (details.primaryVelocity! > 0) {
+                    _previous();
+                  }
+                },
                 child: Center(
                   child: CachedNetworkImage(
                     imageUrl: widget.imagesList[index],
                     fit: BoxFit.contain,
-                    placeholder: (context, url) =>
-                        Icon(Icons.downloading_rounded),
+                    placeholder: (context, url) => const Icon(
+                      Icons.downloading_rounded,
+                      color: Colors.white,
+                      size: 35,
+                    ),
                     errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
+                        const Icon(Icons.error, color: Colors.red),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

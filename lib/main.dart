@@ -7,7 +7,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:meditation_center/core/notifications/local.notification.dart';
+ import 'package:meditation_center/core/notifications/local.notification.dart';
 import 'package:meditation_center/data/firebase/firebase_options.dart';
 import 'package:meditation_center/core/routing/app.routing.dart';
 import 'package:meditation_center/core/theme/app.theme.dart';
@@ -86,7 +86,6 @@ void main() async {
     ),
   );
 }
-
 class MyApp extends StatelessWidget {
   final bool isVerifyUser;
   const MyApp({
@@ -96,28 +95,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  return MaterialApp.router(
-    title: 'Mediation Center UAE',
-    debugShowCheckedModeBanner: false,
-    showPerformanceOverlay: false,
-    theme: AppTheme.lightTheme.copyWith(
-        useMaterial3: false,
-    ),
-    routerConfig: AppRouting(
-      isVerify: isVerifyUser,
-    ).appRouter,
-    builder: (context, child) {
-      child = EasyLoading.init()(context, child);
-      final mediaQuery = MediaQuery.of(context);
-
-      return MediaQuery(
-        data: mediaQuery.copyWith(
-          textScaler: TextScaler.linear(0.8),
-        ),
-        child: child,
-      );
-    },
-  );
-}
+    return MaterialApp.router(
+      title: 'Meditation Center UAE',
+      debugShowCheckedModeBanner: false,
+      showPerformanceOverlay: false,
+      theme: AppTheme.lightTheme,
+      routerConfig: AppRouting(
+        isVerify: isVerifyUser,
+      ).appRouter,
+      builder: EasyLoading.init(),  
+    );
+  }
 
 }

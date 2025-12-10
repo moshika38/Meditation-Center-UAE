@@ -19,12 +19,13 @@ class AppTheme {
       ),
     ),
      
-    fontFamily: GoogleFonts.raleway().fontFamily,
+    fontFamily: GoogleFonts.poppins().fontFamily,
     textTheme: TextTheme(
       bodyLarge: TextStyle(
         fontSize: 25,
         color: AppColors.textColor,
         fontWeight: FontWeight.w400,
+        
       ),
       bodyMedium: TextStyle(
         fontSize: 18,

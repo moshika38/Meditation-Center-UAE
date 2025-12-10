@@ -6,63 +6,76 @@ class UploadPageShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final verticalSpacing = size.height * 0.025;
+    final textInputHeight = size.height * 0.17;
+    final buttonHeight = size.height * 0.065;
+    final buttonWidth = size.width * 0.44;
+    final borderRadius = 8.0;
+    final gridSpacing = size.width * 0.025;
+
     return Shimmer.fromColors(
       baseColor: Colors.grey.shade300,
       highlightColor: Colors.grey.shade100,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 20),
+          SizedBox(height: verticalSpacing),
+
           // TextInput shimmer
           Container(
-            height: 130,
+            height: textInputHeight,
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(borderRadius),
             ),
           ),
-          const SizedBox(height: 20),
+
+          SizedBox(height: verticalSpacing),
+
           // Buttons shimmer row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width * 0.44,
+                height: buttonHeight,
+                width: buttonWidth,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(borderRadius),
                 ),
               ),
               Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width * 0.44,
+                height: buttonHeight,
+                width: buttonWidth,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(borderRadius),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+
+          SizedBox(height: verticalSpacing),
+
           // Grid shimmer (2x2)
           Expanded(
             child: GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: 4,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
+                crossAxisSpacing: gridSpacing,
+                mainAxisSpacing: gridSpacing,
                 childAspectRatio: 1,
               ),
               itemBuilder: (context, index) {
                 return Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(borderRadius),
                   ),
                 );
               },

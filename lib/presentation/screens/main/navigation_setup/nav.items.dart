@@ -5,6 +5,7 @@ import 'package:meditation_center/core/theme/app.colors.dart';
 class NavItems extends StatefulWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
+
   const NavItems({
     super.key,
     required this.currentIndex,
@@ -19,35 +20,42 @@ class _NavItemsState extends State<NavItems> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      
       showSelectedLabels: false,
       showUnselectedLabels: false,
       type: BottomNavigationBarType.fixed,
-       
-      currentIndex: widget.currentIndex,  
-       backgroundColor: Colors.transparent,    
-  elevation: 0,
+      currentIndex: widget.currentIndex,
+      elevation: 0,
+      backgroundColor: Colors.transparent,
       onTap: widget.onTap,
       items: [
-        navBarIcons("assets/svg/home0.svg",widget.currentIndex == 0),
-        navBarIcons("assets/svg/note0.svg",widget.currentIndex == 1),
-        navBarIcons("assets/svg/add0.svg",widget.currentIndex == 2),
-        navBarIcons("assets/svg/calendar0.svg",widget.currentIndex == 3),
-        navBarIcons("assets/svg/list0.svg",widget.currentIndex == 4),
+        navBarIcon("assets/svg/home0.svg", "assets/svg/home.svg", 0),
+        navBarIcon("assets/svg/note0.svg", "assets/svg/note.svg", 1),
+        navBarIcon("assets/svg/add0.svg", "assets/svg/add.svg", 2),
+        navBarIcon("assets/svg/calendar0.svg", "assets/svg/calendar.svg", 3),
+        navBarIcon("assets/svg/list0.svg", "assets/svg/list.svg", 4),
       ],
     );
   }
 
-  BottomNavigationBarItem navBarIcons(
-    String assetName,
-    bool isActive,
-
+  BottomNavigationBarItem navBarIcon(
+    String inactiveAsset,
+    String activeAsset,
+    int index,
   ) {
+    final bool isActive = widget.currentIndex == index;
+
     return BottomNavigationBarItem(
-      icon: SvgPicture.asset(
-       isActive? "${assetName.split("0")[0]}.svg":assetName,
-        colorFilter: ColorFilter.mode(isActive?AppColors.primaryColor:AppColors.secondaryColor, BlendMode.srcIn),
+      icon: SizedBox(
         width: 26,
         height: 26,
+        child: SvgPicture.asset(
+          isActive ? activeAsset : inactiveAsset,
+          colorFilter: ColorFilter.mode(
+            isActive ? AppColors.primaryColor : AppColors.secondaryColor,
+            BlendMode.srcIn,
+          ),
+        ),
       ),
       label: "",
     );

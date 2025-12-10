@@ -17,9 +17,11 @@ class EmptyDataCard extends StatelessWidget {
               .copyWith(fontWeight: FontWeight.bold),
         ),
          SizedBox(height: 20),
-        Image.asset(
-          'assets/icons/empty.png',
-          width:   MediaQuery.of(context).size.width * 0.3,
+        Center(
+          child: Image.asset(
+            'assets/icons/empty.png',
+            width:   MediaQuery.of(context).size.width * 0.3,
+          ),
         ),
       ],
     );

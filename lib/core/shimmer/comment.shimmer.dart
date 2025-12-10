@@ -7,11 +7,21 @@ class CommentShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final avatarWidth = screenWidth * 0.105;
+    final avatarHeight = screenWidth * 0.26;
+    final bubbleHeight = screenWidth * 0.078;
+    final bubbleWidth = screenWidth * 0.6;
+    final spacing = screenWidth * 0.033;
+
     return ListView.separated(
-      reverse: true, // latest comment top
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      reverse: true,
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.04,
+        vertical: screenWidth * 0.02,
+      ),
       itemCount: itemCount,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, __) => SizedBox(height: spacing),
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
           baseColor: Colors.grey.shade300,
@@ -19,36 +29,34 @@ class CommentShimmer extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // User avatar
               Container(
-                width: 40,
-                height: 100,
+                width: avatarWidth,
+                height: avatarHeight,
                 decoration: const BoxDecoration(
                   color: Colors.grey,
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 12),
-              // Comment bubble
+              SizedBox(width: spacing),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       width: double.infinity,
-                      height: 30,
+                      height: bubbleHeight,
                       decoration: BoxDecoration(
                         color: Colors.grey,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(0.02 * screenWidth),
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: spacing * 0.18),
                     Container(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      height: 30,
+                      width: bubbleWidth,
+                      height: bubbleHeight,
                       decoration: BoxDecoration(
                         color: Colors.grey,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(0.02 * screenWidth),
                       ),
                     ),
                   ],

@@ -1,4 +1,3 @@
-// notice_card_shimmer.dart
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
@@ -8,27 +7,38 @@ class NoticeCardShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final horizontalPadding = size.width * 0.025;
+    final verticalPadding = size.height * 0.02;
+    final dateWidth = size.width * 0.2;
+    final timeWidth = size.width * 0.15;
+    final imageHeight = size.height * 0.33;
+    final titleHeight = size.height * 0.02;
+    final bodyHeight = size.height * 0.015;
+    final bodyShortWidth = size.width * 0.4;
+    final buttonWidth = size.width * 0.25;
+    final buttonHeight = size.height * 0.05;
+    final borderRadius = 10.0;
+
     return Expanded(
       child: SingleChildScrollView(
         child: ListView.builder(
           itemCount: 5,
           shrinkWrap: true,
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           itemBuilder: (context, index) => Shimmer.fromColors(
-            baseColor: AppColors.gray
-                // ignore: deprecated_member_use
-                .withOpacity(0.2),  
-            highlightColor: AppColors.gray
-                // ignore: deprecated_member_use
-                .withOpacity(0.1), 
+            baseColor: AppColors.gray.withOpacity(0.2),
+            highlightColor: AppColors.gray.withOpacity(0.1),
             child: Container(
               width: double.infinity,
-              margin: const EdgeInsets.only(bottom: 20),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              margin: EdgeInsets.only(bottom: verticalPadding),
+              padding: EdgeInsets.symmetric(
+                horizontal: horizontalPadding,
+                vertical: verticalPadding,
+              ),
               decoration: BoxDecoration(
-                // ignore: deprecated_member_use
                 color: AppColors.gray.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(borderRadius),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,65 +48,65 @@ class NoticeCardShimmer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        width: 80,
-                        height: 12,
+                        width: dateWidth,
+                        height: bodyHeight,
                         color: Colors.white,
                       ),
                       Container(
-                        width: 60,
-                        height: 12,
+                        width: timeWidth,
+                        height: bodyHeight,
                         color: Colors.white,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-        
+                  SizedBox(height: verticalPadding),
+
                   // Image placeholder
                   Container(
                     width: double.infinity,
-                    height: 260,
+                    height: imageHeight,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(borderRadius),
                     ),
                   ),
-                  const SizedBox(height: 20),
-        
+                  SizedBox(height: verticalPadding),
+
                   // Title placeholder
                   Container(
                     width: double.infinity,
-                    height: 16,
+                    height: titleHeight,
                     color: Colors.white,
                   ),
-                  const SizedBox(height: 10),
-        
+                  SizedBox(height: verticalPadding * 0.5),
+
                   // Body text placeholders
                   Container(
                     width: double.infinity,
-                    height: 12,
+                    height: bodyHeight,
                     color: Colors.white,
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: verticalPadding * 0.25),
                   Container(
                     width: double.infinity,
-                    height: 12,
+                    height: bodyHeight,
                     color: Colors.white,
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: verticalPadding * 0.25),
                   Container(
-                    width: 150,
-                    height: 12,
+                    width: bodyShortWidth,
+                    height: bodyHeight,
                     color: Colors.white,
                   ),
-                  const SizedBox(height: 20),
-        
+                  SizedBox(height: verticalPadding),
+
                   // Button placeholder
                   Container(
-                    width: 100,
-                    height: 35,
+                    width: buttonWidth,
+                    height: buttonHeight,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(borderRadius),
                     ),
                   ),
                 ],

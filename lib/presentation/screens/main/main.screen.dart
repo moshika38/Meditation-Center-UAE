@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +8,9 @@ import 'package:go_router/go_router.dart';
 import 'package:meditation_center/core/notifications/local.notification.dart';
 import 'package:meditation_center/data/services/permission.services.dart';
 import 'package:meditation_center/presentation/pages/home/home.page.dart';
-import 'package:meditation_center/presentation/pages/item%20menus/pages/item.menu.page.dart';
+import 'package:meditation_center/presentation/pages/item menus/pages/item.menu.page.dart';
 import 'package:meditation_center/presentation/pages/notice/page/notice.page.dart';
-import 'package:meditation_center/presentation/pages/upcoming%20program/page/upcoming.program.dart';
+import 'package:meditation_center/presentation/pages/upcoming program/page/upcoming.program.dart';
 import 'package:meditation_center/presentation/pages/upload/page/upload.page.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/presentation/screens/main/navigation_setup/nav.items.dart';
@@ -26,18 +27,50 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final cUSer = FirebaseAuth.instance.currentUser!.uid;
+  final String? cUSer = FirebaseAuth.instance.currentUser?.uid;
 
-  validateUser() {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
-      context.push('/login');
-    }
+  int _currentIndex = 0;
+  bool isAvailable = false;
+
+  StreamSubscription<List<dynamic>>? _postsSubscription;
+
+  final List<Widget> _pages = const [
+    HomePage(),
+    NoticePage(),
+    UploadPage(),
+    UpcomingProgram(),
+    ItemMenuPage(),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    PermissionServices.requestPermissions();
+    listeners();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // validateUser();
+      subscribeOnce();
+      await checkIfPostAvailableOrNot();
+      updateUserLastLogin();
+    });
   }
 
+  @override
+void dispose() {
+  _postsSubscription?.cancel();
+  super.dispose();
+}
+
+  // validateUser() {
+  //   final currentUser = FirebaseAuth.instance.currentUser;
+  //   if (currentUser == null) {
+  //     context.push('/login');
+  //   }
+  // }
+
   Future<void> updateUserLastLogin() async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    userProvider.updateUserLastLogin();
+    Provider.of<UserProvider>(context, listen: false).updateUserLastLogin();
   }
 
   void listeners() {
@@ -53,32 +86,16 @@ class _MainScreenState extends State<MainScreen> {
           message.notification?.title ?? "No Title",
           message.notification?.body ?? "No Body",
         );
-      } else {
-        debugPrint("👋 Notification is from current user or data missing");
       }
-    });
-
-    FirebaseMessaging.instance.getInitialMessage().then((message) {
-      if (message != null) {
-        debugPrint(
-            "📩 App opened from terminated by notification: ${message.data}");
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      debugPrint(
-          "📩 App opened from background by notification: ${message.data}");
     });
   }
 
   Future<void> subscribeOnce() async {
     final currentUser = FirebaseAuth.instance.currentUser;
-
-    if (currentUser == null) {
-      return;
-    }
+    if (currentUser == null) return;
 
     final id = currentUser.uid;
+
     final provider = Provider.of<UserProvider>(context, listen: false);
 
     try {
@@ -95,19 +112,16 @@ class _MainScreenState extends State<MainScreen> {
         }
       }
     } catch (e) {
-      debugPrint("Error fetching user for subscription: $e");
+      debugPrint("Subscription error: $e");
     }
   }
 
-  bool isAvailable = false;
   Future<void> checkIfPostAvailableOrNot() async {
     final currentUser = FirebaseAuth.instance.currentUser;
-
-    if (currentUser == null) {
-      return;
-    }
+    if (currentUser == null) return;
 
     final id = currentUser.uid;
+
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final postProvider = Provider.of<PostProvider>(context, listen: false);
 
@@ -115,168 +129,115 @@ class _MainScreenState extends State<MainScreen> {
       final user = await userProvider.getUserById(id);
 
       if (user.isAdmin) {
-        postProvider.unapprovedPostsStream().listen((posts) {
-          if (posts.isNotEmpty) {
-            setState(() {
-              isAvailable = true;
-            });
-          } else {
-            setState(() {
-              isAvailable = false;
-            });
-          }
+        _postsSubscription =
+            postProvider.unapprovedPostsStream().listen((posts) {
+          setState(() {
+            isAvailable = posts.isNotEmpty;
+          });
         });
       }
     } catch (e) {
-      debugPrint("Error checking post availability: $e");
+      debugPrint("Post availability check failed: $e");
     }
   }
 
   @override
-  void initState() {
-    super.initState();
-    // validate User
-    validateUser();
-    // request permissions
-    PermissionServices.requestPermissions();
-    // setup  listeners
-    listeners();
-
-    // async calls
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) async {
-        // subscribe to admin
-        subscribeOnce();
-        // check if post available
-        checkIfPostAvailableOrNot();
-        // update user last login
-        updateUserLastLogin();
-      },
-    );
-  }
-
-  int _currentIndex = 0;
-
-  final List<Widget> _pages = const [
-    // HomePage
-    HomePage(),
-    // notice page
-    NoticePage(),
-    // PostPage
-    UploadPage(),
-    // UpcomingProgram,
-    UpcomingProgram(),
-    // BookingPage
-    ItemMenuPage(),
-  ];
-
-  @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      animationDuration: Duration(milliseconds: 500),
       length: 5,
-      child: Builder(
-        builder: (BuildContext innerContext) {
-          return Scaffold(
-            extendBody: true,
-            appBar: AppBar(
-              elevation: 0,
-              toolbarHeight: 80,
-              automaticallyImplyLeading: false,
-              title: Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Mediation Center',
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: AppColors.whiteColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
-                          ),
-                    ),
-                    Text(
-                      'CMC-UAE',
-                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: AppColors.secondaryColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                isAvailable
-                    ? IconButton(
-                        onPressed: () {
-                          context.push('/approve');
-                        },
-                        icon: FaIcon(FontAwesomeIcons.lock, size: 23),
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          toolbarHeight: MediaQuery.of(context).size.height * 0.1,
+          automaticallyImplyLeading: false,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Meditation Center',
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         color: AppColors.whiteColor,
-                        iconSize: 30,
-                      )
-                    : SizedBox.shrink(),
-                IconButton(
-                  onPressed: () {
-                    context.push('/profile', extra: cUSer);
-                  },
-                  icon: SvgPicture.asset(
-                    "assets/svg/user.svg",
-                    colorFilter:
-                        ColorFilter.mode(AppColors.whiteColor, BlendMode.srcIn),
-                    width: 30,
-                    height: 30,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                      ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: IconButton(
-                    onPressed: () {
-                      context.push('/settings');
-                    },
-                    icon: SvgPicture.asset(
-                      "assets/svg/settings.svg",
-                      colorFilter: ColorFilter.mode(
-                          AppColors.whiteColor, BlendMode.srcIn),
-                      width: 30,
-                      height: 30,
-                    ),
-                  ),
+                Text(
+                  'CMC-UAE',
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        color: AppColors.secondaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
                 ),
               ],
             ),
-            body: _pages[_currentIndex],
-            bottomNavigationBar: SafeArea(
-              child: Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                height: 60,
-                decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
-                  border: Border.all(
-                    width: 1.5,
-                    color: AppColors.primaryColor,
-                  ),
-                  borderRadius: BorderRadius.circular(100),
+          ),
+          actions: [
+            if (isAvailable)
+              IconButton(
+                onPressed: () {
+                  context.push('/approve');
+                },
+                icon: const FaIcon(FontAwesomeIcons.lock, size: 22),
+                color: AppColors.whiteColor,
+              ),
+            IconButton(
+              onPressed: () {
+                if (cUSer != null) {
+                  context.push('/profile', extra: cUSer);
+                }
+              },
+              icon: SvgPicture.asset(
+                "assets/svg/user.svg",
+                colorFilter:
+                    ColorFilter.mode(AppColors.whiteColor, BlendMode.srcIn),
+                width: 28,
+                height: 28,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                context.push('/settings');
+              },
+              icon: SvgPicture.asset(
+                "assets/svg/settings.svg",
+                colorFilter:
+                    ColorFilter.mode(AppColors.whiteColor, BlendMode.srcIn),
+                width: 28,
+                height: 28,
+              ),
+            ),
+          ],
+        ),
+        body: _pages[_currentIndex],
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.whiteColor,
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(
+                  width: 1.5,
+                  color: AppColors.primaryColor,
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: NavItems(
-                    currentIndex: _currentIndex,
-                    onTap: (int index) {
-                      setState(() {
-                        _currentIndex = index;
-                      });
-                    },
-                  ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: NavItems(
+                  currentIndex: _currentIndex,
+                  onTap: (i) {
+                    setState(() {
+                      _currentIndex = i;
+                    });
+                  },
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

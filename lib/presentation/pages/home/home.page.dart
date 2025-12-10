@@ -26,33 +26,44 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final String cUser = FirebaseAuth.instance.currentUser!.uid;
+
   final ScrollController _scrollController = ScrollController();
-  late Future<List<PostWithUsersModel>> _postsFuture;
-  final cUser = FirebaseAuth.instance.currentUser!.uid;
+
+  Future<List<PostWithUsersModel>>? _postsFuture;
+
+
+  bool isAdmin = false;
+  bool isConnected = true;
 
   @override
   void initState() {
     super.initState();
-    _loadPosts();
-    checkAdmin();
+
+    _loadData();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkAdminStatus();
+    });
+
     FirebaseCrashlytics.instance.log("User opened Home Screen");
     FirebaseCrashlytics.instance.setCustomKey('screen', 'Home Screen');
   }
 
-  bool isAdmin = false;
-  bool isConnect = false;
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
-  // check user is admin or not
-  void checkAdmin() async {
+  void checkAdminStatus() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-
-    //
 
     try {
       final user = await userProvider.getUserById(cUser);
-      if (user.isAdmin) {
+      if (user.isAdmin != isAdmin) {
         setState(() {
-          isAdmin = true;
+          isAdmin = user.isAdmin;
         });
       }
     } catch (e) {
@@ -62,21 +73,47 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _checkConnectivity() async {
+    final result = await ConnectionChecker().checkConnection();
+
+    if (isConnected != result) {
+      setState(() {
+        isConnected = result;
+      });
+
+      if (!result) {
+        showLostConnectionAlert();
+      }
+    }
+  }
+
   void _loadPosts() {
-    initConnectivity();
     final provider =
         Provider.of<PostWithUserDataProvider>(context, listen: false);
-    _postsFuture = provider.getAllPosts();
+
+    setState(() {
+  _postsFuture = provider.getAllPosts();
+});
+
+  }
+
+  void _loadData() {
+    _checkConnectivity();
+    _loadPosts();
   }
 
   Future<void> _refreshPosts() async {
-    initConnectivity();
+    LoadingPopup.show("Refreshing posts...");
+
     try {
-      LoadingPopup.show("Refreshing posts...");
+      await _checkConnectivity();
       _loadPosts();
+
       setState(() {});
     } catch (e) {
       AppTopSnackbar.showTopSnackBar(context, "Failed to refresh posts");
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current,
+          reason: "Error during post refresh");
     } finally {
       EasyLoading.dismiss();
     }
@@ -84,117 +121,100 @@ class _HomePageState extends State<HomePage> {
 
   void showLostConnectionAlert() {
     LostConnectionAlert.showAlert(context, onCheckAgain: () {
-      initConnectivity();
+      _refreshPosts();
     });
-  }
-
-  initConnectivity() async {
-    final result = await ConnectionChecker().checkConnection();
-    if (!result) {
-      isConnect = false;
-      setState(() {});
-      showLostConnectionAlert();
-    } else {
-      isConnect = true;
-      setState(() {});
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return isConnect
-        ? RefreshIndicator(
-            backgroundColor: AppColors.whiteColor,
-            color: AppColors.primaryColor,
-            onRefresh: _refreshPosts,
-            child: FutureBuilder<List<PostWithUsersModel>>(
-              future: _postsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    EasyLoading.dismiss();
-                    AppTopSnackbar.showTopSnackBar(
-                        context, "Something went wrong");
-                  });
-                  return Center(
-                    child: EmptyDataCard(title: "Error loading posts !"),
-                  );
-                }
+    if (!isConnected) {
+      return const PostShimmer();
+    }
 
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 20),
-                    child: const PostShimmer(),
-                  );
-                }
+    return RefreshIndicator(
+      backgroundColor: AppColors.whiteColor,
+      color: AppColors.primaryColor,
+      onRefresh: _refreshPosts,
+      child: FutureBuilder<List<PostWithUsersModel>>(
+        future: _postsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: PostShimmer(),
+            );
+          }
 
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  EasyLoading.dismiss();
-                });
+          if (snapshot.hasError) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              EasyLoading.dismiss();
+              AppTopSnackbar.showTopSnackBar(context, "Something went wrong");
+            });
+            return const Center(
+              child: EmptyDataCard(title: "Error loading posts !"),
+            );
+          }
 
-                final posts = snapshot.data ?? [];
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            EasyLoading.dismiss();
+          });
 
-                if (posts.isEmpty) {
-                  return const Center(
-                      child: EmptyDataCard(title: "No posts yet!"));
-                }
+          final posts = snapshot.data ?? [];
 
-                return ListView.builder(
-                  controller: _scrollController,
-                  itemCount: posts.length,
-                  cacheExtent: 1000,
-                  itemBuilder: (context, index) {
-                    final post = posts[index];
-                    return GestureDetector(
-                      onLongPress: () {
-                        if (isAdmin) {
-                          // admin can delete any post
-                          PopupWindow.showPopupWindow(
-                            "Are you sure? you want to delete this post?if you delete this post, it will be gone forever",
-                            "Yes, Delete",
-                            context,
-                            () {
-                              // delete post by admin
-                              LoadingPopup.show('Deleting...');
-                              final postProvider = Provider.of<PostProvider>(
-                                  context,
-                                  listen: false);
-                              postProvider.deletePost(post.post.id);
-                              EasyLoading.dismiss();
-                              _refreshPosts();
-                              context.pop();
-                            },
-                            () {
-                              context.pop();
-                            },
-                          );
-                        }
+          if (posts.isEmpty) {
+            return const Center(child: EmptyDataCard(title: "No posts yet!"));
+          }
+
+          return ListView.builder(
+            controller: _scrollController,
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              return GestureDetector(
+                onLongPress: () {
+                  if (isAdmin) {
+                    PopupWindow.showPopupWindow(
+                      "Are you sure? you want to delete this post?if you delete this post, it will be gone forever",
+                      "Yes, Delete",
+                      context,
+                      () {
+                        LoadingPopup.show('Deleting...');
+                        final postProvider =
+                            Provider.of<PostProvider>(context, listen: false);
+                        postProvider.deletePost(post.post.id);
+
+                        _refreshPosts();
+                        context.pop();
+                        EasyLoading.dismiss();
                       },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: BoxDecoration(
-                          // ignore: deprecated_member_use
-                          color: AppColors.gray.withOpacity(0.1),
-                        ),
-                        child: PostCard(
-                          isReel: post.post.isReel,
-                          removeFun: () {},
-                          approvedFun: () {},
-                          approvedPage: false,
-                          isApproved: post.post.isApproved,
-                          isCUser: post.user.uid == cUser,
-                          isHome: true,
-                          postID: post.post.id,
-                          onDelete: () {},
-                        ),
-                      ),
+                      () {
+                        context.pop();
+                      },
                     );
-                  },
-                );
-              },
-            ),
-          )
-        : PostShimmer();
+                  }
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.gray.withOpacity(0.1),
+                  ),
+                  child: PostCard(
+                    isReel: post.post.isReel,
+                    removeFun: () {},
+                    approvedFun: () {},
+                    approvedPage: false,
+                    isApproved: post.post.isApproved,
+                    isCUser: post.user.uid == cUser,
+                    isHome: true,
+                    postID: post.post.id,
+                    onDelete: () {},
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
   }
 }

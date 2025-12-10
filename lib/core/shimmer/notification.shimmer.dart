@@ -7,47 +7,56 @@ class NotificationShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final padding = size.width * 0.04;
+    final avatarSize = size.width * 0.12;
+    final spacing = size.width * 0.03;
+    final textHeight = size.height * 0.018;
+    final textShortWidth = size.width * 0.5;
+    final containerPadding = size.width * 0.03;
+    final borderRadius = 12.0;
+
     final baseColor = Colors.grey[300]!;
     final highlightColor = Colors.grey[100]!;
 
     return ListView.separated(
       itemCount: itemCount,
-      padding: const EdgeInsets.all(16),
-      separatorBuilder: (_, __) => const SizedBox(height: 16),
+      padding: EdgeInsets.all(padding),
+      separatorBuilder: (_, __) => SizedBox(height: spacing),
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
           baseColor: baseColor,
           highlightColor: highlightColor,
           child: Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(containerPadding),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(borderRadius),
             ),
             child: Row(
               children: [
                 Container(
-                  width: 50,
-                  height: 80,
+                  width: avatarSize,
+                  height: avatarSize,
                   decoration: BoxDecoration(
                     color: Colors.grey[400],
                     shape: BoxShape.circle,
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: spacing),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        height: 12,
+                        height: textHeight,
                         width: double.infinity,
                         color: Colors.grey[400],
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: spacing * 0.5),
                       Container(
-                        height: 12,
-                        width: MediaQuery.of(context).size.width * 0.5,
+                        height: textHeight,
+                        width: textShortWidth,
                         color: Colors.grey[400],
                       ),
                     ],
@@ -61,4 +70,3 @@ class NotificationShimmer extends StatelessWidget {
     );
   }
 }
- 

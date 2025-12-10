@@ -6,8 +6,18 @@ class NoticeViewerShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final padding = size.width * 0.05;
+    final titleHeight = size.height * 0.022;
+    final bodyHeight = size.height * 0.018;
+    final spacingSmall = size.height * 0.01;
+    final spacingMedium = size.height * 0.025;
+    final titleShortWidth = size.width * 0.5;
+    final bodyShortWidth = size.width * 0.35;
+    final imageHeight = size.height * 0.25;
+
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(padding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -20,20 +30,20 @@ class NoticeViewerShimmer extends StatelessWidget {
               children: [
                 Container(
                   width: double.infinity,
-                  height: 18,
+                  height: titleHeight,
                   color: Colors.white,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: spacingSmall),
                 Container(
-                  width: 200,
-                  height: 18,
+                  width: titleShortWidth,
+                  height: titleHeight,
                   color: Colors.white,
                 ),
               ],
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: spacingMedium),
 
           // Image shimmer
           Shimmer.fromColors(
@@ -41,12 +51,12 @@ class NoticeViewerShimmer extends StatelessWidget {
             highlightColor: Colors.grey[100]!,
             child: Container(
               width: double.infinity,
-              height: 200,
+              height: imageHeight,
               color: Colors.white,
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: spacingMedium),
 
           // Body shimmer (2–3 lines)
           Shimmer.fromColors(
@@ -57,19 +67,19 @@ class NoticeViewerShimmer extends StatelessWidget {
               children: [
                 Container(
                   width: double.infinity,
-                  height: 16,
+                  height: bodyHeight,
                   color: Colors.white,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: spacingSmall),
                 Container(
                   width: double.infinity,
-                  height: 16,
+                  height: bodyHeight,
                   color: Colors.white,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: spacingSmall),
                 Container(
-                  width: 150,
-                  height: 16,
+                  width: bodyShortWidth,
+                  height: bodyHeight,
                   color: Colors.white,
                 ),
               ],

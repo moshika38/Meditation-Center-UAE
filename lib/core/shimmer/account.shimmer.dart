@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-
 class AccountPageShimmer extends StatelessWidget {
   const AccountPageShimmer({super.key});
 
@@ -10,8 +9,16 @@ class AccountPageShimmer extends StatelessWidget {
     final baseColor = Colors.grey[300]!;
     final highlightColor = Colors.grey[100]!;
 
+    // MediaQuery sizes
+    final screenWidth = MediaQuery.of(context).size.width;
+    final avatarSize = screenWidth * 0.25; // 25% of screen width
+    final nameWidth = screenWidth * 0.4;
+    final emailWidth = screenWidth * 0.6;
+    final menuHeight = screenWidth * 0.18; // proportional height
+    final menuRadius = 20.0;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -20,70 +27,70 @@ class AccountPageShimmer extends StatelessWidget {
             baseColor: baseColor,
             highlightColor: highlightColor,
             child: Container(
-              width: 100,
-              height: 100,
+              width: avatarSize,
+              height: avatarSize,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
             ),
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: screenWidth * 0.04),
           // Name shimmer
           Shimmer.fromColors(
             baseColor: baseColor,
             highlightColor: highlightColor,
             child: Container(
-              width: 120,
-              height: 18,
+              width: nameWidth,
+              height: avatarSize * 0.18,
               decoration: BoxDecoration(
                 color: baseColor,
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: screenWidth * 0.025),
           // Email shimmer
           Shimmer.fromColors(
             baseColor: baseColor,
             highlightColor: highlightColor,
             child: Container(
-              width: 180,
-              height: 14,
+              width: emailWidth,
+              height: avatarSize * 0.14,
               decoration: BoxDecoration(
                 color: baseColor,
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
           ),
-          const SizedBox(height: 40),
+          SizedBox(height: screenWidth * 0.1),
 
           // Menu items shimmer
           ...List.generate(4, (index) {
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.symmetric(vertical: screenWidth * 0.025),
               child: Shimmer.fromColors(
                 baseColor: baseColor,
                 highlightColor: highlightColor,
                 child: Container(
-                  height: 70,
+                  height: menuHeight,
                   decoration: BoxDecoration(
                     color: baseColor,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(menuRadius),
                   ),
                 ),
               ),
             );
           }),
 
-          const SizedBox(height: 50),
+          SizedBox(height: screenWidth * 0.125),
           // App version shimmer
           Shimmer.fromColors(
             baseColor: baseColor,
             highlightColor: highlightColor,
             child: Container(
-              width: 80,
-              height: 14,
+              width: screenWidth * 0.2,
+              height: avatarSize * 0.14,
               decoration: BoxDecoration(
                 color: baseColor,
                 borderRadius: BorderRadius.circular(6),
