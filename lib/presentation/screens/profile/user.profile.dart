@@ -4,11 +4,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_center/connection/connection.checker.dart';
 import 'package:meditation_center/connection/lost.connection.alert.dart';
+import 'package:meditation_center/core/alerts/app.loading.dart';
 import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/core/formatter/number.formatter.dart';
-import 'package:meditation_center/core/shimmer/user.account.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/post.model.dart';
+import 'package:meditation_center/data/models/posts.with.users.model.dart';
 import 'package:meditation_center/data/models/user.model.dart';
 import 'package:meditation_center/presentation/components/empty.data.card.dart';
 import 'package:meditation_center/presentation/components/post.card.dart';
@@ -52,11 +53,38 @@ class _UserProfileState extends State<UserProfile> {
       isConnect = false;
       setState(() {});
       showLostConnectionAlert();
-    }else{
+    } else {
       isConnect = true;
       setState(() {});
     }
   }
+
+  final PostWithUsersModel nlData = PostWithUsersModel(
+    post: PostModel(
+      id: "",
+      description: "",
+      userId: "",
+      userName: "",
+      dateTime: DateTime.now(),
+      isApproved: false,
+      isReel: false,
+      assetsUrls: [],
+      likes: 0,
+      comments: 0,
+      commentsIds: [],
+      likedUsersIds: [],
+    ),
+    user: UserModel(
+      id: "",
+      name: "",
+      email: "",
+      profileImage: "",
+      isAdmin: false,
+      isVerify: false,
+      uid: '',
+      allowNotification: true,
+    ),
+  );
 
   @override
   void initState() {
@@ -67,103 +95,110 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return isConnect?Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: AppColors.whiteColor,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.pureBlack,
-            size: 20,
-          ),
-        ),
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          setState(() {});
-        },
-        child: Consumer<PostWithUserDataProvider>(
-          builder: (context, postDataProvider, child) =>
-              FutureBuilder<List<PostModel>>(
-            future: postDataProvider.getPostsByUserId(widget.userId),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const UserProfileShimmer();
-              }
-              if (snapshot.hasError) {
-                return Center(child: Text("Error loading posts"));
-              }
+    return isConnect
+        ? Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: AppColors.whiteColor,
+              leading: IconButton(
+                onPressed: () => context.pop(),
+                icon: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: AppColors.pureBlack,
+                  size: 20,
+                ),
+              ),
+            ),
+            body: RefreshIndicator(
+              onRefresh: () async {
+                setState(() {});
+              },
+              child: Consumer<PostWithUserDataProvider>(
+                builder: (context, postDataProvider, child) =>
+                    FutureBuilder<List<PostModel>>(
+                  future: postDataProvider.getPostsByUserId(widget.userId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const PageLoader();
+                    }
+                    if (snapshot.hasError) {
+                      return Center(child: Text("Error loading posts"));
+                    }
 
-              final posts = snapshot.data ?? [];
+                    final posts = snapshot.data ?? [];
 
-              int totalPosts = posts.length;
-              int totalLikes = posts.fold(0, (sum, post) => sum + (post.likes));
-              int totalComments =
-                  posts.fold(0, (sum, post) => sum + (post.comments));
+                    int totalPosts = posts.length;
+                    int totalLikes =
+                        posts.fold(0, (sum, post) => sum + (post.likes));
+                    int totalComments =
+                        posts.fold(0, (sum, post) => sum + (post.comments));
 
-              return ListView(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                children: [
-                  // User info
-                  Consumer<UserProvider>(
-                    builder: (context, userProvider, child) => FutureBuilder(
-                      future: userProvider.getUserById(widget.userId),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          final user = snapshot.data as UserModel;
-                          userData = user;
-                        }
-                        return UserDataCard(
-                          imageUrl:
-                              userData != null ? userData!.profileImage : "",
-                          name: userData != null ? userData!.name : "",
-                          email: userData != null ? userData!.email : "",
-                          isDarkText: true,
-                        );
-                      },
-                    ),
-                  ),
-
-                  // **Dynamic counts**
-                  _detailsCard(totalPosts, totalLikes, totalComments),
-
-                  _headerCard(),
-
-                  if (posts.isEmpty)
-                    _emptyAnimation()
-                  else
-                    ...posts.map(
-                      (postData) => Container(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: BoxDecoration(
-                          // ignore: deprecated_member_use
-                          color: AppColors.gray.withOpacity(0.1),
+                    return ListView(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      children: [
+                        // User info
+                        Consumer<UserProvider>(
+                          builder: (context, userProvider, child) =>
+                              FutureBuilder(
+                            future: userProvider.getUserById(widget.userId),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final user = snapshot.data as UserModel;
+                                userData = user;
+                              }
+                              return UserDataCard(
+                                imageUrl: userData != null
+                                    ? userData!.profileImage
+                                    : "",
+                                name: userData != null ? userData!.name : "",
+                                email: userData != null ? userData!.email : "",
+                                isDarkText: true,
+                              );
+                            },
+                          ),
                         ),
-                        child: PostCard(
-                          postID: postData.id,
-                          isApproved: postData.isApproved,
-                          isHome: false,
-                          isCUser:
-                              currentUser == postData.userId ? true : false,
-                          isReel: postData.isReel,
-                          approvedPage: false,
-                          onDelete: () {
-                            deletePost(postData.id);
-                          },
-                          approvedFun: () {},
-                          removeFun: () {},
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
-    ):UserProfileShimmer();
+
+                        // **Dynamic counts**
+                        _detailsCard(totalPosts, totalLikes, totalComments),
+
+                        _headerCard(),
+
+                        if (posts.isEmpty)
+                          _emptyAnimation()
+                        else
+                          ...posts.map(
+                            (postData) => Container(
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                // ignore: deprecated_member_use
+                                color: AppColors.gray.withOpacity(0.1),
+                              ),
+                              child: PostCard(
+                                postUserData: nlData,
+                                postData: postData,
+                                isApproved: postData.isApproved,
+                                isHome: false,
+                                isCUser: currentUser == postData.userId
+                                    ? true
+                                    : false,
+                                isReel: postData.isReel,
+                                approvedPage: false,
+                                onDelete: () {
+                                  deletePost(postData.id);
+                                },
+                                approvedFun: () {},
+                                removeFun: () {},
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          )
+        : PageLoader();
   }
 
   Widget _headerCard() {

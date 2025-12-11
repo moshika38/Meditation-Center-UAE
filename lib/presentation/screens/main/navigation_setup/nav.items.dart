@@ -20,8 +20,10 @@ class _NavItemsState extends State<NavItems> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+       selectedFontSize: 13,
+      selectedItemColor: AppColors.primaryColor,
       
-      showSelectedLabels: false,
+      showSelectedLabels: true,
       showUnselectedLabels: false,
       type: BottomNavigationBarType.fixed,
       currentIndex: widget.currentIndex,
@@ -29,11 +31,11 @@ class _NavItemsState extends State<NavItems> {
       backgroundColor: Colors.transparent,
       onTap: widget.onTap,
       items: [
-        navBarIcon("assets/svg/home0.svg", "assets/svg/home.svg", 0),
-        navBarIcon("assets/svg/note0.svg", "assets/svg/note.svg", 1),
-        navBarIcon("assets/svg/add0.svg", "assets/svg/add.svg", 2),
-        navBarIcon("assets/svg/calendar0.svg", "assets/svg/calendar.svg", 3),
-        navBarIcon("assets/svg/list0.svg", "assets/svg/list.svg", 4),
+        navBarIcon("assets/svg/home0.svg", "assets/svg/home.svg","Home", 0),
+        navBarIcon("assets/svg/note0.svg", "assets/svg/note.svg", "Notice", 1),
+        navBarIcon("assets/svg/add0.svg", "assets/svg/add.svg", "Add", 2),
+        navBarIcon("assets/svg/calendar0.svg", "assets/svg/calendar.svg", "Events", 3),
+        navBarIcon("assets/svg/list0.svg", "assets/svg/list.svg", "Menu", 4),
       ],
     );
   }
@@ -41,6 +43,7 @@ class _NavItemsState extends State<NavItems> {
   BottomNavigationBarItem navBarIcon(
     String inactiveAsset,
     String activeAsset,
+    String label,
     int index,
   ) {
     final bool isActive = widget.currentIndex == index;
@@ -57,7 +60,7 @@ class _NavItemsState extends State<NavItems> {
           ),
         ),
       ),
-      label: "",
+      label: label,
     );
   }
 }

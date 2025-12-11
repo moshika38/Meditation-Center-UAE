@@ -5,9 +5,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_center/connection/connection.checker.dart';
 import 'package:meditation_center/connection/lost.connection.alert.dart';
+import 'package:meditation_center/core/alerts/app.loading.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
-import 'package:meditation_center/core/shimmer/account.shimmer.dart';
 import 'package:meditation_center/data/models/user.model.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
@@ -138,7 +138,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 // loading user data
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  AccountPageShimmer();
+                                  return const PageLoader();
                                 }
                                 // has user data
                                 if (snapshot.hasData) {
@@ -219,7 +219,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     ],
                                   );
                                 }
-                                return AccountPageShimmer();
+                                return PageLoader();
                               },
                             ),
                           ),
@@ -231,7 +231,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               )
             : Padding(
                 padding: const EdgeInsets.all(20),
-                child: AccountPageShimmer(),
+                child: PageLoader(),
               ),
       ),
     );

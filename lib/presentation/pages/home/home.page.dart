@@ -5,6 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_center/connection/connection.checker.dart';
 import 'package:meditation_center/connection/lost.connection.alert.dart';
+import 'package:meditation_center/core/alerts/app.loading.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
@@ -12,7 +13,6 @@ import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/posts.with.users.model.dart';
 import 'package:meditation_center/presentation/components/empty.data.card.dart';
 import 'package:meditation_center/presentation/components/post.card.dart';
-import 'package:meditation_center/core/shimmer/post.shimmer.dart';
 import 'package:meditation_center/providers/post.provider.dart';
 import 'package:meditation_center/providers/post.with.user.data.provider.dart';
 import 'package:meditation_center/providers/user.provider.dart';
@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     if (!isConnected) {
-      return const PostShimmer();
+      return const PageLoader();
     }
 
     return RefreshIndicator(
@@ -141,7 +141,7 @@ class _HomePageState extends State<HomePage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: PostShimmer(),
+              child: PageLoader(),
             );
           }
 
@@ -206,7 +206,8 @@ class _HomePageState extends State<HomePage> {
                     isApproved: post.post.isApproved,
                     isCUser: post.user.uid == cUser,
                     isHome: true,
-                    postID: post.post.id,
+                    postData: post.post,
+                    postUserData: post,
                     onDelete: () {},
                   ),
                 ),

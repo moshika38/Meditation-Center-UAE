@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meditation_center/core/alerts/app.loading.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
-import 'package:meditation_center/core/shimmer/comment.shimmer.dart';
 import 'package:meditation_center/data/models/comment.model.dart';
 import 'package:meditation_center/presentation/components/app.input.dart';
 import 'package:meditation_center/presentation/components/comment.card.dart';
@@ -147,7 +147,7 @@ class _CommentPageState extends State<CommentPage> {
                       return Center(child: Text("Error: ${snapshot.error}"));
                     }
 
-                    return CommentShimmer();
+                    return PageLoader();
                   },
                 );
               },

@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meditation_center/connection/connection.checker.dart';
 import 'package:meditation_center/connection/lost.connection.alert.dart';
+import 'package:meditation_center/core/alerts/app.loading.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
-import 'package:meditation_center/core/shimmer/upload.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/user.model.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
@@ -175,7 +175,7 @@ class _UploadPageState extends State<UploadPage> {
                   }
                   // loading user data
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    UploadPageShimmer();
+                    PageLoader();
                   }
                   if (snapshot.hasData) {
                     final user = snapshot.data as UserModel;
@@ -334,12 +334,12 @@ class _UploadPageState extends State<UploadPage> {
                       ],
                     );
                   } else {
-                    return UploadPageShimmer();
+                    return PageLoader();
                   }
                 },
               ),
             ),
           )
-        : UploadPageShimmer();
+        : PageLoader();
   }
 }

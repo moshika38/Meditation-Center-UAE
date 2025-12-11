@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meditation_center/core/alerts/app.loading.dart';
 import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
-import 'package:meditation_center/core/shimmer/notice.viewer.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/notice.model.dart';
 import 'package:meditation_center/data/models/user.model.dart';
@@ -58,7 +58,7 @@ class _NoticeViewerState extends State<NoticeViewer> {
             future: provider.getNoticeByID(widget.noticeID),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const NoticeViewerShimmer();
+                return const PageLoader();
               }
 
               if (snapshot.hasError) {
@@ -86,7 +86,7 @@ class _NoticeViewerState extends State<NoticeViewer> {
                   ),
                 );
               }
-              return const NoticeViewerShimmer();
+              return const PageLoader();
             },
           ),
         ),

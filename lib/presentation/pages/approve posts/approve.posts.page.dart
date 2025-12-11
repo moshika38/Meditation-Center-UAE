@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meditation_center/core/alerts/app.loading.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/core/notifications/send.push.notification.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
-import 'package:meditation_center/core/shimmer/post.shimmer.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/posts.with.users.model.dart';
 import 'package:meditation_center/presentation/components/empty.data.card.dart';
@@ -85,7 +85,7 @@ class _ApprovePostsPageState extends State<ApprovePostsPage> {
             }
 
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const PostShimmer();
+              return const PageLoader();
             }
 
             final posts = snapshot.data ?? [];
@@ -107,9 +107,10 @@ class _ApprovePostsPageState extends State<ApprovePostsPage> {
                     color: AppColors.gray.withOpacity(0.1),
                   ),
                   child: PostCard(
+                    postUserData: post,
                     isReel: post.post.isReel,
                     approvedPage: true,
-                    postID: post.post.id,
+                    postData: post.post,
                     isApproved: post.post.isApproved,
                     isHome: true,
                     isCUser: false,

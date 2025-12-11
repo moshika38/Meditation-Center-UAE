@@ -5,20 +5,20 @@ import 'package:go_router/go_router.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/formatter/number.formatter.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
+import 'package:meditation_center/data/models/post.model.dart';
+import 'package:meditation_center/data/models/posts.with.users.model.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
 import 'package:meditation_center/presentation/components/native.share.dart';
 import 'package:meditation_center/presentation/components/pending.icon.dart';
 import 'package:meditation_center/presentation/components/post.card.Components.dart';
 import 'package:meditation_center/presentation/components/post.card.user.info.dart';
-import 'package:meditation_center/core/shimmer/post.shimmer.dart';
-import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/presentation/pages/upload/widgets/video.player.dart';
 import 'package:meditation_center/providers/post.provider.dart';
-import 'package:meditation_center/providers/post.with.user.data.provider.dart';
 import 'package:provider/provider.dart';
 
 class PostCard extends StatefulWidget {
-  final String postID;
+  final PostModel postData;
+  final PostWithUsersModel postUserData;
   final bool isHome;
   final bool isCUser;
   final bool isApproved;
@@ -30,7 +30,8 @@ class PostCard extends StatefulWidget {
 
   const PostCard({
     super.key,
-    required this.postID,
+    required this.postData,
+    required this.postUserData,
     required this.isApproved,
     required this.isHome,
     required this.isCUser,
@@ -45,29 +46,34 @@ class PostCard extends StatefulWidget {
   State<PostCard> createState() => _PostCardState();
 }
 
-class _PostCardState extends State<PostCard> {
+class _PostCardState extends State<PostCard>
+    with AutomaticKeepAliveClientMixin {
+  final String cUser = FirebaseAuth.instance.currentUser!.uid;
+
   bool isMore = false;
   bool isLiked = false;
 
-  int numOfLikes = 0;
-  int numOfComments = 0;
+  late int numOfLikes;
+  late int numOfComments;
 
-  String? cUser;
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
-    cUser = FirebaseAuth.instance.currentUser?.uid;
 
-    if (cUser != null) {
-      _checkUserLikeStatus();
-    }
+    // ✅ INIT local state ONCE
+    numOfLikes = widget.postData.likes;
+    numOfComments = widget.postData.comments;
+
+    _checkUserLikeStatus();
   }
 
-  Future<void> _checkUserLikeStatus() async {
+  void _checkUserLikeStatus() async {
     final postProvider = Provider.of<PostProvider>(context, listen: false);
     final status =
-        await postProvider.hasUserLikedPost(widget.postID, cUser!);
+        await postProvider.hasUserLikedPost(widget.postData.id, cUser);
 
     if (!mounted) return;
     setState(() => isLiked = status);
@@ -75,232 +81,180 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
-    final postWithUserDataProvider =
-        Provider.of<PostWithUserDataProvider>(context, listen: false);
-    final postProvider =
-        Provider.of<PostProvider>(context, listen: false);
+    super.build(context);
+    final postProvider = Provider.of<PostProvider>(context, listen: false);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-      child: StreamBuilder(
-        stream:
-            postWithUserDataProvider.getPostDetailsById(widget.postID),
-        builder: (context, snapshot) {
-          /// proper shimmer
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const PostShimmer();
-          }
-
-          if (snapshot.hasError) {
-            return Column(
+      child: Column(
+        children: [
+          /// ✅ APPROVE / REMOVE (ADMIN)
+          if (widget.approvedPage && !widget.isApproved)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(
-                  "Error loading post",
-                  style: Theme.of(context).textTheme.bodySmall,
+                AppButtons(
+                  width: 120,
+                  height: 40,
+                  icon: Icons.remove,
+                  text: "Remove",
+                  onTap: widget.removeFun,
+                  isPrimary: true,
                 ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () => setState(() {}),
-                  child: const Text("Try again"),
+                const SizedBox(width: 10),
+                AppButtons(
+                  width: 120,
+                  height: 40,
+                  icon: Icons.check_circle_rounded,
+                  text: "Approve",
+                  onTap: widget.approvedFun,
+                  isPrimary: true,
                 ),
               ],
-            );
-          }
+            ),
 
-          if (!snapshot.hasData) {
-            return const SizedBox.shrink();
-          }
+          const SizedBox(height: 20),
 
-          final postData = snapshot.data!;
-
-          /// sync counters once
-          numOfLikes = postData.post.likes;
-          numOfComments = postData.post.comments;
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          /// ✅ USER INFO
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              /// approve / remove buttons
-              if (widget.approvedPage && !widget.isApproved)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    AppButtons(
-                      width: 120,
-                      height: 40,
-                      icon: Icons.remove,
-                      text: "Remove",
-                      onTap: widget.removeFun,
-                      isPrimary: true,
-                    ),
-                    const SizedBox(width: 10),
-                    AppButtons(
-                      width: 120,
-                      height: 40,
-                      icon: Icons.check_circle_rounded,
-                      text: "Approve",
-                      onTap: widget.approvedFun,
-                      isPrimary: true,
-                    ),
-                  ],
-                ),
-
-              const SizedBox(height: 20),
-
-              /// user info
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  PostCardUserInfo(
-                    isNotHome: widget.approvedPage,
-                    userId: postData.user.uid,
-                    userName: postData.user.name,
-                    userImage: postData.user.profileImage,
-                    time: postData.post.dateTime,
-                  ),
-                  if (widget.isCUser && !widget.isHome)
-                    PopupMenuButton<int>(
-                      icon: const Icon(Icons.more_vert_outlined),
-                      onSelected: (_) {
-                        PopupWindow.showPopupWindow(
-                          "Are you sure? This action cannot be undone.",
-                          "Yes, delete",
-                          context,
-                          () {
-                            context.pop();
-                            widget.onDelete();
-                          },
-                          () => context.pop(),
-                        );
-                      },
-                      itemBuilder: (_) => const [
-                        PopupMenuItem(
-                          value: 1,
-                          child: Text("Delete",
-                              style: TextStyle(color: Colors.white)),
-                        )
-                      ],
-                    )
-                ],
+              PostCardUserInfo(
+                isNotHome: widget.approvedPage,
+                userId: widget.postUserData.user.uid,
+                userName: widget.postUserData.user.name,
+                userImage: widget.postUserData.user.profileImage,
+                time: widget.postUserData.post.dateTime,
               ),
-
-              const SizedBox(height: 10),
-
-              /// description
-              GestureDetector(
-                onTap: () => setState(() => isMore = !isMore),
-                child: Text(
-                  postData.post.description ?? "",
-                  maxLines: isMore ? null : 2,
-                  overflow:
-                      isMore ? TextOverflow.visible : TextOverflow.ellipsis,
-                ),
-              ),
-
-              if ((postData.post.description ?? "").isNotEmpty)
-                const SizedBox(height: 10),
-
-              /// media
-              widget.isReel
-                  ? VideoPlayerWidget(
-                      videoPath: postData.post.assetsUrls.first,
-                    )
-                  : _buildImages(postData),
-
-              const SizedBox(height: 20),
-
-              /// counts
-              widget.isApproved
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "${NumberFormatter.formatCount(numOfLikes)} likes",
-                        ),
-                        Text(
-                          "${NumberFormatter.formatCount(numOfComments)} comments",
-                        ),
-                      ],
-                    )
-                  : (widget.isCUser ? const PendingIcon() : const SizedBox()),
-
-              if (widget.isApproved) const SizedBox(height: 10),
-
-              /// actions
-              if (widget.isApproved)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    PostCardComponents.actionBtn(
+              if (widget.isCUser && !widget.isHome)
+                PopupMenuButton(
+                  icon: const Icon(Icons.more_vert_outlined),
+                  onSelected: (_) {
+                    PopupWindow.showPopupWindow(
+                      "Delete this post?",
+                      "Yes, Delete",
                       context,
-                      Icons.thumb_up,
-                      "Like",
-                      isLiked,
                       () {
-                        if (cUser == null) return;
-
-                        setState(() {
-                          isLiked = !isLiked;
-                          numOfLikes += isLiked ? 1 : -1;
-                        });
-
-                        isLiked
-                            ? postProvider.likePost(
-                                widget.postID, cUser!)
-                            : postProvider.dislikePost(
-                                widget.postID, cUser!);
+                        context.pop();
+                        widget.onDelete();
                       },
-                    ),
-                    PostCardComponents.actionBtn(
-                      context,
-                      Icons.comment,
-                      "Comment",
-                      false,
-                      () =>
-                          context.push('/comment', extra: widget.postID),
-                    ),
-                    PostCardComponents.actionBtn(
-                      context,
-                      Icons.share_outlined,
-                      "Share",
-                      false,
-                      () {
-                        LoadingPopup.show('Sharing...');
-                        NativeShare.share(
-                          text: postData.post.description ?? "",
-                          url: postData.post.assetsUrls.first,
-                        );
-                        EasyLoading.dismiss();
-                      },
-                    ),
+                      () => context.pop(),
+                    );
+                  },
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(
+                      value: 1,
+                      child: Text("Delete",
+                          style: TextStyle(color: Colors.white)),
+                    )
                   ],
                 ),
             ],
-          );
-        },
-      ),
-    );
-  }
+          ),
 
-  /// image helper
-  Widget _buildImages(postData) {
-    return Container(
-      color: AppColors.gray.withOpacity(0.05),
-      child: Column(
-        children: [
-          if (postData.post.assetsUrls.isNotEmpty)
-            GestureDetector(
-              onTap: () =>
-                  context.push('/viewer', extra: postData.post.assetsUrls),
-              child: PostCardComponents.imageCard(
-                context,
-                false,
-                postData.post.assetsUrls.length,
-                postData.post.assetsUrls[0],
-                postData.post.assetsUrls.length > 1
-                    ? postData.post.assetsUrls[1]
-                    : "null",
-              ),
+          const SizedBox(height: 10),
+
+          /// ✅ DESCRIPTION
+          GestureDetector(
+            onTap: () => setState(() => isMore = !isMore),
+            child: Text(
+              widget.postData.description ?? "",
+              maxLines: isMore ? null : 2,
+              overflow: isMore ? null : TextOverflow.ellipsis,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          /// ✅ IMAGE / VIDEO
+          widget.isReel
+              ? VideoPlayerWidget(
+                  videoPath: widget.postData.assetsUrls.first,
+                )
+              : PostCardComponents.imageCard(
+                  context,
+                  false,
+                  widget.postData.assetsUrls.length,
+                  widget.postData.assetsUrls.first,
+                  widget.postData.assetsUrls.length > 1
+                      ? widget.postData.assetsUrls[1]
+                      : "null",
+                ),
+
+          const SizedBox(height: 20),
+
+          /// ✅ LIKE / COMMENT COUNT
+          if (widget.isApproved)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "${NumberFormatter.formatCount(numOfLikes)} likes",
+                ),
+                Text(
+                  "${NumberFormatter.formatCount(numOfComments)} comments",
+                ),
+              ],
+            ),
+
+          if (!widget.isApproved && widget.isCUser)
+            const Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: PendingIcon(),
+            ),
+
+          const SizedBox(height: 10),
+
+          /// ✅ ACTION BUTTONS
+          if (widget.isApproved)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                PostCardComponents.actionBtn(
+                  context,
+                  Icons.thumb_up,
+                  "Like",
+                  isLiked,
+                  () {
+                    setState(() {
+                      if (isLiked) {
+                        numOfLikes--;
+                      } else {
+                        numOfLikes++;
+                      }
+                      isLiked = !isLiked;
+                    });
+
+                    isLiked
+                        ? postProvider.likePost(widget.postData.id, cUser)
+                        : postProvider.dislikePost(
+                            widget.postData.id,
+                            cUser,
+                          );
+                  },
+                ),
+                PostCardComponents.actionBtn(
+                  context,
+                  Icons.comment,
+                  "Comment",
+                  false,
+                  () => context.push('/comment', extra: widget.postData.id),
+                ),
+                PostCardComponents.actionBtn(
+                  context,
+                  Icons.share_outlined,
+                  "Share",
+                  false,
+                  () {
+                    LoadingPopup.show("Sharing...");
+                    NativeShare.share(
+                      text: widget.postData.description ?? "",
+                      url: widget.postData.assetsUrls.first,
+                    );
+                    EasyLoading.dismiss();
+                  },
+                ),
+              ],
             ),
         ],
       ),
