@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Delete Account - CMC-UAE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      /* Base */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #ffffff; /* whiteColor */
+        color: #282828; /* textColor */
+        line-height: 1.6;
+      }
+
+      /* Container */
+      .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f9f3f7; /* very light secondary tint */
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .container h2 {
+        color: #930e55; /* primaryColor */
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 22px;
+      }
+
+      .container p {
+        font-size: 16px;
+        margin-bottom: 15px;
+      }
+
+      .container ul {
+        margin-left: 20px;
+        margin-bottom: 15px;
+      }
+
+      .container a {
+        color: #c883a0; /* secondaryColor */
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .container a:hover {
+        text-decoration: underline;
+      }
+
+      pre {
+        background-color: #282828; /* textColor as dark bg */
+        color: #ffffff; /* white text */
+        padding: 15px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 15px;
+        margin-bottom: 20px;
+      }
+
+      /* Button */
+      .btn {
+        background-color: #930e55; /* primaryColor */
+        color: #ffffff;
+        padding: 15px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        text-align: center;
+        display: block;
+        width: 100%;
+        transition: background-color 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #c883a0; /* secondaryColor */
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        header h1 {
+          font-size: 20px;
+        }
+        .container h2 {
+          font-size: 20px;
+        }
+        .container p,
+        .container ul {
+          font-size: 15px;
+        }
+        .btn {
+          font-size: 15px;
+          padding: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>CMC-UAE Account Deletion Instructions</h2>
+
+      <p>
+        To delete your account, please send an email to our admin team at:
+        <a href="mailto:info.app.cmc@gmail.com?subject=Account Deletion Request"
+          >info.app.cmc@gmail.com</a
+        >
+      </p>
+
+      <p>
+        In your email, please include the following information so that we can
+        identify your account:
+      </p>
+
+      <ul>
+        <li>Your registered email address used in the app</li>
+        <li>Your full name or username (as registered in the app)</li>
+        <li>Reason for account deletion (optional)</li>
+      </ul>
+
+      <p>
+        Once we receive your email, our admin team will process your deletion
+        request and permanently remove your account and all associated data.
+      </p>
+
+      <p>Example email content:</p>
+      <pre>
+Subject: Account Deletion Request
+
+Hello Admin,
+
+Please delete my account with the following details:
+
+Email: user@example.com
+Username: JohnDoe
+
+Thank you.
+    </pre
+      >
+
+      <button
+        class="btn"
+        onclick="window.location.href='mailto:info.app.cmc@gmail.com?subject=Account Deletion Request&body=Hello Admin,%0A%0APlease delete my account with the following details:%0AEmail:%20your-email@example.com%0AUsername:%20your-username%0A%0AThank you.'"
+      >
+        Send Deletion Request
+      </button>
+    </div>
+  </body>
+</html>
