@@ -107,7 +107,7 @@ class _ApprovePostsPageState extends State<ApprovePostsPage> {
                     color: AppColors.gray.withOpacity(0.1),
                   ),
                   child: PostCard(
-                    postUserData: post,
+                    userData: post.user,
                     isReel: post.post.isReel,
                     approvedPage: true,
                     postData: post.post,

@@ -6,7 +6,7 @@ import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/formatter/number.formatter.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
 import 'package:meditation_center/data/models/post.model.dart';
-import 'package:meditation_center/data/models/posts.with.users.model.dart';
+import 'package:meditation_center/data/models/user.model.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
 import 'package:meditation_center/presentation/components/native.share.dart';
 import 'package:meditation_center/presentation/components/pending.icon.dart';
@@ -18,7 +18,7 @@ import 'package:provider/provider.dart';
 
 class PostCard extends StatefulWidget {
   final PostModel postData;
-  final PostWithUsersModel postUserData;
+  final  UserModel userData;
   final bool isHome;
   final bool isCUser;
   final bool isApproved;
@@ -31,7 +31,7 @@ class PostCard extends StatefulWidget {
   const PostCard({
     super.key,
     required this.postData,
-    required this.postUserData,
+    required this.userData,
     required this.isApproved,
     required this.isHome,
     required this.isCUser,
@@ -63,7 +63,7 @@ class _PostCardState extends State<PostCard>
   void initState() {
     super.initState();
 
-    // ✅ INIT local state ONCE
+    //  INIT local state ONCE
     numOfLikes = widget.postData.likes;
     numOfComments = widget.postData.comments;
 
@@ -87,8 +87,9 @@ class _PostCardState extends State<PostCard>
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// ✅ APPROVE / REMOVE (ADMIN)
+          //  APPROVE / REMOVE (ADMIN)
           if (widget.approvedPage && !widget.isApproved)
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -115,16 +116,17 @@ class _PostCardState extends State<PostCard>
 
           const SizedBox(height: 20),
 
-          /// ✅ USER INFO
+          //  USER INFO
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               PostCardUserInfo(
+                isProfile: widget.isHome,
                 isNotHome: widget.approvedPage,
-                userId: widget.postUserData.user.uid,
-                userName: widget.postUserData.user.name,
-                userImage: widget.postUserData.user.profileImage,
-                time: widget.postUserData.post.dateTime,
+                userId: widget.userData.uid,
+                userName: widget.userData.name,
+                userImage: widget.userData.profileImage,
+                time: widget.postData.dateTime,
               ),
               if (widget.isCUser && !widget.isHome)
                 PopupMenuButton(
@@ -154,19 +156,22 @@ class _PostCardState extends State<PostCard>
 
           const SizedBox(height: 10),
 
-          /// ✅ DESCRIPTION
+          //  DESCRIPTION
           GestureDetector(
             onTap: () => setState(() => isMore = !isMore),
-            child: Text(
-              widget.postData.description ?? "",
-              maxLines: isMore ? null : 2,
-              overflow: isMore ? null : TextOverflow.ellipsis,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Text(
+                widget.postData.description ?? "",
+                maxLines: isMore ? null : 2,
+                overflow: isMore ? null : TextOverflow.ellipsis,
+              ),
             ),
           ),
 
           const SizedBox(height: 10),
 
-          /// ✅ IMAGE / VIDEO
+          //  IMAGE / VIDEO
           widget.isReel
               ? VideoPlayerWidget(
                   videoPath: widget.postData.assetsUrls.first,
@@ -183,7 +188,7 @@ class _PostCardState extends State<PostCard>
 
           const SizedBox(height: 20),
 
-          /// ✅ LIKE / COMMENT COUNT
+          //  LIKE / COMMENT COUNT
           if (widget.isApproved)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -205,7 +210,7 @@ class _PostCardState extends State<PostCard>
 
           const SizedBox(height: 10),
 
-          /// ✅ ACTION BUTTONS
+          //  ACTION BUTTONS
           if (widget.isApproved)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

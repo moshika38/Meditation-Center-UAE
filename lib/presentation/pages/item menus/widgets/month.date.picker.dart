@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meditation_center/core/alerts/app.top.snackbar.dart';
 import 'package:meditation_center/core/constance/app.constance.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -125,9 +126,23 @@ class MonthDatePicker {
                       ),
                       TextButton(
                         onPressed: () {
-                          // logic
                           if (selectedMonth != null && selectedDay != null) {
-                            launchWhatsapp(AppData.whatsAppNumber, " $selectedMonth මස $selectedDay දින  $text");
+                            final day =
+                                int.tryParse(selectedDay!); // safe parse
+                            if (day != null && day > 0 && day <= 31) {
+                              launchWhatsapp(
+                                AppData.whatsAppNumber,
+                                " $selectedMonth මස $day දින  $text",
+                              );
+                            } else {
+                              // invalid day
+                              AppTopSnackbar.showTopSnackBar(
+                                  context, "දිනය 1–31 අතර විය යුතුයි");
+                            }
+                          } else {
+                            // month or day not selected
+                            AppTopSnackbar.showTopSnackBar(
+                                context, "මාසය සහ දිනය ඇතුලත් කරන්න");
                           }
                         },
                         child: Text(

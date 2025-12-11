@@ -10,6 +10,7 @@ class PostCardUserInfo extends StatelessWidget {
   final DateTime time;
   final String userId;
   final bool isNotHome;
+  final bool isProfile;
 
   const PostCardUserInfo({
     super.key,
@@ -18,6 +19,7 @@ class PostCardUserInfo extends StatelessWidget {
     required this.time,
     required this.userId,
     required this.isNotHome,
+    required this.isProfile,
   });
 
   @override
@@ -27,10 +29,12 @@ class PostCardUserInfo extends StatelessWidget {
         GestureDetector(
           onTap: () {
             // navigate to user profile
-            context.push(
-              '/profile',
-              extra: userId,
-            );
+            isProfile
+                ? context.push(
+                    '/profile',
+                    extra: userId,
+                  )
+                : null;
           },
           child: Container(
             decoration: BoxDecoration(

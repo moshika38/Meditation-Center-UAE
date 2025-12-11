@@ -207,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                     isCUser: post.user.uid == cUser,
                     isHome: true,
                     postData: post.post,
-                    postUserData: post,
+                    userData: post.user,
                     onDelete: () {},
                   ),
                 ),

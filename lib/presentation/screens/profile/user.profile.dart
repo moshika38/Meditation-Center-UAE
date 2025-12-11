@@ -9,7 +9,6 @@ import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
 import 'package:meditation_center/core/formatter/number.formatter.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/post.model.dart';
-import 'package:meditation_center/data/models/posts.with.users.model.dart';
 import 'package:meditation_center/data/models/user.model.dart';
 import 'package:meditation_center/presentation/components/empty.data.card.dart';
 import 'package:meditation_center/presentation/components/post.card.dart';
@@ -47,7 +46,7 @@ class _UserProfileState extends State<UserProfile> {
     });
   }
 
-  initConnectivity() async {
+  Future<void> initConnectivity() async {
     final result = await ConnectionChecker().checkConnection();
     if (!result) {
       isConnect = false;
@@ -58,33 +57,6 @@ class _UserProfileState extends State<UserProfile> {
       setState(() {});
     }
   }
-
-  final PostWithUsersModel nlData = PostWithUsersModel(
-    post: PostModel(
-      id: "",
-      description: "",
-      userId: "",
-      userName: "",
-      dateTime: DateTime.now(),
-      isApproved: false,
-      isReel: false,
-      assetsUrls: [],
-      likes: 0,
-      comments: 0,
-      commentsIds: [],
-      likedUsersIds: [],
-    ),
-    user: UserModel(
-      id: "",
-      name: "",
-      email: "",
-      profileImage: "",
-      isAdmin: false,
-      isVerify: false,
-      uid: '',
-      allowNotification: true,
-    ),
-  );
 
   @override
   void initState() {
@@ -113,92 +85,94 @@ class _UserProfileState extends State<UserProfile> {
               onRefresh: () async {
                 setState(() {});
               },
-              child: Consumer<PostWithUserDataProvider>(
-                builder: (context, postDataProvider, child) =>
-                    FutureBuilder<List<PostModel>>(
-                  future: postDataProvider.getPostsByUserId(widget.userId),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const PageLoader();
-                    }
-                    if (snapshot.hasError) {
-                      return Center(child: Text("Error loading posts"));
-                    }
+              child: FutureBuilder<UserModel>(
+                future: Provider.of<UserProvider>(context, listen: false)
+                    .getUserById(widget.userId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const PageLoader();
+                  }
 
-                    final posts = snapshot.data ?? [];
+                  if (snapshot.hasError || !snapshot.hasData) {
+                    return Center(child: Text("Error loading user data"));
+                  }
 
-                    int totalPosts = posts.length;
-                    int totalLikes =
-                        posts.fold(0, (sum, post) => sum + (post.likes));
-                    int totalComments =
-                        posts.fold(0, (sum, post) => sum + (post.comments));
+                  userData = snapshot.data!;
 
-                    return ListView(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      children: [
-                        // User info
-                        Consumer<UserProvider>(
-                          builder: (context, userProvider, child) =>
-                              FutureBuilder(
-                            future: userProvider.getUserById(widget.userId),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                final user = snapshot.data as UserModel;
-                                userData = user;
-                              }
-                              return UserDataCard(
-                                imageUrl: userData != null
-                                    ? userData!.profileImage
-                                    : "",
-                                name: userData != null ? userData!.name : "",
-                                email: userData != null ? userData!.email : "",
-                                isDarkText: true,
-                              );
-                            },
-                          ),
-                        ),
+                  return Consumer<PostWithUserDataProvider>(
+                    builder: (context, postDataProvider, child) =>
+                        FutureBuilder<List<PostModel>>(
+                      future: postDataProvider.getPostsByUserId(widget.userId),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const PageLoader();
+                        }
 
-                        // **Dynamic counts**
-                        _detailsCard(totalPosts, totalLikes, totalComments),
+                        if (snapshot.hasError) {
+                          return Center(child: Text("Error loading posts"));
+                        }
 
-                        _headerCard(),
+                        final posts = snapshot.data ?? [];
 
-                        if (posts.isEmpty)
-                          _emptyAnimation()
-                        else
-                          ...posts.map(
-                            (postData) => Container(
-                              margin: const EdgeInsets.symmetric(vertical: 8),
-                              decoration: BoxDecoration(
-                                // ignore: deprecated_member_use
-                                color: AppColors.gray.withOpacity(0.1),
-                              ),
-                              child: PostCard(
-                                postUserData: nlData,
-                                postData: postData,
-                                isApproved: postData.isApproved,
-                                isHome: false,
-                                isCUser: currentUser == postData.userId
-                                    ? true
-                                    : false,
-                                isReel: postData.isReel,
-                                approvedPage: false,
-                                onDelete: () {
-                                  deletePost(postData.id);
-                                },
-                                approvedFun: () {},
-                                removeFun: () {},
-                              ),
+                        int totalPosts = posts.length;
+                        int totalLikes =
+                            posts.fold(0, (sum, post) => sum + (post.likes));
+                        int totalComments =
+                            posts.fold(0, (sum, post) => sum + (post.comments));
+
+                        return ListView(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          children: [
+                            // User info
+                            UserDataCard(
+                              imageUrl: userData!.profileImage,
+                              name: userData!.name,
+                              email: userData!.email,
+                              isDarkText: true,
                             ),
-                          ),
-                      ],
-                    );
-                  },
-                ),
+
+                            // **Dynamic counts**
+                            _detailsCard(totalPosts, totalLikes, totalComments),
+
+                            _headerCard(),
+
+                            if (posts.isEmpty)
+                              _emptyAnimation()
+                            else
+                              ...posts.map(
+                                (postData) => Container(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.gray.withOpacity(0.1),
+                                  ),
+                                  child: PostCard(
+                                    userData: userData!,
+                                    postData: postData,
+                                    isApproved: postData.isApproved,
+                                    isHome: false,
+                                    isCUser:
+                                        currentUser == postData.userId ? true : false,
+                                    isReel: postData.isReel,
+                                    approvedPage: false,
+                                    onDelete: () {
+                                      deletePost(postData.id);
+                                    },
+                                    approvedFun: () {},
+                                    removeFun: () {},
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  );
+                },
               ),
             ),
           )
-        : PageLoader();
+        : const PageLoader();
   }
 
   Widget _headerCard() {
@@ -213,8 +187,7 @@ class _UserProfileState extends State<UserProfile> {
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          FaIcon(
-            // ignore: deprecated_member_use
+          const FaIcon(
             FontAwesomeIcons.earth,
             size: 20,
           ),
@@ -224,8 +197,8 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Widget _emptyAnimation() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 30),
+    return const Padding(
+      padding: EdgeInsets.only(top: 30),
       child: EmptyDataCard(title: "No posts yet!"),
     );
   }
@@ -237,7 +210,6 @@ class _UserProfileState extends State<UserProfile> {
         width: double.infinity,
         height: 100,
         decoration: BoxDecoration(
-          // ignore: deprecated_member_use
           color: AppColors.primaryColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: AppColors.primaryColor, width: 1),
@@ -276,11 +248,7 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
-  Widget _itemCard(
-    String title,
-    int count,
-    IconData icon,
-  ) {
+  Widget _itemCard(String title, int count, IconData icon) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
