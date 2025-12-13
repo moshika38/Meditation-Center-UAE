@@ -55,7 +55,7 @@ class MonthDatePicker {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButtonFormField<String>(
-                    value: selectedMonth,
+                    initialValue: selectedMonth,
                     decoration: InputDecoration(
                       labelStyle: theme.textTheme.bodySmall,
                       labelText: "මාසය තෝරන්න",

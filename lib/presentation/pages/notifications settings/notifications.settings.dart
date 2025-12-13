@@ -112,7 +112,7 @@ class _NotificationsSettingsState extends State<NotificationsSettings> {
                     // switch button
                     Switch(
                       value: isSwitch,
-                      activeColor: AppColors.secondaryColor,
+                      activeThumbColor: AppColors.secondaryColor,
                       activeTrackColor: AppColors.primaryColor,
                       inactiveThumbColor: AppColors.gray,
                       inactiveTrackColor: AppColors.whiteColor,

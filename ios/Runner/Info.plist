@@ -45,33 +45,5 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.282843198069-j5s0s3ob0e2f52a679c3ijoei236b2a8</string>
-			</array>
-		</dict>
-	</array>
-
-	<key>UIBackgroundModes</key>
-	<array>
-	<string>fetch</string>
-	<string>remote-notification</string>
-	</array>
-
-	<key>NSUserTrackingUsageDescription</key>
-	<string>This identifier will be used to deliver personalized notifications.</string>
-	<key>UNUserNotificationAlertStyle</key>
-	<string>alert</string>
-
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>We need access to your photo library to save images.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need access to your photo library to save images.</string>
-
-
 </dict>
 </plist>

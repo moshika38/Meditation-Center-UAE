@@ -96,7 +96,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Meditation Center UAE',
+    title: 'Meditation Center UAE',
       debugShowCheckedModeBanner: false,
       showPerformanceOverlay: false,
       theme: AppTheme.lightTheme,
