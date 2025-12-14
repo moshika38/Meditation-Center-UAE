@@ -7,7 +7,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
- import 'package:meditation_center/core/notifications/local.notification.dart';
+import 'package:meditation_center/core/notifications/local.notification.dart';
 import 'package:meditation_center/data/firebase/firebase_options.dart';
 import 'package:meditation_center/core/routing/app.routing.dart';
 import 'package:meditation_center/core/theme/app.theme.dart';
