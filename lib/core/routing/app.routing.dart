@@ -5,7 +5,6 @@ import 'package:meditation_center/presentation/pages/account%20settings/account.
 import 'package:meditation_center/presentation/pages/approve%20posts/approve.posts.page.dart';
 import 'package:meditation_center/presentation/pages/notice/add%20notice/add.notice.dart';
 import 'package:meditation_center/presentation/pages/notifications%20settings/notifications.settings.dart';
-import 'package:meditation_center/presentation/pages/comments/comment.page.dart';
 import 'package:meditation_center/presentation/pages/help%20and%20supports/help.and.support.dart';
 import 'package:meditation_center/presentation/pages/notice/notice%20viewer/notice.viewer.dart';
 import 'package:meditation_center/presentation/pages/home/post%20viewer/post.viewer.dart';
@@ -150,14 +149,14 @@ class AppRouting {
           },
         ),
         // no - animation
-        GoRoute(
-          path: "/comment",
-          name: "comment",
-          builder: (context, state) {
-            final postID = state.extra as String;
-            return CommentPage(postID: postID);
-          },
-        ),
+        // GoRoute(
+        //   path: "/comment",
+        //   name: "comment",
+        //   builder: (context, state) {
+        //     final postID = state.extra as String;
+        //     return CommentPage(postID: postID);
+        //   },
+        // ),
         // no - animation
         GoRoute(
           path: "/addNotice",

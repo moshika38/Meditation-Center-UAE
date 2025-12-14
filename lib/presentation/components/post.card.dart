@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:meditation_center/core/alerts/loading.popup.dart';
 import 'package:meditation_center/core/formatter/number.formatter.dart';
 import 'package:meditation_center/core/popup/popup.window.dart';
+import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/post.model.dart';
 import 'package:meditation_center/data/models/user.model.dart';
 import 'package:meditation_center/presentation/components/app.buttons.dart';
@@ -12,13 +13,14 @@ import 'package:meditation_center/presentation/components/native.share.dart';
 import 'package:meditation_center/presentation/components/pending.icon.dart';
 import 'package:meditation_center/presentation/components/post.card.Components.dart';
 import 'package:meditation_center/presentation/components/post.card.user.info.dart';
+import 'package:meditation_center/presentation/pages/comments/comment.page.dart';
 import 'package:meditation_center/presentation/pages/upload/widgets/video.player.dart';
 import 'package:meditation_center/providers/post.provider.dart';
 import 'package:provider/provider.dart';
 
 class PostCard extends StatefulWidget {
   final PostModel postData;
-  final  UserModel userData;
+  final UserModel userData;
   final bool isHome;
   final bool isCUser;
   final bool isApproved;
@@ -72,11 +74,24 @@ class _PostCardState extends State<PostCard>
 
   void _checkUserLikeStatus() async {
     final postProvider = Provider.of<PostProvider>(context, listen: false);
-    final status =
-        await postProvider.hasUserLikedPost(widget.postData.id, cUser);
+    final status = await postProvider.hasUserLikedPost(
+      widget.postData.id,
+      cUser,
+    );
 
     if (!mounted) return;
     setState(() => isLiked = status);
+  }
+
+  void openComments(BuildContext context, String postId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return CommentBottomSheet(postID: postId);
+      },
+    );
   }
 
   @override
@@ -146,9 +161,11 @@ class _PostCardState extends State<PostCard>
                   itemBuilder: (_) => const [
                     PopupMenuItem(
                       value: 1,
-                      child: Text("Delete",
-                          style: TextStyle(color: Colors.white)),
-                    )
+                      child: Text(
+                        "Delete",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ],
                 ),
             ],
@@ -173,9 +190,7 @@ class _PostCardState extends State<PostCard>
 
           //  IMAGE / VIDEO
           widget.isReel
-              ? VideoPlayerWidget(
-                  videoPath: widget.postData.assetsUrls.first,
-                )
+              ? VideoPlayerWidget(videoPath: widget.postData.assetsUrls.first)
               : PostCardComponents.imageCard(
                   context,
                   false,
@@ -186,20 +201,29 @@ class _PostCardState extends State<PostCard>
                       : "null",
                 ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
 
           //  LIKE / COMMENT COUNT
           if (widget.isApproved)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "${NumberFormatter.formatCount(numOfLikes)} likes",
-                ),
-                Text(
-                  "${NumberFormatter.formatCount(numOfComments)} comments",
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "${NumberFormatter.formatCount(numOfLikes)} likes",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall!.copyWith(fontSize: 14),
+                  ),
+                  Text(
+                    "${NumberFormatter.formatCount(numOfComments)} comments",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall!.copyWith(fontSize: 14),
+                  ),
+                ],
+              ),
             ),
 
           if (!widget.isApproved && widget.isCUser)
@@ -208,58 +232,67 @@ class _PostCardState extends State<PostCard>
               child: PendingIcon(),
             ),
 
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            child: Container(color: AppColors.gray.withOpacity(0.3), height: 1),
+          ),
+
           const SizedBox(height: 10),
 
           //  ACTION BUTTONS
           if (widget.isApproved)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                PostCardComponents.actionBtn(
-                  context,
-                  Icons.thumb_up,
-                  "Like",
-                  isLiked,
-                  () {
-                    setState(() {
-                      if (isLiked) {
-                        numOfLikes--;
-                      } else {
-                        numOfLikes++;
-                      }
-                      isLiked = !isLiked;
-                    });
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  PostCardComponents.actionBtn(
+                    context,
+                    Icons.thumb_up,
+                    "Like",
+                    "assets/svg/like.svg",
+                    isLiked,
+                    () {
+                      setState(() {
+                        if (isLiked) {
+                          numOfLikes--;
+                        } else {
+                          numOfLikes++;
+                        }
+                        isLiked = !isLiked;
+                      });
 
-                    isLiked
-                        ? postProvider.likePost(widget.postData.id, cUser)
-                        : postProvider.dislikePost(
-                            widget.postData.id,
-                            cUser,
-                          );
-                  },
-                ),
-                PostCardComponents.actionBtn(
-                  context,
-                  Icons.comment,
-                  "Comment",
-                  false,
-                  () => context.push('/comment', extra: widget.postData.id),
-                ),
-                PostCardComponents.actionBtn(
-                  context,
-                  Icons.share_outlined,
-                  "Share",
-                  false,
-                  () {
-                    LoadingPopup.show("Sharing...");
-                    NativeShare.share(
-                      text: widget.postData.description ?? "",
-                      url: widget.postData.assetsUrls.first,
-                    );
-                    EasyLoading.dismiss();
-                  },
-                ),
-              ],
+                      isLiked
+                          ? postProvider.likePost(widget.postData.id, cUser)
+                          : postProvider.dislikePost(widget.postData.id, cUser);
+                    },
+                  ),
+
+                  PostCardComponents.actionBtn(
+                    context,
+                    Icons.comment,
+                    "Comment",
+                    "assets/svg/comments.svg",
+                    false,
+                    // () => context.push('/comment', extra: widget.postData.id),
+                    () {
+                      openComments(context, widget.postData.id);
+                    },
+                  ),
+                  PostCardComponents.actionBtn(
+                    context,
+                    Icons.share_outlined,
+                    "Share",
+                    "assets/svg/share.svg",
+                    false,
+                    () {
+                      LoadingPopup.show("Sharing...");
+                      NativeShare.share(url: widget.postData.assetsUrls.first);
+                      EasyLoading.dismiss();
+                    },
+                  ),
+                ],
+              ),
             ),
         ],
       ),

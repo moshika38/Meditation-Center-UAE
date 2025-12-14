@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 
 class PostCardComponents {
@@ -73,35 +74,33 @@ class PostCardComponents {
     BuildContext context,
     IconData icon,
     String text,
+    String url,
     bool isColors,
     VoidCallback onTap,
   ) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25),
-          // ignore: deprecated_member_use
-          color: AppColors.gray.withOpacity(0.0),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: isColors ? AppColors.primaryColor : AppColors.gray,
-              size: 20,
+      child: Row(
+        children: [
+          
+          SvgPicture.asset(
+              url,
+              colorFilter:
+                  ColorFilter.mode(isColors ? AppColors.primaryColor : AppColors.gray, BlendMode.srcIn),
+              width:text=="Like"?31: 28,
+              height:text=="Like"?31: 28,
+               
             ),
-            const SizedBox(width: 5),
-            Text(
-              text,
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    color:
-                        isColors ? AppColors.primaryColor : AppColors.textColor,
-                  ),
-            ),
-          ],
-        ),
+          const SizedBox(width: 5),
+          Text(
+            text,
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+              fontSize: 15,
+                  color:
+                      isColors ? AppColors.primaryColor : AppColors.textColor,
+                ),
+          ),
+        ],
       ),
     );
   }
