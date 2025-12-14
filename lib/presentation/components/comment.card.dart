@@ -50,7 +50,7 @@ class _CommentCardState extends State<CommentCard> {
 
               return Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   CircleAvatar(
                     radius: 25,
@@ -62,16 +62,21 @@ class _CommentCardState extends State<CommentCard> {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppColors.primaryColor,
+                        color: AppColors.whiteColor,
+                         border: Border.all(
+                           color: AppColors.secondaryColor,
+                            width: 1,
+                         ),
                         borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20),
-                          bottomRight: Radius.circular(20),
-                          topRight: Radius.circular(20),
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                          topLeft: Radius.circular(10),
                         ),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 8),
+                            horizontal: 20, vertical: 5),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -85,11 +90,8 @@ class _CommentCardState extends State<CommentCard> {
                                     user.name,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .bodySmall!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.whiteColor,
-                                        ),
+                                        .bodySmall!.copyWith(fontSize: 13,fontWeight: FontWeight.bold)
+                                        ,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                     softWrap: false,
@@ -103,10 +105,7 @@ class _CommentCardState extends State<CommentCard> {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall!
-                                  .copyWith(
-                                    fontSize: 15,
-                                    color: AppColors.whiteColor,
-                                  ),
+                                  ,
                             ),
                             const SizedBox(height: 5),
                             Row(
@@ -116,10 +115,10 @@ class _CommentCardState extends State<CommentCard> {
                                   DatetimeFormatter.timeAgo(widget.dateTime),
                                   style: Theme.of(context)
                                       .textTheme
-                                      .bodySmall!
-                                      .copyWith(
-                                          color: AppColors.whiteColor,
-                                          fontSize: 12),
+                                      .bodySmall!.copyWith(
+                                        fontSize: 12
+                                      )
+                                      ,
                                 ),
                               ],
                             )
