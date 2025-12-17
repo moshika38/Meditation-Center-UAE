@@ -28,14 +28,17 @@ class UserDataCard extends StatelessWidget {
           selectImage: () {},
         ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-        Text(
-          name,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                fontWeight: FontWeight.bold,
-                color:isDarkText?AppColors.textColor: AppColors.whiteColor,
-              ),
+        Padding( 
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            name,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color:isDarkText?AppColors.textColor: AppColors.whiteColor,
+                ),
+          ),
         ),
         Text(
           email,

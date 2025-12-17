@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meditation_center/core/alerts/app.update.dart';
 import 'package:meditation_center/core/notifications/local.notification.dart';
 import 'package:meditation_center/data/services/permission.services.dart';
 import 'package:meditation_center/presentation/pages/home/home.page.dart';
@@ -49,26 +50,18 @@ class _MainScreenState extends State<MainScreen> {
     listeners();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // validateUser();
       subscribeOnce();
       await checkIfPostAvailableOrNot();
       updateUserLastLogin();
+      AppUpdate().checkAppUpdate(context);
     });
   }
 
   @override
-void dispose() {
-  _postsSubscription?.cancel();
-  super.dispose();
-}
-
-  // validateUser() {
-  //   final currentUser = FirebaseAuth.instance.currentUser;
-  //   if (currentUser == null) {
-  //     context.push('/login');
-  //   }
-  // }
-  
+  void dispose() {
+    _postsSubscription?.cancel();
+    super.dispose();
+  }
 
   Future<void> updateUserLastLogin() async {
     Provider.of<UserProvider>(context, listen: false).updateUserLastLogin();
@@ -130,8 +123,9 @@ void dispose() {
       final user = await userProvider.getUserById(id);
 
       if (user.isAdmin) {
-        _postsSubscription =
-            postProvider.unapprovedPostsStream().listen((posts) {
+        _postsSubscription = postProvider.unapprovedPostsStream().listen((
+          posts,
+        ) {
           setState(() {
             isAvailable = posts.isNotEmpty;
           });
@@ -144,97 +138,95 @@ void dispose() {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 5,
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          toolbarHeight: MediaQuery.of(context).size.height * 0.1,
-          automaticallyImplyLeading: false,
-          title: Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Meditation Center',
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: AppColors.whiteColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                      ),
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        toolbarHeight: MediaQuery.of(context).size.height * 0.1,
+        automaticallyImplyLeading: false,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Meditation Center',
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  color: AppColors.whiteColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
                 ),
-                Text(
-                  'CMC-UAE',
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        color: AppColors.secondaryColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
+              ),
+              Text(
+                'CMC-UAE',
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  color: AppColors.secondaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
                 ),
-              ],
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          if (isAvailable)
+            IconButton(
+              onPressed: () {
+                context.push('/approve');
+              },
+              icon: const FaIcon(FontAwesomeIcons.lock, size: 22),
+              color: AppColors.whiteColor,
+            ),
+          IconButton(
+            onPressed: () {
+              if (cUSer != null) {
+                context.push('/profile', extra: cUSer);
+              }
+            },
+            icon: SvgPicture.asset(
+              "assets/svg/user.svg",
+              colorFilter: ColorFilter.mode(
+                AppColors.whiteColor,
+                BlendMode.srcIn,
+              ),
+              width: 28,
+              height: 28,
             ),
           ),
-          actions: [
-            if (isAvailable)
-              IconButton(
-                onPressed: () {
-                  context.push('/approve');
+          IconButton(
+            onPressed: () {
+              context.push('/settings');
+            },
+            icon: SvgPicture.asset(
+              "assets/svg/settings.svg",
+              colorFilter: ColorFilter.mode(
+                AppColors.whiteColor,
+                BlendMode.srcIn,
+              ),
+              width: 28,
+              height: 28,
+            ),
+          ),
+        ],
+      ),
+      body: _pages[_currentIndex],
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.whiteColor,
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(width: 1.5, color: AppColors.primaryColor),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: NavItems(
+                currentIndex: _currentIndex,
+                onTap: (i) {
+                  setState(() {
+                    _currentIndex = i;
+                  });
                 },
-                icon: const FaIcon(FontAwesomeIcons.lock, size: 22),
-                color: AppColors.whiteColor,
-              ),
-            IconButton(
-              onPressed: () {
-                if (cUSer != null) {
-                  context.push('/profile', extra: cUSer);
-                }
-              },
-              icon: SvgPicture.asset(
-                "assets/svg/user.svg",
-                colorFilter:
-                    ColorFilter.mode(AppColors.whiteColor, BlendMode.srcIn),
-                width: 28,
-                height: 28,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                context.push('/settings');
-              },
-              icon: SvgPicture.asset(
-                "assets/svg/settings.svg",
-                colorFilter:
-                    ColorFilter.mode(AppColors.whiteColor, BlendMode.srcIn),
-                width: 28,
-                height: 28,
-              ),
-            ),
-          ],
-        ),
-        body: _pages[_currentIndex],
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.whiteColor,
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(
-                  width: 1.5,
-                  color: AppColors.primaryColor,
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: NavItems(
-                  currentIndex: _currentIndex,
-                  onTap: (i) {
-                    setState(() {
-                      _currentIndex = i;
-                    });
-                  },
-                ),
               ),
             ),
           ),

@@ -131,7 +131,7 @@ class _UserProfileState extends State<UserProfile> {
                               isDarkText: true,
                             ),
 
-                            // **Dynamic counts**
+                            
                             _detailsCard(totalPosts, totalLikes, totalComments),
 
                             _headerCard(),
