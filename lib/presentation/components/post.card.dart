@@ -158,12 +158,14 @@ class _PostCardState extends State<PostCard>
                       () => context.pop(),
                     );
                   },
-                  itemBuilder: (_) => const [
+                  itemBuilder: (_) =>   [
                     PopupMenuItem(
                       value: 1,
                       child: Text(
                         "Delete",
-                        style: TextStyle(color: Colors.white),
+                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                              color: AppColors.pureBlack,
+                            ),
                       ),
                     ),
                   ],
