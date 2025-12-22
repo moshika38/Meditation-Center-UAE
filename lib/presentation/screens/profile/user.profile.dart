@@ -148,9 +148,9 @@ class _UserProfileState extends State<UserProfile> {
                                     totalPosts: totalPosts,
                                     totalLikes: totalLikes,
                                     totalComments: totalComments,
-                                    createdDate:
-                                        userData!.onCreated as DateTime,
-                                    lastLogin: userData!.lastLogin as DateTime,
+                                    createdDate: userData!.onCreated!=null ? userData!.onCreated.toString() : "N/A",
+                                    lastLogin: userData!.lastLogin!=null ?userData!.lastLogin.toString() : "N/A",
+
                                   ),
                                 ),
 

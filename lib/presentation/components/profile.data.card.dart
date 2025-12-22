@@ -11,8 +11,8 @@ class ProfileDataCard {
     required int totalPosts,
     required int totalLikes,
     required int totalComments,
-    required DateTime createdDate,
-    required DateTime lastLogin,
+    required String createdDate,
+    required String lastLogin,
   }) {
     final TextStyle labelStyle = Theme.of(context).textTheme.bodySmall!
         .copyWith(color: AppColors.whiteColor, fontWeight: FontWeight.bold);
@@ -145,7 +145,7 @@ class ProfileDataCard {
   static Widget _infoRow(
     IconData icon,
     String label,
-    DateTime? value, 
+    String value, 
     TextStyle labelStyle,
     TextStyle valueStyle,
   ) {
@@ -155,7 +155,7 @@ class ProfileDataCard {
         const SizedBox(width: 5),
         Text("$label : ", style: labelStyle),
         Text(
-          value != null ? _formatCustomDate(value) : "N/A",
+          value != "N/A" ? _formatCustomDate(DateTime.parse(value)) : "N/A",
           style: valueStyle,
         ),
       ],
