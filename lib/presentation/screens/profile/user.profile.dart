@@ -6,12 +6,12 @@ import 'package:meditation_center/connection/connection.checker.dart';
 import 'package:meditation_center/connection/lost.connection.alert.dart';
 import 'package:meditation_center/core/alerts/app.loading.dart';
 import 'package:meditation_center/core/crashlytics/crashlytics.helper.dart';
-import 'package:meditation_center/core/formatter/number.formatter.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
 import 'package:meditation_center/data/models/post.model.dart';
 import 'package:meditation_center/data/models/user.model.dart';
 import 'package:meditation_center/presentation/components/empty.data.card.dart';
 import 'package:meditation_center/presentation/components/post.card.dart';
+import 'package:meditation_center/presentation/components/profile.data.card.dart';
 import 'package:meditation_center/presentation/components/user.data.card.dart';
 import 'package:meditation_center/providers/post.provider.dart';
 import 'package:meditation_center/providers/post.with.user.data.provider.dart';
@@ -20,10 +20,7 @@ import 'package:provider/provider.dart';
 
 class UserProfile extends StatefulWidget {
   final String userId;
-  const UserProfile({
-    super.key,
-    required this.userId,
-  });
+  const UserProfile({super.key, required this.userId});
 
   @override
   State<UserProfile> createState() => _UserProfileState();
@@ -41,9 +38,12 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   void showLostConnectionAlert() {
-    LostConnectionAlert.showAlert(context, onCheckAgain: () {
-      initConnectivity();
-    });
+    LostConnectionAlert.showAlert(
+      context,
+      onCheckAgain: () {
+        initConnectivity();
+      },
+    );
   }
 
   Future<void> initConnectivity() async {
@@ -86,8 +86,10 @@ class _UserProfileState extends State<UserProfile> {
                 setState(() {});
               },
               child: FutureBuilder<UserModel>(
-                future: Provider.of<UserProvider>(context, listen: false)
-                    .getUserById(widget.userId),
+                future: Provider.of<UserProvider>(
+                  context,
+                  listen: false,
+                ).getUserById(widget.userId),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const PageLoader();
@@ -102,71 +104,91 @@ class _UserProfileState extends State<UserProfile> {
                   return Consumer<PostWithUserDataProvider>(
                     builder: (context, postDataProvider, child) =>
                         FutureBuilder<List<PostModel>>(
-                      future: postDataProvider.getPostsByUserId(widget.userId),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const PageLoader();
-                        }
+                          future: postDataProvider.getPostsByUserId(
+                            widget.userId,
+                          ),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const PageLoader();
+                            }
 
-                        if (snapshot.hasError) {
-                          return Center(child: Text("Error loading posts"));
-                        }
+                            if (snapshot.hasError) {
+                              return Center(child: Text("Error loading posts"));
+                            }
 
-                        final posts = snapshot.data ?? [];
+                            final posts = snapshot.data ?? [];
 
-                        int totalPosts = posts.length;
-                        int totalLikes =
-                            posts.fold(0, (sum, post) => sum + (post.likes));
-                        int totalComments =
-                            posts.fold(0, (sum, post) => sum + (post.comments));
+                            int totalPosts = posts.length;
+                            int totalLikes = posts.fold(
+                              0,
+                              (sum, post) => sum + (post.likes),
+                            );
+                            int totalComments = posts.fold(
+                              0,
+                              (sum, post) => sum + (post.comments),
+                            );
 
-                        return ListView(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          children: [
-                            // User info
-                            UserDataCard(
-                              imageUrl: userData!.profileImage,
-                              name: userData!.name,
-                              email: userData!.email,
-                              isDarkText: true,
-                            ),
+                            return ListView(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              children: [
+                                // User info
+                                UserDataCard(
+                                  imageUrl: userData!.profileImage,
+                                  name: userData!.name,
+                                  email: userData!.email,
+                                  isDarkText: true,
+                                ),
 
-                            
-                            _detailsCard(totalPosts, totalLikes, totalComments),
-
-                            _headerCard(),
-
-                            if (posts.isEmpty)
-                              _emptyAnimation()
-                            else
-                              ...posts.map(
-                                (postData) => Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.gray.withOpacity(0.1),
-                                  ),
-                                  child: PostCard(
-                                    userData: userData!,
-                                    postData: postData,
-                                    isApproved: postData.isApproved,
-                                    isHome: false,
-                                    isCUser:
-                                        currentUser == postData.userId ? true : false,
-                                    isReel: postData.isReel,
-                                    approvedPage: false,
-                                    onDelete: () {
-                                      deletePost(postData.id);
-                                    },
-                                    approvedFun: () {},
-                                    removeFun: () {},
+                                // Details card
+                                GestureDetector(
+                                  child: ProfileDataCard.detailsCard(
+                                    context,
+                                    isAdmin: userData!.isAdmin,
+                                    totalPosts: totalPosts,
+                                    totalLikes: totalLikes,
+                                    totalComments: totalComments,
+                                    createdDate:
+                                        userData!.onCreated as DateTime,
+                                    lastLogin: userData!.lastLogin as DateTime,
                                   ),
                                 ),
-                              ),
-                          ],
-                        );
-                      },
-                    ),
+
+                                _headerCard(),
+
+                                if (posts.isEmpty)
+                                  _emptyAnimation()
+                                else
+                                  ...posts.map(
+                                    (postData) => Container(
+                                      margin: const EdgeInsets.symmetric(
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.gray.withOpacity(0.1),
+                                      ),
+                                      child: PostCard(
+                                        userData: userData!,
+                                        postData: postData,
+                                        isApproved: postData.isApproved,
+                                        isHome: false,
+                                        isCUser: currentUser == postData.userId
+                                            ? true
+                                            : false,
+                                        isReel: postData.isReel,
+                                        approvedPage: false,
+                                        onDelete: () {
+                                          deletePost(postData.id);
+                                        },
+                                        approvedFun: () {},
+                                        removeFun: () {},
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
+                        ),
                   );
                 },
               ),
@@ -183,14 +205,11 @@ class _UserProfileState extends State<UserProfile> {
         children: [
           Text(
             "Uploaded Posts",
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.bold),
           ),
-          const FaIcon(
-            FontAwesomeIcons.earth,
-            size: 20,
-          ),
+          const FaIcon(FontAwesomeIcons.earth, size: 20),
         ],
       ),
     );
@@ -200,80 +219,6 @@ class _UserProfileState extends State<UserProfile> {
     return const Padding(
       padding: EdgeInsets.only(top: 30),
       child: EmptyDataCard(title: "No posts yet!"),
-    );
-  }
-
-  Widget _detailsCard(int totalPosts, int totalLikes, int totalComments) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Container(
-        width: double.infinity,
-        height: 100,
-        decoration: BoxDecoration(
-          color: AppColors.primaryColor.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.primaryColor, width: 1),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _itemCard(
-              "Likes",
-              totalLikes,
-              FontAwesomeIcons.heart,
-            ),
-            Container(
-              width: 1,
-              height: 30,
-              color: AppColors.gray,
-            ),
-            _itemCard(
-              "Comments",
-              totalComments,
-              FontAwesomeIcons.comment,
-            ),
-            Container(
-              width: 1,
-              height: 30,
-              color: AppColors.gray,
-            ),
-            _itemCard(
-              "Posts",
-              totalPosts,
-              FontAwesomeIcons.noteSticky,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _itemCard(String title, int count, IconData icon) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Row(
-          children: [
-            Text(
-              NumberFormatter.formatCount(count),
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: AppColors.primaryColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(width: 5),
-            FaIcon(icon, size: 15, color: AppColors.primaryColor),
-          ],
-        ),
-        const SizedBox(height: 5),
-        Text(
-          title,
-          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                color: AppColors.pureBlack,
-                fontSize: 15,
-              ),
-        ),
-      ],
     );
   }
 }
