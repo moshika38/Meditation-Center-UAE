@@ -143,8 +143,7 @@ class _UserProfileState extends State<UserProfile> {
                                 // Details card
                                 GestureDetector(
                                   child: ProfileDataCard.detailsCard(
-                                    context,
-                                    isAdmin: userData!.isAdmin,
+                                    context,   
                                     totalPosts: totalPosts,
                                     totalLikes: totalLikes,
                                     totalComments: totalComments,

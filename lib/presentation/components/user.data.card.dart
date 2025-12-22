@@ -40,14 +40,17 @@ class UserDataCard extends StatelessWidget {
                 ),
           ),
         ),
-        Text(
-          email,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                fontWeight: FontWeight.bold,
-                color:isDarkText?AppColors.textColor: AppColors.whiteColor,
-              ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            email,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color:isDarkText?AppColors.textColor: AppColors.whiteColor,
+                ),
+          ),
         ),
       ],
     );

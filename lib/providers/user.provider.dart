@@ -62,6 +62,17 @@ class UserProvider extends ChangeNotifier {
     return UserModel.fromJson(snapshot.data()!);
   }
 
+
+// get all users
+Future<List<UserModel>> getAllUsers() async {
+  final snapshot = await _firestore.collection('users').get();
+
+  return snapshot.docs
+      .map((doc) => UserModel.fromJson(doc.data()))
+      .toList();
+}
+
+
 // cloudinary upload image
   Future<bool> uploadUserProfileImage(
     XFile imagePath,

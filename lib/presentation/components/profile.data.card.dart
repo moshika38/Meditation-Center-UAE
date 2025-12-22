@@ -1,13 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:meditation_center/core/alerts/app.loading.dart';
 import 'package:meditation_center/core/formatter/number.formatter.dart';
 import 'package:meditation_center/core/theme/app.colors.dart';
+import 'package:meditation_center/providers/user.provider.dart';
+import 'package:provider/provider.dart';
 
 class ProfileDataCard {
   static Widget detailsCard(
     BuildContext context, {
-    required bool isAdmin,
+
     required int totalPosts,
     required int totalLikes,
     required int totalComments,
@@ -18,86 +22,107 @@ class ProfileDataCard {
         .copyWith(color: AppColors.whiteColor, fontWeight: FontWeight.bold);
     final TextStyle valueStyle = Theme.of(
       context,
-    ).textTheme.bodySmall!.copyWith(color: AppColors.whiteColor,fontSize: 15);
+    ).textTheme.bodySmall!.copyWith(color: AppColors.whiteColor, fontSize: 15);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColors.primaryColor.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.primaryColor, width: 1),
+    return Consumer(
+      builder: (context, UserProvider userProvider, child) => FutureBuilder(
+        future: userProvider.getUserById(
+          FirebaseAuth.instance.currentUser!.uid,
         ),
-        child: Padding(
-          padding:   EdgeInsets.only(top: 30, bottom: isAdmin?12:30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Stats Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _itemCard(
-                    context,
-                    "Likes",
-                    totalLikes,
-                    FontAwesomeIcons.heart,
-                  ),
-                  _divider(),
-                  _itemCard(
-                    context,
-                    "Comments",
-                    totalComments,
-                    FontAwesomeIcons.comment,
-                  ),
-                  _divider(),
-                  _itemCard(
-                    context,
-                    "Posts",
-                    totalPosts,
-                    FontAwesomeIcons.noteSticky,
-                  ),
-                ],
+        builder: (context, asyncSnapshot) {
+          if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child:AppLoading());
+          }
+          final currentUser = asyncSnapshot.data;
+          final bool currentUserIsAdmin = currentUser?.isAdmin ?? false;
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.primaryColor, width: 1),
               ),
-             isAdmin? const SizedBox(height: 20):SizedBox.shrink(),
-              // Info Card
-          isAdmin?    Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryColor,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 15,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _infoRow(
-                        Icons.credit_score_sharp,
-                        "Created",
-                        createdDate,
-                        labelStyle,
-                        valueStyle,
-                      ),
-                      const SizedBox(height: 10),
-                      _infoRow(
-                        Icons.calendar_month_sharp,
-                        "Last Login",
-                        lastLogin,
-                        labelStyle,
-                        valueStyle,
-                      ),
-                    ],
-                  ),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: 30,
+                  bottom: currentUserIsAdmin ? 12 : 30,
                 ),
-              ):SizedBox.shrink()
-            ],
-          ),
-        ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Stats Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _itemCard(
+                          context,
+                          "Likes",
+                          totalLikes,
+                          FontAwesomeIcons.heart,
+                        ),
+                        _divider(),
+                        _itemCard(
+                          context,
+                          "Comments",
+                          totalComments,
+                          FontAwesomeIcons.comment,
+                        ),
+                        _divider(),
+                        _itemCard(
+                          context,
+                          "Posts",
+                          totalPosts,
+                          FontAwesomeIcons.noteSticky,
+                        ),
+                      ],
+                    ),
+                    currentUserIsAdmin
+                        ? const SizedBox(height: 20)
+                        : SizedBox.shrink(),
+                    // Info Card
+                    currentUserIsAdmin
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryColor,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 15,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _infoRow(
+                                    Icons.credit_score_sharp,
+                                    "Created",
+                                    createdDate,
+                                    labelStyle,
+                                    valueStyle,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  _infoRow(
+                                    Icons.calendar_month_sharp,
+                                    "Last Login",
+                                    lastLogin,
+                                    labelStyle,
+                                    valueStyle,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : SizedBox.shrink(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -145,7 +170,7 @@ class ProfileDataCard {
   static Widget _infoRow(
     IconData icon,
     String label,
-    String value, 
+    String value,
     TextStyle labelStyle,
     TextStyle valueStyle,
   ) {

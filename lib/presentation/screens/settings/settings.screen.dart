@@ -40,9 +40,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void showLostConnectionAlert() {
-    LostConnectionAlert.showAlert(context, onCheckAgain: () {
-      initConnectivity();
-    });
+    LostConnectionAlert.showAlert(
+      context,
+      onCheckAgain: () {
+        initConnectivity();
+      },
+    );
   }
 
   initConnectivity() async {
@@ -71,9 +74,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     AuthServices.logOut();
     await FirebaseAuth.instance.signOut();
     if (!mounted) return;
-    context.goNamed(
-      'login',
-    );
+    context.goNamed('login');
 
     EasyLoading.showSuccess('Logged out successfully!');
   }
@@ -98,9 +99,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: Text(
           'Settings',
           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.whiteColor,
-              ),
+            fontWeight: FontWeight.bold,
+            color: AppColors.whiteColor,
+          ),
         ),
       ),
       body: SafeArea(
@@ -109,119 +110,138 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 builder: (context, constraints) {
                   return SingleChildScrollView(
                     child: ConstrainedBox(
-                      constraints:
-                          BoxConstraints(minHeight: constraints.maxHeight),
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
                       child: IntrinsicHeight(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 20),
+                            vertical: 20,
+                            horizontal: 20,
+                          ),
                           child: Consumer(
-                            builder: (
-                              BuildContext context,
-                              UserProvider userProvider,
-                              child,
-                            ) =>
-                                FutureBuilder(
-                              // get user
-                              future: userProvider.getUserById(
-                                FirebaseAuth.instance.currentUser!.uid,
-                              ),
-                              builder: (context, snapshot) {
-                                // error getting user
-                                if (snapshot.hasError) {
-                                  EasyLoading.dismiss();
-                                  AppTopSnackbar.showTopSnackBar(
-                                      context, "Something went wrong");
+                            builder:
+                                (
+                                  BuildContext context,
+                                  UserProvider userProvider,
+                                  child,
+                                ) => FutureBuilder(
+                                  // get user
+                                  future: userProvider.getUserById(
+                                    FirebaseAuth.instance.currentUser!.uid,
+                                  ),
+                                  builder: (context, snapshot) {
+                                    // error getting user
+                                    if (snapshot.hasError) {
+                                      EasyLoading.dismiss();
+                                      AppTopSnackbar.showTopSnackBar(
+                                        context,
+                                        "Something went wrong",
+                                      );
 
-                                  context.push('/main');
-                                }
-                                // loading user data
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const PageLoader();
-                                }
-                                // has user data
-                                if (snapshot.hasData) {
-                                  final user = snapshot.data as UserModel;
+                                      context.push('/main');
+                                    }
+                                    // loading user data
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const PageLoader();
+                                    }
+                                    // has user data
+                                    if (snapshot.hasData) {
+                                      final user = snapshot.data as UserModel;
 
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.01),
-                                      UserDataCard(
-                                        isDarkText: false,
-                                        imageUrl: user.profileImage,
-                                        name: user.name,
-                                        email: user.email,
-                                      ),
-                                      SizedBox(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.05),
-                                      _items(
-                                        Icons.help,
-                                        "Help & Support",
-                                        "Get assistance",
-                                        () {
-                                          context.push('/help_and_support');
-                                        },
-                                      ),
-                                      _items(
-                                        Icons.person_3_sharp,
-                                        "Account settings",
-                                        "Manage your account",
-                                        () {
-                                          context.push('/account_settings');
-                                        },
-                                      ),
-                                      _items(
-                                        Icons.notifications,
-                                        "Notifications ",
-                                        "Manage notification settings",
-                                        () {
-                                          context.push('/notifications');
-                                        },
-                                      ),
-                                      _items(
-                                        Icons.logout,
-                                        "Logout",
-                                        "Sign out of your account",
-                                        () {
-                                          PopupWindow.showPopupWindow(
-                                            "This action cannot be undone\nAre you sure you want to continue?",
-                                            "Yes, Logout",
-                                            context,
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            height:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.height *
+                                                0.01,
+                                          ),
+                                          UserDataCard(
+                                            isDarkText: false,
+                                            imageUrl: user.profileImage,
+                                            name: user.name,
+                                            email: user.email,
+                                          ),
+                                          SizedBox(
+                                            height:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.height *
+                                                0.05,
+                                          ),
+                                          _items(
+                                            Icons.help,
+                                            "Help & Support",
+                                            "Get assistance",
                                             () {
-                                              logOut();
+                                              context.push('/help_and_support');
                                             },
+                                          ),
+                                          _items(
+                                            Icons.person_3_sharp,
+                                            "Account settings",
+                                            "Manage your account",
                                             () {
-                                              context.pop();
+                                              context.push('/account_settings');
                                             },
-                                          );
-                                        },
-                                      ),
-                                      Spacer(),
-                                      Text(
-                                        "v $appVersion + $buildNumber",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                              color: AppColors.whiteColor,
-                                            ),
-                                      ),
-                                    ],
-                                  );
-                                }
-                                return PageLoader();
-                              },
-                            ),
+                                          ),
+                                          _items(
+                                            Icons.notifications,
+                                            "Notifications ",
+                                            "Manage notification settings",
+                                            () {
+                                              context.push('/notifications');
+                                            },
+                                          ),
+                                          user.isAdmin
+                                              ? _items(
+                                                  Icons.data_usage_sharp,
+                                                  "Users list ",
+                                                  "Manage users list",
+                                                  () {
+                                                    context.push('/users');
+                                                  },
+                                                )
+                                              : SizedBox.shrink(),
+                                          _items(
+                                            Icons.logout,
+                                            "Logout",
+                                            "Sign out of your account",
+                                            () {
+                                              PopupWindow.showPopupWindow(
+                                                "This action cannot be undone\nAre you sure you want to continue?",
+                                                "Yes, Logout",
+                                                context,
+                                                () {
+                                                  logOut();
+                                                },
+                                                () {
+                                                  context.pop();
+                                                },
+                                              );
+                                            },
+                                          ),
+                                          Spacer(),
+                                          Text(
+                                            "v $appVersion + $buildNumber",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium!
+                                                .copyWith(
+                                                  color: AppColors.whiteColor,
+                                                ),
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                    return PageLoader();
+                                  },
+                                ),
                           ),
                         ),
                       ),
@@ -229,10 +249,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   );
                 },
               )
-            : Padding(
-                padding: const EdgeInsets.all(20),
-                child: PageLoader(),
-              ),
+            : Padding(padding: const EdgeInsets.all(20), child: PageLoader()),
       ),
     );
   }
@@ -267,10 +284,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(15),
-                        child: Icon(
-                          icon,
-                          color: AppColors.primaryColor,
-                        ),
+                        child: Icon(icon, color: AppColors.primaryColor),
                       ),
                     ),
                   ),
@@ -281,16 +295,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Text(
                         text,
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.whiteColor),
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.whiteColor,
+                        ),
                       ),
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.45,
                         child: Text(
                           subText,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall!
+                          style: Theme.of(context).textTheme.bodySmall!
                               .copyWith(color: AppColors.whiteColor),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
